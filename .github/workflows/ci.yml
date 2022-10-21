@@ -5,10 +5,10 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
-    
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  
+
 jobs:
   build:
     name: Build
@@ -37,7 +37,7 @@ jobs:
           SONAR_SCANNER_DOWNLOAD_URL: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_SCANNER_VERSION }}-linux.zip
         run: |
           mkdir -p $HOME/.sonar
-          curl -sSLo $HOME/.sonar/sonar-scanner.zip ${{ env.SONAR_SCANNER_DOWNLOAD_URL }} 
+          curl -sSLo $HOME/.sonar/sonar-scanner.zip ${{ env.SONAR_SCANNER_DOWNLOAD_URL }}
           unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
           echo "$HOME/.sonar/sonar-scanner-${{ env.SONAR_SCANNER_VERSION }}-linux/bin" >> $GITHUB_PATH
       - name: Download and set up build-wrapper
@@ -46,7 +46,7 @@ jobs:
         run: |
           curl -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip ${{ env.BUILD_WRAPPER_DOWNLOAD_URL }}
           unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
-          echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH     
+          echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
       - name: Download and install Fledge
         env:
           FLEDGE_REPO_URL: "https://github.com/fledge-iot/fledge/archive/refs/heads/develop.zip" 
@@ -68,13 +68,13 @@ jobs:
           sudo cp -prv $HOME/fledge/C/thirdparty/rapidjson/include/rapidjson/* /usr/include/fledge/rapidjson/
           sudo mkdir -p /usr/lib/fledge/
           sudo cp -prv /usr/local/fledge/lib/* /usr/lib/fledge/
-      - name: Download and install lib61850
+      - name: Download and install libiec61850
         env:
-          LIB61850_REPO_URL: "https://github.com/mz-automation/lib61850.git" 
+          LIBIEC61850_REPO_URL: "https://github.com/mz-automation/libiec61850.git"
         run: |
           cd $HOME
-          git clone ${{ env.LIB61850_REPO_URL }}
-          cd $HOME/lib61850
+          git clone ${{ env.LIBIEC61850_REPO_URL }}
+          cd $HOME/libiec61850
           mkdir build
           cd build
           cmake -DBUILD_TESTS=NO -DBUILD_EXAMPLES=NO ..
@@ -93,7 +93,7 @@ jobs:
           mkdir build
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Coverage
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Release
-          cd build 
+          cd build
           make
           make iec61850_coverage_sonar
       - name: Run sonar-scanner
