@@ -41,6 +41,7 @@ class IEC61850: public ClientGatewayInterface, public FledgeProxyInterface
         IEC61850 &operator = (IEC61850 &&) = delete;
 
         void setConfig(const ConfigCategory &config);
+        std::string getLogMinLevel();
 
         void start() override;
         void stop() override;

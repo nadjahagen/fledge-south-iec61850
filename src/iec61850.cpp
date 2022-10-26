@@ -33,6 +33,15 @@ void IEC61850::setConfig(const ConfigCategory &config)
     }
 }
 
+std::string IEC61850::getLogMinLevel()
+{
+    if (m_config) {
+        return (m_config->logMinLevel);
+    } else {
+        return ("info");
+    }
+}
+
 void IEC61850::start()
 {
     Logger::getLogger()->info("Plugin started");

@@ -28,6 +28,7 @@ class IEC61850ClientConfig
 {
     public :
 
+        std::string logMinLevel;
         std::string assetName;
 
         ConnectionParameters connectionParam;

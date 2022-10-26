@@ -101,6 +101,13 @@ static const char *const default_config = QUOTE({
         "type" : "string",  // FC
         "default" : "ST",
         "displayName" : "61850 Server functional constraint"
+    },
+
+    "log min level" : {
+        "description" : "minimum level for the Fledge logger (debug, info)",
+        "type" : "string",
+        "default" : "info",
+        "displayName" : "logger minimum level"
     }
 });
 // *INDENT-ON*
@@ -147,6 +154,7 @@ extern "C" {
 
         Logger::getLogger()->info("Starting the plugin");
         IEC61850 *iec61850 = static_cast<IEC61850 *>(handle);
+        Logger::getLogger()->setMinLevel(iec61850->getLogMinLevel());
         iec61850->start();
     }
 
@@ -187,7 +195,7 @@ extern "C" {
         IEC61850 *iec61850 = static_cast<IEC61850 *>(handle);
         iec61850->stop();
         iec61850->setConfig(config);
-
+        Logger::getLogger()->setMinLevel(iec61850->getLogMinLevel());
         iec61850->start();
     }
 

@@ -12,6 +12,7 @@
 
 constexpr const uint16_t DEFAULT_MMS_PORT = 8102;
 const char *const DEFAULT_IED_IP_ADDRESS = "127.0.0.1";
+const char *const DEFAULT_LOG_MIN_LEVEL = "info";
 
 void IEC61850ClientConfig::importConfig(const ConfigCategory &newConfig)
 {
@@ -19,6 +20,12 @@ void IEC61850ClientConfig::importConfig(const ConfigCategory &newConfig)
         assetName = newConfig.getValue("asset");
     } else {
         assetName = "iec61850";
+    }
+
+    if (newConfig.itemExists("log min level")) {
+        logMinLevel = newConfig.getValue("log min level");
+    } else {
+        logMinLevel = DEFAULT_LOG_MIN_LEVEL;
     }
 
     // Set the IP of the 61850 server
