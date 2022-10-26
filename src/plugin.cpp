@@ -15,6 +15,7 @@
 #include <plugin_api.h>
 #include <config_category.h>
 #include <logger.h>
+#include <reading.h>
 
 // local library
 #include "./version.h"
@@ -130,62 +131,8 @@ extern "C" {
     {
         IEC61850 *iec61850;
         Logger::getLogger()->info("Initializing the plugin");
-        std::string ipAddress = DEFAULT_IED_IP_ADDRESS;
-        std::string model = "testmodel";
-        std::string logicalNode;
-        std::string logicalDevice;
-        std::string cdc;
-        std::string attribute;
-        std::string fonctionConstraint;
-        uint16_t mmsPort = DEFAULT_MMS_PORT;
-
-        if (config->itemExists("ip")) {
-            ipAddress = config->getValue("ip");
-        }
-
-        if (config->itemExists("port")) {
-            mmsPort = static_cast<uint16_t>(stoi(config->getValue("port")));
-        }
-
-        if (config->itemExists("IED Model")) {
-            model = (config->getValue("IED Model"));
-        }
-
-        if (config->itemExists("Logical Device")) {
-            logicalDevice = config->getValue("Logical Device");
-        }
-
-        if (config->itemExists("Logical Node")) {
-            logicalNode = config->getValue("Logical Node");
-        }
-
-        if (config->itemExists("CDC")) {
-            cdc = config->getValue("CDC");
-        }
-
-        if (config->itemExists("Functional Constraint")) {
-            fonctionConstraint = config->getValue("Functional Constraint");
-        }
-
-        if (config->itemExists("Data Attribute")) {
-            attribute = config->getValue("Data Attribute");
-        }
-
-        iec61850 = new IEC61850(ipAddress.c_str(),
-                                mmsPort,
-                                model,
-                                logicalNode,
-                                logicalDevice,
-                                cdc,
-                                attribute,
-                                fonctionConstraint);
-
-        if (config->itemExists("asset")) {
-            iec61850->setAssetName(config->getValue("asset"));
-        } else {
-            iec61850->setAssetName("iec61850");
-        }
-
+        iec61850 = new IEC61850();
+        iec61850->setConfig(*config);
         return (PLUGIN_HANDLE) iec61850;
     }
 
@@ -239,52 +186,7 @@ extern "C" {
         ConfigCategory config("new", newConfig);
         IEC61850 *iec61850 = static_cast<IEC61850 *>(handle);
         iec61850->stop();
-
-        if (config.itemExists("ip")) {
-            std::string ipAddress = config.getValue("ip");
-            iec61850->setIedIpAddress(ipAddress);
-        }
-
-        if (config.itemExists("port")) {
-            uint16_t mmsPort = static_cast<uint16_t>(stoi(config.getValue("port")));
-            iec61850->setMmsPort(mmsPort);
-        }
-
-        if (config.itemExists("IED Model")) {
-            std::string model = (config.getValue("IED Model"));
-            iec61850->setModel(model);
-        }
-
-        if (config.itemExists("Logical Device")) {
-            std::string logicalDevice = config.getValue("Logical Device");
-            iec61850->setLogicalDevice(logicalDevice);
-        }
-
-        if (config.itemExists("Logical Node")) {
-            std::string logicalNode = config.getValue("Logical Node");
-            iec61850->setLogicalNode(logicalNode);
-        }
-
-        if (config.itemExists("CDC")) {
-            std::string cdc_name = config.getValue("CDC");
-            iec61850->setCdc(cdc_name);
-        }
-
-        if (config.itemExists("Data Attribute")) {
-            std::string data_attribute = config.getValue("Data Attribute");
-            iec61850->setAttribute(data_attribute);
-        }
-
-        if (config.itemExists("Functional Constraint")) {
-            std::string fc_name = config.getValue("Functional Constraint");
-            iec61850->setFc(fc_name);
-        }
-
-        if (config.itemExists("asset")) {
-            iec61850->setAssetName(config.getValue("asset"));
-        } else {
-            iec61850->setAssetName("iec61850");
-        }
+        iec61850->setConfig(config);
 
         iec61850->start();
     }
