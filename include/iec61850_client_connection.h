@@ -35,14 +35,24 @@ class IEC61850Client;
 class Mms
 {
     public:
-        Mms();
+        Mms() = default;
         ~Mms();
+
+        /** Disable copy constructor */
+        Mms(const Mms &) = delete;
+        /** Disable copy assignment operator */
+        Mms &operator = (const Mms &) = delete;
+        /** Disable move constructor */
+        Mms(Mms &&) = delete;
+        /** Disable move assignment operator */
+        Mms &operator = (Mms &&) = delete;
+
         void setMmsValue(MmsValue *mmsValue);
         const MmsValue *getMmsValue() const;
-        bool isNull();
+        bool isNull() const;
 
     private:
-        MmsValue *m_mmsValue;
+        MmsValue *m_mmsValue = nullptr;
 };
 
 /** \class IEC61850ClientConnection
@@ -62,9 +72,21 @@ class IEC61850ClientConnection
 
         ~IEC61850ClientConnection();
 
+        /** Disable default constructor */
+        IEC61850ClientConnection() = delete;
+
+        /** Disable copy constructor */
+        IEC61850ClientConnection(const IEC61850ClientConnection &) = delete;
+        /** Disable copy assignment operator */
+        IEC61850ClientConnection &operator = (const IEC61850ClientConnection &) = delete;
+        /** Disable move constructor */
+        IEC61850ClientConnection(IEC61850ClientConnection &&) = delete;
+        /** Disable move assignment operator */
+        IEC61850ClientConnection &operator = (IEC61850ClientConnection &&) = delete;
+
         bool isConnected();
-        bool isNoError();
-        void logError();
+        bool isNoError() const;
+        void logError() const;
 
         std::shared_ptr<Mms> readMms(const std::string &daPath,
                                      const std::string &fcName);

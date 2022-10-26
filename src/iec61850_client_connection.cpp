@@ -14,11 +14,6 @@
 #include <libiec61850/iec61850_common.h>
 
 
-Mms::Mms()
-    : m_mmsValue(nullptr)
-{
-}
-
 Mms::~Mms()
 {
     if (m_mmsValue) {
@@ -35,13 +30,14 @@ void Mms::setMmsValue(MmsValue *mmsValue)
 
 const MmsValue *Mms::getMmsValue() const
 {
-    return (m_mmsValue);
+    return m_mmsValue;
 }
 
-bool Mms::isNull()
+bool Mms::isNull() const
 {
     return (m_mmsValue == nullptr);
 }
+
 
 IEC61850ClientConnection::IEC61850ClientConnection(
     const ConnectionParameters &connParam)
@@ -59,7 +55,7 @@ IEC61850ClientConnection::~IEC61850ClientConnection()
     IedConnection_destroy(m_iedConnection);
 }
 
-bool IEC61850ClientConnection::isNoError()
+bool IEC61850ClientConnection::isNoError() const
 {
     return (m_networkStack_error == IED_ERROR_OK);
 }
@@ -98,17 +94,17 @@ IEC61850ClientConnection::readMms(const std::string &daPath,
 
     FunctionalConstraint functionalConstraint =
         FunctionalConstraint_fromString(fcName.c_str());
-    std::shared_ptr<Mms> mms = std::make_shared<Mms>();
+    auto mms = std::make_shared<Mms>();
     std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
     mms->setMmsValue(IedConnection_readObject(m_iedConnection,
                      &m_networkStack_error,
                      daPath.c_str(),
                      functionalConstraint));
-    return (mms);
+    return mms;
 }
 
 
-void IEC61850ClientConnection::logError()
+void IEC61850ClientConnection::logError() const
 {
     switch (m_networkStack_error) {
         case IED_ERROR_OK:
@@ -219,7 +215,6 @@ void IEC61850ClientConnection::logError()
             Logger::getLogger()->error("Service not implemented");
             break;
 
-        case IED_ERROR_UNKNOWN:
         default:
             Logger::getLogger()->error("unknown error");
             break;

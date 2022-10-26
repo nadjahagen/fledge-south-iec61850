@@ -29,25 +29,26 @@ class IEC61850: public ClientGatewayInterface, public FledgeProxyInterface
 {
     public:
         IEC61850();
-        virtual ~IEC61850();
+        ~IEC61850() override = default;
 
-        /** Unavailable copy constructor */
+        /** Disable copy constructor */
         IEC61850(const IEC61850 &) = delete;
-        /** Unavailable copy assignment operator */
+        /** Disable copy assignment operator */
         IEC61850 &operator = (const IEC61850 &) = delete;
-        /** Unavailable move constructor */
+        /** Disable move constructor */
         IEC61850(IEC61850 &&) = delete;
-        /** Unavailable move assignment operator */
+        /** Disable move assignment operator */
         IEC61850 &operator = (IEC61850 &&) = delete;
 
-        void setConfig(const ConfigCategory &config);
-        std::string getLogMinLevel();
+        void setConfig(const ConfigCategory &config) const;
+        std::string getLogMinLevel() const;
 
         void start() override;
         void stop() override;
 
         void ingest(std::vector<Datapoint *>  points) override;
-        void registerIngest(void *data, void (*ingest_cb)(void *, Reading)) override
+        void registerIngest(INGEST_DATA_TYPE data,
+                            void (*ingest_cb)(INGEST_DATA_TYPE, Reading)) override
         {
             m_ingest_callback = ingest_cb;
             m_data = data;
@@ -57,7 +58,7 @@ class IEC61850: public ClientGatewayInterface, public FledgeProxyInterface
     private:
 
         void                (*m_ingest_callback)(void *, Reading) {}; // NOLINT
-        void                *m_data = nullptr;
+        INGEST_DATA_TYPE    m_data = nullptr;
         std::mutex          m_ingestMutex;
 
         std::unique_ptr<IEC61850Client> m_client;

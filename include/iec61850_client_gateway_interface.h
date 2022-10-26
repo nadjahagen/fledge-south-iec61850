@@ -12,6 +12,7 @@
 class ClientGatewayInterface
 {
     public :
+        virtual ~ClientGatewayInterface() = default;
 
         virtual void start() = 0;
         virtual void stop() = 0;

@@ -14,17 +14,12 @@
 
 IEC61850::IEC61850()
     : ClientGatewayInterface(),
-      FledgeProxyInterface(),
-      m_client(nullptr)
+      FledgeProxyInterface()
 {
     m_config = std::make_shared<IEC61850ClientConfig>();
 }
 
-IEC61850::~IEC61850()
-{
-}
-
-void IEC61850::setConfig(const ConfigCategory &config)
+void IEC61850::setConfig(const ConfigCategory &config) const
 {
     if (m_config) {
         m_config->importConfig(config);
@@ -33,12 +28,12 @@ void IEC61850::setConfig(const ConfigCategory &config)
     }
 }
 
-std::string IEC61850::getLogMinLevel()
+std::string IEC61850::getLogMinLevel() const
 {
     if (m_config) {
-        return (m_config->logMinLevel);
+        return m_config->logMinLevel;
     } else {
-        return ("info");
+        return "info";
     }
 }
 

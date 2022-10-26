@@ -91,8 +91,9 @@ Datapoint *IEC61850Client::createDatapoint(const std::string &dataName,
         T primitiveTypeValue)
 {
     DatapointValue value = DatapointValue(primitiveTypeValue);
-    Datapoint *datapoint = new Datapoint(dataName, value);
-    return (datapoint);
+    /** Dynamic allocation with raw pointer: Fledge core will deallocate it */
+    auto *datapoint = new Datapoint(dataName, value);  // NOSONAR
+    return datapoint;
 }
 
 
@@ -127,14 +128,14 @@ Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<Mms> mms)
             break;
         }
 
-        case (MMS_INTEGER):
+        case MMS_INTEGER:
             datapoint = createDatapoint("MMS_INTEGER",
                                         static_cast<int64_t>(MmsValue_toInt32(mmsValue)));
             break;
 
         case MMS_VISIBLE_STRING:
             // TODO fix 'MmsValue_toString()' signature in libiec61850
-            //createDatapoint("MMS_VISIBLE_STRING", MmsValue_toString(mmsValue));
+            // TODO use: createDatapoint("MMS_VISIBLE_STRING", MmsValue_toString(mmsValue));
             datapoint = createDatapoint("MMS_VISIBLE_STRING",
                                         MmsValue_toString(const_cast<MmsValue *>(mmsValue)));
             break;
@@ -146,9 +147,9 @@ Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<Mms> mms)
 
         case MMS_OCTET_STRING: {
             // TODO fix 'MmsValue_getOctetStringBuffer()' signature in libiec61850
-            //uint8_t *mms_string_buffer = MmsValue_getOctetStringBuffer(mmsValue);
+            // TODO use: MmsValue_getOctetStringBuffer(mmsValue);
             uint8_t *mms_string_buffer = MmsValue_getOctetStringBuffer(const_cast<MmsValue *>(mmsValue));
-            std::string sval(reinterpret_cast<char *>(mms_string_buffer),
+            std::string sval(reinterpret_cast<char *>(mms_string_buffer),  // only 'string of char' is supported
                              MmsValue_getOctetStringSize(mmsValue));
             datapoint = createDatapoint("MMS_OCTET_STRING", sval);
             break;

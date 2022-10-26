@@ -17,11 +17,10 @@
 #include <config_category.h>
 
 
-typedef struct {
+struct ConnectionParameters {
     std::string ipAddress;
     uint16_t    mmsPort;
-
-} ConnectionParameters;
+};
 
 
 class IEC61850ClientConfig

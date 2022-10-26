@@ -21,7 +21,7 @@
 #include "./version.h"
 #include "./iec61850.h"
 
-#define PLUGIN_NAME "iec61850"
+#define PLUGIN_NAME "iec61850"  // NOSONAR (Fledge API)
 
 using INGEST_CB = void (*)(void *, Reading);
 
@@ -116,7 +116,7 @@ static const char *const default_config = QUOTE({
  * The 61850 plugin interface
  */
 extern "C" {
-    static PLUGIN_INFORMATION info = {
+    static const PLUGIN_INFORMATION info = {
         PLUGIN_NAME,              // Name
         VERSION,                  // Version
         SP_ASYNC,                 // Flags
@@ -131,10 +131,10 @@ extern "C" {
     PLUGIN_INFORMATION *plugin_info()
     {
         Logger::getLogger()->info("61850 Config is %s", info.config);
-        return &info;
+        return const_cast<PLUGIN_INFORMATION*>(&info);
     }
 
-    PLUGIN_HANDLE plugin_init(ConfigCategory *config)
+    PLUGIN_HANDLE plugin_init(ConfigCategory *config)  // NOSONAR (Fledge API)
     {
         IEC61850 *iec61850;
         Logger::getLogger()->info("Initializing the plugin");
@@ -153,7 +153,7 @@ extern "C" {
         }
 
         Logger::getLogger()->info("Starting the plugin");
-        IEC61850 *iec61850 = static_cast<IEC61850 *>(handle);
+        auto iec61850 = static_cast<IEC61850 *>(handle);
         Logger::getLogger()->setMinLevel(iec61850->getLogMinLevel());
         iec61850->start();
     }
@@ -161,20 +161,20 @@ extern "C" {
     /**
      * Register ingest callback
      */
-    void plugin_register_ingest(PLUGIN_HANDLE handle, INGEST_CB ingestCallback, void *data)
+    void plugin_register_ingest(PLUGIN_HANDLE handle, INGEST_CB ingestCallback, void *data)  // NOSONAR (Fledge API)
     {
         if (!handle) {
             throw std::exception();
         }
 
-        IEC61850 *iec61850 = static_cast<IEC61850 *>(handle);
+        auto iec61850 = static_cast<IEC61850 *>(handle);
         iec61850->registerIngest(data, ingestCallback);
     }
 
     /**
      * Poll for a plugin reading
      */
-    Reading plugin_poll(PLUGIN_HANDLE handle)
+    Reading plugin_poll(PLUGIN_HANDLE)  // NOSONAR (Fledge API)
     {
         throw std::runtime_error(
             "IEC_61850 is an async plugin, poll should not be called");
@@ -184,7 +184,7 @@ extern "C" {
      * Reconfigure the plugin
      *
      */
-    void plugin_reconfigure(PLUGIN_HANDLE handle, std::string &newConfig)
+    void plugin_reconfigure(PLUGIN_HANDLE handle, std::string &newConfig)  // NOSONAR (Fledge API)
     {
         if (!handle) {
             Logger::getLogger()->warn("plugin_reconfigure: PLUGIN_HANDLE is null");
@@ -192,7 +192,7 @@ extern "C" {
         }
 
         ConfigCategory config("new", newConfig);
-        IEC61850 *iec61850 = static_cast<IEC61850 *>(handle);
+        auto iec61850 = static_cast<IEC61850 *>(handle);
         iec61850->stop();
         iec61850->setConfig(config);
         Logger::getLogger()->setMinLevel(iec61850->getLogMinLevel());
