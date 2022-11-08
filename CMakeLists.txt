@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.16)
 
 # Set the plugin name to build
 project(iec61850)
@@ -12,12 +12,37 @@ project(iec61850)
 # If no -D options are given and FLEDGE_ROOT environment variable is set
 # then Fledge libraries and header files are pulled from FLEDGE_ROOT path.
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -O3")
-set("-I$ENV{HOME}/libiec61850/src/iec61850/inc/")
-set("-I$ENV{HOME}/libiec61850/src/common/inc/")
-set("-I$ENV{HOME}/libiec61850/src/mms/inc/")
-set("-I$ENV{HOME}/libiec61850/hal/inc/")
-set("-I$ENV{HOME}/libiec61850/src/logging/")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+
+message(STATUS ${CMAKE_CXX_FLAGS})
+
+if (${CMAKE_BUILD_TYPE} STREQUAL Coverage)
+  message("Coverage is going to be generated")
+  enable_testing()
+  add_subdirectory(tests/unitTests)
+  include(CodeCoverage)
+  append_coverage_compiler_flags()
+  set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} --coverage")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
+  set(GCOVR_ADDITIONAL_ARGS "--exclude-unreachable-branches" "--exclude-throw-branches" )
+
+  setup_target_for_coverage_gcovr_sonar(NAME "${PROJECT_NAME}_coverage_sonar"
+                                      EXECUTABLE RunTests
+                                      DEPENDENCIES RunTests
+                                      BASE_DIRECTORY "${PROJECT_SOURCE_DIR}"
+                                      EXCLUDE "tests/*"
+  )
+
+  setup_target_for_coverage_gcovr_html(NAME "${PROJECT_NAME}_coverage_html"
+                                       EXECUTABLE RunTests
+                                       DEPENDENCIES RunTests
+                                       BASE_DIRECTORY "${PROJECT_SOURCE_DIR}"
+                                       EXCLUDE "tests/*"
+  )
+else()
+  message("Build without Coverage")
+  set(CMAKE_CXX_FLAGS "-std=c++14 -O3")
+endif()
 
 # Generation version header file
 set_source_files_properties(version.h PROPERTIES GENERATED TRUE)
@@ -37,7 +62,7 @@ set(PLUGIN_TYPE "south")
 set(NEEDED_FLEDGE_LIBS common-lib)
 
 # Find source files
-file(GLOB SOURCES *.cpp)
+file(GLOB SOURCES src/*.cpp)
 
 # Find Fledge includes and libs, by including FindFledge.cmak file
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
@@ -54,13 +79,6 @@ endif()
 # On success, FLEDGE_INCLUDE_DIRS and FLEDGE_LIB_DIRS variables are set 
 
 
-#Find the libiec61850 files
-if (NOT "$ENV{LIB_61850}" STREQUAL "")
-	set(LIB_61850 "$ENV{LIB_61850}")
-else()
-	set(LIB_61850 "$ENV{HOME}/libiec61850")
-endif()
-
 # Add ./include
 include_directories(include)
 # Add Fledge include dir(s)
@@ -68,27 +86,11 @@ include_directories(${FLEDGE_INCLUDE_DIRS})
 
 # Add Fledge lib path
 link_directories(${FLEDGE_LIB_DIRS})
-# Create shared library
-link_directories(${LIB_61850}/build/src)
 
 if (FLEDGE_SRC)
 	message(STATUS "Using third-party includes " ${FLEDGE_SRC}/C/thirdparty)
 	include_directories(${FLEDGE_SRC}/C/thirdparty/rapidjson/include)
 endif()
-
-# Add other include paths
-if (NOT EXISTS "${LIB_61850}/src")
-	message(FATAL_ERROR "LIB_61850 ${LIB_61850}/src \n"
-			"does not appear to be pointing at a valid libiec61850 source tree")
-	return()
-endif()
-
-
-include_directories(${LIB_61850}/src/iec61850/inc)
-include_directories(${LIB_61850}/src/common/inc)
-include_directories(${LIB_61850}/hal/inc)
-include_directories(${LIB_61850}/src/mms/inc/)
-include_directories(${LIB_61850}/src/logging/)
 
 # Create shared library
 add_library(${PROJECT_NAME} SHARED ${SOURCES} version.h)
@@ -97,21 +99,20 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES} version.h)
 target_link_libraries(${PROJECT_NAME} ${NEEDED_FLEDGE_LIBS})
 
 # Add the libiec61850
-find_library(LIBIEC61850 libiec61850.a "${LIB_61850}/build/src")
+find_library(LIBIEC61850 libiec61850.a)
 if (NOT LIBIEC61850)
-	message(FATAL_ERROR "The 61850 library libiec61850 was not found in ${LIB_61850}/build/src\n"
-			"Please build the library and set the environment variable LIB_61850 to root of libiec61850 source tree")
+    message(FATAL_ERROR "The 61850 library 'libiec61850' was not found (in the standard lib dir)\n"
+			"Please build and install the libiec61850 library")
 	return()
 endif()
 
-
-target_link_libraries(${PROJECT_NAME} -L${LIB_61850}/build/src -liec61850)
+target_link_libraries(${PROJECT_NAME} -L/usr/local/lib -liec61850)
 
 
 # Add additional libraries
 target_link_libraries(${PROJECT_NAME} -lpthread -ldl)
 
-# Set the build version 
+# Set the build version
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION 1)
 
 set(FLEDGE_INSTALL "" CACHE INTERNAL "")

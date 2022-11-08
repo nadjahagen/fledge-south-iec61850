@@ -1,9 +1,18 @@
+.. Images
+.. |South_IEC61850_plugin_context| image:: docs/images/south-iec61850-plugin_context.drawio.svg
+.. |South_IEC61850_plugin_class_diagram| image:: docs/images/south-iec61850-plugin_classDiagram.drawio.png
+
 ===============================================================================
 IEC61850 C/C++ South plugin
 ===============================================================================
 
 A simple asynchronous IEC61850 plugin that pulls data from a server and sends
 it to Fledge.
+
+
+|South_IEC61850_plugin_context|
+
+(use 'Drawio' -https://draw.io- for updating this diagram)
 
 To build this plugin, you will need the libiec61850 library installed on your environment
 as described below.
@@ -15,26 +24,23 @@ package repository.
 Building libiec61850
 -----------------
 
-To build IEC104 C/C++ South plugin, you need to download libiec61850 at:
+To build IEC61850 C/C++ South plugin, you need to download libiec61850 at:
 https://github.com/mz-automation/libiec61850
 
 .. code-block:: console
 
   $ git clone https://github.com/mz-automation/libiec61850.git
   $ cd libiec61850
-  $ export LIB_61850=`pwd`
 
-As shown above, you need a $LIB_61850 env var set to the source tree of the
-library.
-
-Then, you can build libiec61850 with:
+Then, you can build and install libiec61850 with:
 
 .. code-block:: console
 
   $ mkdir build
   $ cd build
-  $ cmake ..
+  $ cmake -DBUILD_TESTS=NO -DBUILD_EXAMPLES=NO ..
   $ make
+  $ sudo make install
 
 
 Build
@@ -42,11 +48,22 @@ Build
 
 To build Fledge IEC 61850 C++ South plugin:
 
+To build a release:
+
 .. code-block:: console
 
   $ mkdir build
   $ cd build
-  $ cmake ..
+  $ cmake -DCMAKE_BUILD_TYPE=Release ..
+  $ make
+
+To build with unit tests and code coverage:
+
+.. code-block:: console
+
+  $ mkdir build
+  $ cd build
+  $ cmake -DCMAKE_BUILD_TYPE=Coverage ..
   $ make
 
 - By default the Fledge develop package header files and libraries
@@ -111,3 +128,12 @@ a service from the web API:
  - Select iec61850 and give it a name, then click on "Next"
  - Change the default settings to your settings, then click on "Next"
  - Let the "Enabled" option checked, then click on "Done"
+
+
+Plugin design
+-------------
+
+Here, an overview of the plugin, with a UML class diagram:
+
+|South_IEC61850_plugin_class_diagram|
+
