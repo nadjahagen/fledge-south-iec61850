@@ -65,12 +65,15 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
         void open();
         void close();
 
+        void setOsiConnectionParameters();
+
         ServerConnectionParameters m_connectionParam;
         std::mutex m_iedConnectionMutex; // libiec61850 thread safe?: protect the IedConnection
 
         // libiec61850 objects
         IedConnection       m_iedConnection = nullptr;
         IedClientError      m_networkStack_error = IED_ERROR_OK;
+        AcseAuthenticationParameter m_acseAuthentParams{nullptr};
 
         // Section: see the class as a white box for unit tests
         FRIEND_TEST(IEC61850ClientConnectionTest, openConnection);
