@@ -17,11 +17,32 @@
 // Fledge headers
 #include <config_category.h>
 
+// libiec61850 headers
+#include <libiec61850/libiec61850_common_api.h>
+#include <libiec61850/iso_connection_parameters.h>
+
 #include <rapidjson/document.h>
+/**
+ *  Lower layer parameters (below the MMS layer) for connection with server
+ */
+struct OsiParameters{
+    std::string localApTitle;
+    int localAeQualifier;
+    std::string remoteApTitle;
+    int remoteAeQualifier;
+    TSelector localTSelector;
+    TSelector remoteTSelector;
+    SSelector localSSelector;
+    SSelector remoteSSelector;
+    PSelector localPSelector;
+    PSelector remotePSelector;
+};
 
 struct ServerConnectionParameters {
     std::string ipAddress;
     int mmsPort;
+    bool isOsiParametersEnabled{false};
+    OsiParameters osiParameters;
 };
 
 struct ExchangedData {

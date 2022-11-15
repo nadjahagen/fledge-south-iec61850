@@ -61,7 +61,19 @@ static const char *const default_config = QUOTE({
                     "connections" : [
                         {
                             "srv_ip": "0.0.0.0",
-                            "port" : 102
+                            "port" : 102,
+                            "osi": {
+                                "local_ap_title": "1,3,9999,23",
+                                "local_ae_qualifier": "12",
+                                "remote_ap_title": "1,2,1200,15,3",
+                                "local_ae_qualifier": "1",
+                                "local_psel": "0x00",
+                                "local_ssel": "5",
+                                "local_tsel": "0xA5",
+                                "remote_psel": "0x01",
+                                "remote_ssel": "6",
+                                "remote_tsel": "0xE7"
+                            },
                         },
                         {
                             "srv_ip": "0.0.0.0",
