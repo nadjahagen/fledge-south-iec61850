@@ -13,104 +13,15 @@
 
 // Fledge headers
 #include <plugin_api.h>
-#include <config_category.h>
 #include <logger.h>
 #include <reading.h>
 
 // local library
 #include "./version.h"
+#include "./plugin.h"
 #include "./iec61850.h"
 
-#define PLUGIN_NAME "iec61850"  // NOSONAR (Fledge API)
-
 using INGEST_CB = void (*)(void *, Reading);
-
-/**
- * Default configuration
- */
-
-// *INDENT-OFF* (disable 'astyle' tool on this section)
-static const char *const default_config = QUOTE({
-    "plugin" : {
-        "description" : "iec61850 south plugin",
-        "type" : "string",
-        "default" : PLUGIN_NAME,
-        "readonly" : "true"
-    },
-
-    "asset" : {
-        "description" : "Asset name",
-        "type" : "string",
-        "default" : "iec61850",
-        "displayName" : "Asset Name",
-        "order" : "1",
-        "mandatory" : "true"
-    },
-
-    "ip" : {
-        "description" : "IP of the Server",
-        "type" : "string",
-        "default" : "127.0.0.1",
-        "displayName" : "61850 Server IP",
-        "order" : "2"
-    },
-
-    "port" : {
-        "description" : "Port number of the 61850 server",
-        "type" : "integer",
-        "default" : "102",
-        "displayName" : "61850 Server port"
-    },
-
-    "IED Model" : {
-        "description" : "Name of the 61850 IED model",
-        "type" : "string",  // IedModel
-        "default" : "simpleIO",
-        "displayName" : "61850 Server IedModel"
-    },
-    "Logical Device" : {
-        "description" : "Logical device of the 61850 server",
-        "type" : "string",  // LogicalDevice
-        "default" : "GenericIO",
-        "displayName" : "61850 Server logical device"
-    },
-
-    "Logical Node" : {
-        "description" : "Logical node of the 61850 server",
-        "type" : "string",  // LogicalNode
-        "default" : "GGIO1",
-        "displayName" : "61850 Server logical node"
-    },
-
-    "CDC" : {
-        "description" : "CDC name of the 61850 server",
-        "type" : "string",  // CDC_SAV
-        "default" : "SPCSO1",
-        "displayName" : "61850 Server CDC_SAV"
-    },
-
-    "Data Attribute" : {
-        "description" : "Data attribute of the CDC",
-        "type" : "string",  // dataAttribute
-        "default" : "stVal",
-        "displayName" : "61850 Server data attribute"
-    },
-
-    "Functional Constraint" : {
-        "description" : "Functional constraint of the 61850 server",
-        "type" : "string",  // FC
-        "default" : "ST",
-        "displayName" : "61850 Server functional constraint"
-    },
-
-    "log min level" : {
-        "description" : "minimum level for the Fledge logger (debug, info)",
-        "type" : "string",
-        "default" : "info",
-        "displayName" : "logger minimum level"
-    }
-});
-// *INDENT-ON*
 
 /**
  * The 61850 plugin interface
@@ -131,15 +42,32 @@ extern "C" {
     PLUGIN_INFORMATION *plugin_info()
     {
         Logger::getLogger()->info("61850 Config is %s", info.config);
-        return const_cast<PLUGIN_INFORMATION*>(&info);
+        return const_cast<PLUGIN_INFORMATION*>(&info);  // NOSONAR (Fledge API)
     }
 
     PLUGIN_HANDLE plugin_init(ConfigCategory *config)  // NOSONAR (Fledge API)
     {
+        Logger::getLogger()->setMinLevel("info");
+
         IEC61850 *iec61850;
         Logger::getLogger()->info("Initializing the plugin");
-        iec61850 = new IEC61850();
-        iec61850->setConfig(*config);
+
+        try {
+            iec61850 = new IEC61850();  // NOSONAR (Fledge API)
+
+            if (config) {
+                iec61850->setConfig(*config);
+            }
+        }
+        catch (std::exception &e) {
+            Logger::getLogger()->error("%s", e.what());
+            throw;
+        }
+        catch (...) {
+            Logger::getLogger()->error("Error: unknown exception caught");
+            throw;
+        }
+
         return (PLUGIN_HANDLE) iec61850;
     }
 
@@ -164,7 +92,7 @@ extern "C" {
     void plugin_register_ingest(PLUGIN_HANDLE handle, INGEST_CB ingestCallback, void *data)  // NOSONAR (Fledge API)
     {
         if (!handle) {
-            throw std::exception();
+            throw std::invalid_argument("PLUGIN_HANDLE is null");
         }
 
         auto iec61850 = static_cast<IEC61850 *>(handle);
@@ -176,7 +104,7 @@ extern "C" {
      */
     Reading plugin_poll(PLUGIN_HANDLE)  // NOSONAR (Fledge API)
     {
-        throw std::runtime_error(
+        throw std::domain_error(
             "IEC_61850 is an async plugin, poll should not be called");
     }
 
@@ -191,12 +119,22 @@ extern "C" {
             return;
         }
 
-        ConfigCategory config("new", newConfig);
-        auto iec61850 = static_cast<IEC61850 *>(handle);
-        iec61850->stop();
-        iec61850->setConfig(config);
-        Logger::getLogger()->setMinLevel(iec61850->getLogMinLevel());
-        iec61850->start();
+        try {
+            ConfigCategory config("new", newConfig);
+            auto iec61850 = static_cast<IEC61850 *>(handle);
+            iec61850->stop();
+            iec61850->setConfig(config);
+            Logger::getLogger()->setMinLevel(iec61850->getLogMinLevel());
+            iec61850->start();
+        }
+        catch (std::exception &e) {
+            Logger::getLogger()->error("%s", e.what());
+            throw;
+        }
+        catch (...) {
+            Logger::getLogger()->error("Error: unknown exception caught");
+            throw;
+        }
     }
 
     /**
@@ -214,7 +152,7 @@ extern "C" {
 
         if (nullptr != iec61850) {
             iec61850->stop();
-            delete iec61850;
+            delete iec61850;  // NOSONAR (Fledge API)
             iec61850 = nullptr;
         }
     }

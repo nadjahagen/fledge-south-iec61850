@@ -41,33 +41,32 @@ void IEC61850::start()
 {
     Logger::getLogger()->info("Plugin started");
 
-    /* Creating the client for Fledge */
-    if ( ! m_client) {
-        m_client = std::make_unique<IEC61850Client>(this, m_config);
-    } else {
-        Logger::getLogger()->info("IEC61850: client is already created");
+    /* Create the IEC61850 clients */
+    for(auto &serverConfig: m_config->serverConfigDict) {
+        std::string key = serverConfig.first;
+
+        m_clients[key] = std::make_unique<IEC61850Client>(this,
+                                                          serverConfig.second,
+                                                          m_config->exchangedData);
+        m_clients[key]->start();
     }
-
-    m_client->start();
 }
-
-
 
 void IEC61850::stop()
 {
-    if (m_client) {
-        m_client->stop();
+    for(const auto &client: m_clients) {
+        client.second->stop();
     }
+
+    m_clients.clear();
 }
 
-void IEC61850::ingest(std::vector<Datapoint *> points)
+void IEC61850::ingest(std::vector<Datapoint *> &points)
 {
     std::unique_lock<std::mutex> ingestGuard(m_ingestMutex);
 
     if (m_ingest_callback) {
-        /* Creating the name of the type of data */
-        std::string asset = points[0]->getName();
         /* Callback function used after receiving data */
-        (*m_ingest_callback)(m_data, Reading(asset, points));
+        (*m_ingest_callback)(m_data, Reading(m_config->assetName, points));
     }
 }

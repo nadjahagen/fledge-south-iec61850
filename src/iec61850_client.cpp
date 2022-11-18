@@ -16,72 +16,107 @@
 #include <memory>
 #include <vector>
 
+// libiec61850 headers
+#include <libiec61850/mms_value.h>
+
 // local library
 #include "./iec61850.h"
 #include "./iec61850_client_connection.h"
+#include "./wrapped_mms.h"
 
+constexpr const uint32_t SECOND_IN_MILLISEC = 1000;
+constexpr const uint32_t RECONNECTION_FREQUENCY_IN_HERTZ = 1;
 constexpr const uint32_t DEMO_MMS_READ_FREQUENCY_IN_HERTZ = 2;
 
 IEC61850Client::IEC61850Client(IEC61850 *iec61850,
-                               std::shared_ptr<IEC61850ClientConfig> config)
-    : m_iec61850(iec61850),
-      m_config(config)
+                               const ServerConnectionParameters &connectionParam,
+                               const ExchangedData &exchangedData)
+    : m_connectionParam(connectionParam),
+      m_exchangedData(exchangedData),
+      m_iec61850(iec61850)
 {
-    Logger::getLogger()->debug("IEC61850Client: constructor");
+    m_clientId = IEC61850ClientConfig::buildKey(m_connectionParam);
+
+    Logger::getLogger()->debug("IEC61850Client: constructor %s",
+                               m_clientId.c_str());
 }
 
 IEC61850Client::~IEC61850Client()
 {
-    Logger::getLogger()->debug("IEC61850Client: destructor");
+    Logger::getLogger()->debug("IEC61850Client: destructor %s",
+                               m_clientId.c_str());
     stop();  // ensure a correct shutdown, if 'stop' order was missing
 }
 
 void IEC61850Client::start()
 {
-    Logger::getLogger()->debug("IEC61850Client: start");
-    createConnection();
-
-    if (m_connection->isNoError()) {
-        // Start the demo
-        startDemo();
-    } else {
-        Logger::getLogger()->error("IEC61850Client: connection is unavailable");
-        m_connection->logError();
-    }
+    m_backgroundLaunchThread = std::thread(&IEC61850Client::launch, this);
 }
 
 void IEC61850Client::stop()
 {
+    m_stopOrder = true;
+    if (m_backgroundLaunchThread.joinable()) {
+        m_backgroundLaunchThread.join();
+    }
+
     // Stop the demo
     stopDemo();
     destroyConnection();
+}
+
+void IEC61850Client::launch()
+{
+    initializeConnection();
+
+    /** Make subscriptions */
+    // TODO
+
+    /** Start application loop */
+    // Start the demo
+    startDemo();
+}
+
+void IEC61850Client::initializeConnection()
+{
+    do {
+        Logger::getLogger()->debug("IEC61850Client: init connection (%s)",
+                                   m_clientId.c_str());
+        destroyConnection();
+        createConnection();
+
+        // Wait connection establishment
+        std::chrono::milliseconds timespan(SECOND_IN_MILLISEC / RECONNECTION_FREQUENCY_IN_HERTZ);
+        std::this_thread::sleep_for(timespan);
+
+    } while ( (! m_stopOrder) &&
+            (! m_connection->isConnected()));
 }
 
 void IEC61850Client::createConnection()
 {
     // Preconditions
     if (m_connection) {
-        Logger::getLogger()->info("IEC61850Client: connection is already created");
+        Logger::getLogger()->info("IEC61850Client: connection is already created (%s)",
+                                  m_clientId.c_str());
         return;
     }
 
-    if (! m_config) {
-        Logger::getLogger()->error("IEC61850Client: configuration object is null");
-        return;
-    }
-
-    Logger::getLogger()->debug("IEC61850Client: create connection");
-    m_connection = std::make_unique<IEC61850ClientConnection>(m_config->connectionParam);
+    Logger::getLogger()->debug("IEC61850Client: create connection (%s)",
+                               m_clientId.c_str());
+    m_connection = std::make_unique<IEC61850ClientConnection>(m_connectionParam);
 }
 
 void IEC61850Client::destroyConnection()
 {
     if (! m_connection) {
-        Logger::getLogger()->info("IEC61850Client: connection does not exist");
+        Logger::getLogger()->info("IEC61850Client: connection does not exist (%s)",
+                                  m_clientId.c_str());
         return;
     }
 
-    Logger::getLogger()->debug("IEC61850Client: destroy connection");
+    Logger::getLogger()->debug("IEC61850Client: destroy connection (%s)",
+                               m_clientId.c_str());
     m_connection.reset(nullptr);
 }
 
@@ -92,28 +127,42 @@ Datapoint *IEC61850Client::createDatapoint(const std::string &dataName,
 {
     DatapointValue value = DatapointValue(primitiveTypeValue);
     /** Dynamic allocation with raw pointer: Fledge core will deallocate it */
-    auto *datapoint = new Datapoint(dataName, value);  // NOSONAR
-    return datapoint;
+    return new Datapoint(dataName, value);  // NOSONAR
 }
 
 
-void IEC61850Client::sendData(Datapoint *dataPoint)
+void IEC61850Client::sendData(Datapoint *datapoint)
 {
+    // Preconditions
+    if (nullptr == m_iec61850) {
+        Logger::getLogger()->warn("IEC61850Client: abort 'sendData' (receiver is null)");
+        // datapoint is now useless
+        delete datapoint;
+        return;
+    }
+    if (nullptr == datapoint) {
+        Logger::getLogger()->warn("IEC61850Client: abort 'sendData' (datapoint is empty)");
+        return;
+    }
+
     std::vector<Datapoint *> points(0);
-    points.push_back(dataPoint);
+    points.push_back(datapoint);
     m_iec61850->ingest(points);
 }
 
-Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<Mms> mms)
+Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms)
 {
     // Precondition
-    if (nullptr == mms) {
+    if (nullptr == wrappedMms) {
+        return nullptr;
+    }
+    if (nullptr == wrappedMms->getMmsValue()) {
         return nullptr;
     }
 
     Datapoint *datapoint = nullptr;
     /* Test the Mms value type */
-    const MmsValue *mmsValue = mms->getMmsValue();
+    const MmsValue *mmsValue = wrappedMms->getMmsValue();
 
     switch (MmsValue_getType(mmsValue))  {
         case MMS_FLOAT:
@@ -193,21 +242,30 @@ void IEC61850Client::readMmsLoop()
         Logger::getLogger()->warn("IEC61850Client: Connection object is null");
     }
 
-    while (m_isDemoLoopActivated && m_connection->isConnected()) {
-        if (m_connection->isNoError()) {
-            /* read an analog measurement value from server */
-            std::shared_ptr<Mms> mms;
-            mms = m_connection->readMms(m_config->daPath, m_config->fcName);
-
-            if (mms != nullptr) {
-                Datapoint *datapoint = convertMmsToDatapoint(mms);
-                sendData(datapoint);
+    while (m_isDemoLoopActivated) {
+        if (m_connection->isConnected()) {
+            if (m_connection->isNoError()) {
+                readAndExportMms();
+            } else {
+                Logger::getLogger()->info("No data to read");
             }
-        } else {
-            Logger::getLogger()->info("No data to read");
-        }
 
-        std::chrono::milliseconds timespan(1000 / DEMO_MMS_READ_FREQUENCY_IN_HERTZ);
-        std::this_thread::sleep_for(timespan);
+            std::chrono::milliseconds timespan(SECOND_IN_MILLISEC / DEMO_MMS_READ_FREQUENCY_IN_HERTZ);
+            std::this_thread::sleep_for(timespan);
+        } else {
+            initializeConnection();
+        }
+    }
+}
+
+void IEC61850Client::readAndExportMms()
+{
+    /* read an analog measurement value from server */
+    std::shared_ptr<WrappedMms> wrapped_mms;
+    wrapped_mms = m_connection->readMms(m_exchangedData.daPath,
+                                        m_exchangedData.fcName);
+
+    if (wrapped_mms != nullptr) {
+        sendData(convertMmsToDatapoint(wrapped_mms));
     }
 }

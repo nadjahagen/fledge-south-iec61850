@@ -12,14 +12,37 @@
  */
 
 #include <string>
+#include <map>
 
 // Fledge headers
 #include <config_category.h>
 
+#include <rapidjson/document.h>
 
-struct ConnectionParameters {
+struct ServerConnectionParameters {
     std::string ipAddress;
-    uint16_t    mmsPort;
+    int mmsPort;
+};
+
+struct ExchangedData {
+    std::string logicalDeviceName = "LD_NOT_DEFINED";
+    std::string logicalNodeName = "LN_NOT_DEFINED";
+    std::string cdc = "CDC_NOT_DEFINED";
+    std::string dataAttribute = "DA_NOT_DEFINED";
+    std::string fcName = "FC_NOT_DEFINED";
+
+    std::string daPath = "NOT_DEFINED";
+};
+
+using ServerDictKey = std::string;
+using ServerConfigDict = std::map<ServerDictKey, ServerConnectionParameters, std::less<>>;
+
+
+class ConfigurationException: public std::logic_error
+{
+    public:
+        explicit ConfigurationException(std::string const &msg):
+                 std::logic_error("Configuration exception: " + msg) {}
 };
 
 
@@ -29,19 +52,29 @@ class IEC61850ClientConfig
 
         std::string logMinLevel;
         std::string assetName;
+        std::string iedName;
 
-        ConnectionParameters connectionParam;
+        ServerConfigDict serverConfigDict;
 
-        std::string iedModel;
-        std::string logicalDeviceName;
-        std::string logicalNodeName;
-        std::string cdc;
-        std::string dataAttribute;
-        std::string fcName;
-
-        std::string daPath;
+        // Data model section
+        ExchangedData exchangedData;
 
         void importConfig(const ConfigCategory &newConfig);
+
+        inline static std::string buildKey(const ServerConnectionParameters &serverConn) {
+            return (serverConn.ipAddress + "_" +
+                    std::to_string(serverConn.mmsPort));
+        }
+
+    private:
+        void importJsonProtocolConfig(const std::string &protocolConfig);
+        void importJsonTransportLayerConfig(const rapidjson::Value &transportLayer);
+        void importJsonConnectionConfig(const rapidjson::Value &connConfig);
+        void importJsonApplicationLayerConfig(const rapidjson::Value &transportLayer) const;
+        void importJsonExchangeConfig(const std::string &exchangeConfig);
+
+        void logParsedIedConnectionParam(const ServerConnectionParameters &iedConnectionParam);
+        static bool isValidIPAddress(const std::string &addrStr);
 };
 
 #endif  // INCLUDE_IEC61850_CLIENT_CONFIG_H_

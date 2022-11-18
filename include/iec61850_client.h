@@ -16,9 +16,6 @@
 #include <mutex>   // NOLINT
 #include <atomic>
 
-// libiec61850 headers
-#include <libiec61850/mms_value.h>
-
 // Fledge headers
 #include <logger.h>
 #include <reading.h>
@@ -26,10 +23,13 @@
 
 // local library
 #include "./iec61850_client_config.h"
+#include "./iec61850_client_connection_interface.h"
+
+// For white box unit tests
+#include <gtest/gtest_prod.h>
 
 class IEC61850;
-class IEC61850ClientConnection;
-class Mms;
+class WrappedMms;
 
 /** \class IEC61850Client
  *  \brief Read from and write to a IED
@@ -43,21 +43,18 @@ class IEC61850Client
     public :
 
         explicit IEC61850Client(IEC61850 *iec61850,
-                                std::shared_ptr<IEC61850ClientConfig> config);
+                                const ServerConnectionParameters &connectionParam,
+                                const ExchangedData &exchangedData);
 
         ~IEC61850Client();
 
         /** Disable default constructor */
         IEC61850Client() = delete;
 
-        /** Disable copy constructor */
-        IEC61850Client(const IEC61850Client &) = delete;
-        /** Disable copy assignment operator */
-        IEC61850Client &operator = (const IEC61850Client &) = delete;
-        /** Disable move constructor */
-        IEC61850Client(IEC61850Client &&) = delete;
-        /** Disable move assignment operator */
-        IEC61850Client &operator = (IEC61850Client &&) = delete;
+        IEC61850Client(const IEC61850Client &) = default;
+        IEC61850Client &operator = (const IEC61850Client &) = default;
+        IEC61850Client(IEC61850Client &&) = default;
+        IEC61850Client &operator = (IEC61850Client &&) = default;
 
         /**
          * Open the connection with the IED
@@ -70,8 +67,14 @@ class IEC61850Client
         void stop();
 
     private:
-        void createConnection();
-        void destroyConnection();
+        std::string m_clientId;
+
+        // Section: Configuration
+        const ServerConnectionParameters &m_connectionParam;
+        ExchangedData m_exchangedData;
+
+        // Section: Data formatting for the plugin
+        IEC61850 *m_iec61850;
 
         /**
          * Create the Datapoint object that will be ingest by Fledge
@@ -87,7 +90,7 @@ class IEC61850Client
          * by extracting the MMS content and creating a new Datapoint
          * Reentrant function, thread safe
          */
-        static Datapoint *convertMmsToDatapoint(std::shared_ptr<Mms> mms);
+        static Datapoint *convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms);
 
         /**
          * Send a datapoint to Fledge core
@@ -95,18 +98,33 @@ class IEC61850Client
          */
         void sendData(Datapoint *datapoint);
 
+        void readAndExportMms();
 
-        IEC61850 *m_iec61850;
-        std::shared_ptr<IEC61850ClientConfig> m_config;
+        // Section: Client initialization with connection creation
+        void launch();
+        void initializeConnection();
+        void createConnection();
+        void destroyConnection();
+        std::thread m_backgroundLaunchThread;
+        std::atomic<bool> m_stopOrder{false};
+        std::unique_ptr<IEC61850ClientConnectionInterface> m_connection;
 
-        std::unique_ptr<IEC61850ClientConnection> m_connection;
-
-        // For demo only
+        // Section: For demo only
         void startDemo();
         void stopDemo();
         void readMmsLoop();
         std::atomic<bool> m_isDemoLoopActivated{false};
         std::thread m_demoLoopThread;
+
+        // Section: see the class as a white box for unit tests
+        FRIEND_TEST(IEC61850ClientTest, createOneConnection);
+        FRIEND_TEST(IEC61850ClientTest, reuseCreatedConnection);
+        FRIEND_TEST(IEC61850ClientTest, destroyConnection);
+        FRIEND_TEST(IEC61850ClientTest, destroyNullConnection);
+        FRIEND_TEST(IEC61850ClientTest, injectMockConnection);
+        FRIEND_TEST(IEC61850ClientTest, initializeConnectionInOneTry);
+        FRIEND_TEST(IEC61850ClientTest, initializeConnectionFailed);
+        FRIEND_TEST(IEC61850ClientTest, startAndStop);
 };
 
 #endif  // INCLUDE_IEC61850_CLIENT_H_
