@@ -27,10 +27,6 @@ IEC61850ClientConnection::~IEC61850ClientConnection()
     Logger::getLogger()->debug("IEC61850ClientConn: destructor");
     close();
     IedConnection_destroy(m_iedConnection);
-
-    if (nullptr != m_acseAuthentParams) {
-        AcseAuthenticationParameter_destroy(m_acseAuthentParams);
-    }
 }
 
 bool IEC61850ClientConnection::isNoError() const
@@ -48,6 +44,9 @@ void IEC61850ClientConnection::open()
 {
     Logger::getLogger()->debug("IEC61850ClientConn: open");
     std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
+
+    Logger::getLogger()->info("Open connection with: ");
+    IEC61850ClientConfig::logIedConnectionParam(m_connectionParam);
 
     // Set OSI parameters
     if (m_connectionParam.isOsiParametersEnabled) {
@@ -67,13 +66,17 @@ void IEC61850ClientConnection::setOsiConnectionParameters()
 
     const OsiParameters &osiParams = m_connectionParam.osiParameters;
     // set Remote 'AP Title' and 'AE Qualifier'
-    IsoConnectionParameters_setRemoteApTitle(libiecIsoParams,
-                                             osiParams.remoteApTitle.c_str(),
-                                             osiParams.remoteAeQualifier);
+    if (! osiParams.remoteApTitle.empty()) {
+        IsoConnectionParameters_setRemoteApTitle(libiecIsoParams,
+                                                 osiParams.remoteApTitle.c_str(),
+                                                 osiParams.remoteAeQualifier);
+    }
     // set Local 'AP Title' and 'AE Qualifier'
-    IsoConnectionParameters_setLocalApTitle(libiecIsoParams,
-                                            osiParams.localApTitle.c_str(),
-                                            osiParams.localAeQualifier);
+    if (! osiParams.localApTitle.empty()) {
+        IsoConnectionParameters_setLocalApTitle(libiecIsoParams,
+                                                osiParams.localApTitle.c_str(),
+                                                osiParams.localAeQualifier);
+    }
 
     /* change parameters for presentation, session and transport layers */
     IsoConnectionParameters_setRemoteAddresses(libiecIsoParams,
@@ -84,12 +87,6 @@ void IEC61850ClientConnection::setOsiConnectionParameters()
                                               osiParams.localPSelector,
                                               osiParams.localSSelector,
                                               osiParams.remoteTSelector);
-
-    m_acseAuthentParams = AcseAuthenticationParameter_create();
-    AcseAuthenticationParameter_setAuthMechanism(m_acseAuthentParams,
-                                                 ACSE_AUTH_NONE);
-    IsoConnectionParameters_setAcseAuthenticationParameter(libiecIsoParams,
-                                                           m_acseAuthentParams);
 }
 
 void IEC61850ClientConnection::close()

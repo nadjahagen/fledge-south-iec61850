@@ -85,6 +85,12 @@ void IEC61850Client::initializeConnection()
         destroyConnection();
         createConnection();
 
+        if (! m_connection->isConnected()) {
+            Logger::getLogger()->warn("IEC61850Client: failed to connect with %s",
+                                      m_clientId.c_str());
+
+        }
+
         // Wait connection establishment
         std::chrono::milliseconds timespan(SECOND_IN_MILLISEC / RECONNECTION_FREQUENCY_IN_HERTZ);
         std::this_thread::sleep_for(timespan);
@@ -102,7 +108,7 @@ void IEC61850Client::createConnection()
         return;
     }
 
-    Logger::getLogger()->debug("IEC61850Client: create connection (%s)",
+    Logger::getLogger()->info("IEC61850Client: create connection with %s",
                                m_clientId.c_str());
     m_connection = std::make_unique<IEC61850ClientConnection>(m_connectionParam);
 }

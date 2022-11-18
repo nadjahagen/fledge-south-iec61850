@@ -11,6 +11,10 @@
 #include "./iec61850_client_config.h"
 
 #include <arpa/inet.h>
+#include <string.h>
+
+#include <algorithm>
+#include <regex>
 
 // Fledge headers
 #include <logger.h>
@@ -154,24 +158,249 @@ void IEC61850ClientConfig::importJsonConnectionConfig(const rapidjson::Value &co
 
     iedConnectionParam.mmsPort = connConfig["port"].GetInt();
 
-    logParsedIedConnectionParam(iedConnectionParam);
+    if (connConfig.HasMember("osi")) {
+        importJsonConnectionOsiConfig(connConfig["osi"], iedConnectionParam);
+    }
+
+    logIedConnectionParam(iedConnectionParam);
 
     ServerDictKey key = buildKey(iedConnectionParam);
 
     serverConfigDict[key] = iedConnectionParam;
 }
 
+void IEC61850ClientConfig::importJsonConnectionOsiConfig(const rapidjson::Value &connOsiConfig,
+                                                         ServerConnectionParameters &iedConnectionParam)
+{
+    // Preconditions
+    if (! connOsiConfig.IsObject()) {
+        throw ConfigurationException("'OSI' section is not valid");
+    }
+
+    OsiParameters *osiParams = &iedConnectionParam.osiParameters;
+
+    // AE qualifiers
+    if (connOsiConfig.HasMember("local_ae_qualifier")) {
+        if (! connOsiConfig["local_ae_qualifier"].IsInt()) {
+            throw ConfigurationException("bad format for 'local_ae_qualifier'");
+        }
+        osiParams->localAeQualifier = connOsiConfig["local_ae_qualifier"].GetInt();
+    }
+
+    if (connOsiConfig.HasMember("remote_ae_qualifier")) {
+        if (! connOsiConfig["remote_ae_qualifier"].IsInt()) {
+            throw ConfigurationException("bad format for 'remote_ae_qualifier'");
+        }
+        osiParams->remoteAeQualifier = connOsiConfig["remote_ae_qualifier"].GetInt();
+    }
+
+    // AP Title
+    if (connOsiConfig.HasMember("local_ap_title")) {
+        if (! connOsiConfig["local_ap_title"].IsString()) {
+            throw ConfigurationException("bad format for 'local_ap_title'");
+        }
+        osiParams->localApTitle = connOsiConfig["local_ap_title"].GetString();
+
+        std::replace(osiParams->localApTitle.begin(),
+                     osiParams->localApTitle.end(),
+                     ',', '.');
+
+        // check 'localApTitle' contains digits and dot only
+        std::string strToCheck = osiParams->localApTitle;
+        strToCheck.erase(std::remove(strToCheck.begin(), strToCheck.end(), '.'), strToCheck.end());
+        if (! std::regex_match(strToCheck, std::regex("[0-9]*"))) {
+            throw ConfigurationException("'local_ap_title' is not valid");
+        };
+    }
+
+    if (connOsiConfig.HasMember("remote_ap_title")) {
+        if (! connOsiConfig["remote_ap_title"].IsString()) {
+            throw ConfigurationException("bad format for 'remote_ap_title'");
+        }
+        osiParams->remoteApTitle = connOsiConfig["remote_ap_title"].GetString();
+
+        std::replace(osiParams->remoteApTitle.begin(),
+                     osiParams->remoteApTitle.end(),
+                     ',', '.');
+
+        // check 'remoteApTitle' contains digits and dot only
+        std::string strToCheck = osiParams->remoteApTitle;
+        strToCheck.erase(std::remove(strToCheck.begin(), strToCheck.end(), '.'), strToCheck.end());
+        if (! std::regex_match(strToCheck, std::regex("[0-9]*"))) {
+            throw ConfigurationException("'remote_ap_title' is not valid");
+        };
+    }
+
+    // Selector
+    if (connOsiConfig.HasMember("local_psel")) {
+        if (! connOsiConfig["local_psel"].IsString()) {
+            throw ConfigurationException("bad format for 'local_psel'");
+        }
+        std::string inputOsiSelector = connOsiConfig["local_psel"].GetString();
+        osiParams->localPSelector.size = parseOsiPSelector(inputOsiSelector, &osiParams->localPSelector);
+    }
+
+    if (connOsiConfig.HasMember("local_ssel")) {
+        if (! connOsiConfig["local_ssel"].IsString()) {
+            throw ConfigurationException("bad format for 'local_ssel'");
+        }
+        std::string inputOsiSelector = connOsiConfig["local_ssel"].GetString();
+        osiParams->localSSelector.size = parseOsiSSelector(inputOsiSelector, &osiParams->localSSelector);
+    }
+
+    if (connOsiConfig.HasMember("local_tsel")) {
+        if (! connOsiConfig["local_tsel"].IsString()) {
+            throw ConfigurationException("bad format for 'local_tsel'");
+        }
+        std::string inputOsiSelector = connOsiConfig["local_tsel"].GetString();
+        osiParams->localTSelector.size = parseOsiTSelector(inputOsiSelector, &osiParams->localTSelector);
+    }
+
+    if (connOsiConfig.HasMember("remote_psel")) {
+        if (! connOsiConfig["remote_psel"].IsString()) {
+            throw ConfigurationException("bad format for 'remote_psel'");
+        }
+        std::string inputOsiSelector = connOsiConfig["remote_psel"].GetString();
+        osiParams->remotePSelector.size = parseOsiPSelector(inputOsiSelector, &osiParams->remotePSelector);
+    }
+
+    if (connOsiConfig.HasMember("remote_ssel")) {
+        if (! connOsiConfig["remote_ssel"].IsString()) {
+            throw ConfigurationException("bad format for 'remote_ssel'");
+        }
+        std::string inputOsiSelector = connOsiConfig["remote_ssel"].GetString();
+        osiParams->remoteSSelector.size = parseOsiSSelector(inputOsiSelector, &osiParams->remoteSSelector);
+    }
+
+    if (connOsiConfig.HasMember("remote_tsel")) {
+        if (! connOsiConfig["remote_tsel"].IsString()) {
+            throw ConfigurationException("bad format for 'remote_tsel'");
+        }
+        std::string inputOsiSelector = connOsiConfig["remote_tsel"].GetString();
+        osiParams->remoteTSelector.size = parseOsiTSelector(inputOsiSelector, &osiParams->remoteTSelector);
+    }
+    iedConnectionParam.isOsiParametersEnabled = true;
+}
+
+OsiSelectorSize
+IEC61850ClientConfig::parseOsiPSelector(std::string &inputOsiSelector,
+                                        PSelector *pselector)
+{
+    return parseOsiSelector(inputOsiSelector, pselector->value, 16);
+}
+
+OsiSelectorSize
+IEC61850ClientConfig::parseOsiSSelector(std::string &inputOsiSelector,
+                                        SSelector *sselector)
+{
+    return parseOsiSelector(inputOsiSelector, sselector->value, 16);
+}
+
+OsiSelectorSize
+IEC61850ClientConfig::parseOsiTSelector(std::string &inputOsiSelector,
+                                        TSelector *tselector)
+{
+    return parseOsiSelector(inputOsiSelector, tselector->value, 4);
+}
+
+OsiSelectorSize
+IEC61850ClientConfig::parseOsiSelector(std::string &inputOsiSelector,
+                                       uint8_t *selectorValue,
+                                       const uint8_t selectorSize)
+{
+    char * nextToken = strtok(&inputOsiSelector[0], " ,.-");
+    unsigned int count = 0;
+    while(nullptr != nextToken) {
+
+        if (count >= selectorSize) {
+            throw ConfigurationException("bad format for 'OSI Selector' (too many bytes)");
+        }
+
+        int base = 10;
+        if (0 == strncmp(nextToken, "0x", 2)) {
+            base = 16;
+        }
+
+        unsigned long ul = 0;
+        try {
+            ul = std::stoul(nextToken, nullptr, base);
+        }
+        catch (std::invalid_argument &e) {
+            throw ConfigurationException("bad format for 'OSI Selector' (not a byte)");
+        }
+        catch (std::out_of_range &e) {
+            throw ConfigurationException("bad format for 'OSI Selector (exceed an int)'");
+        }
+
+        if (ul > 255) {
+            throw ConfigurationException("bad format for 'OSI Selector' (exceed a byte)");
+        }
+
+        selectorValue[count] = ul;
+        count++;
+        nextToken = strtok(nullptr, " ,.-");
+    }
+
+    return count;
+}
+
 void IEC61850ClientConfig::importJsonApplicationLayerConfig(const rapidjson::Value &/*applicationLayer*/) const
 {}
 
-void IEC61850ClientConfig::logParsedIedConnectionParam(const ServerConnectionParameters &iedConnectionParam)
+void IEC61850ClientConfig::logIedConnectionParam(const ServerConnectionParameters &iedConnectionParam)
 {
-    Logger::getLogger()->info("Config: Transport Layer: new IED:");
-    Logger::getLogger()->info("Config: IED: ied_name: %s", iedName.c_str());
-    Logger::getLogger()->info("Config: IED: IP address:  %s", iedConnectionParam.ipAddress.c_str());
-    Logger::getLogger()->info("Config: IED: MMS port:    %u", iedConnectionParam.mmsPort);
+    Logger::getLogger()->info("Config: Transport Layer:");
+    Logger::getLogger()->info("\tIED: IP address:  %s", iedConnectionParam.ipAddress.c_str());
+    Logger::getLogger()->info("\tIED: MMS port:    %d", iedConnectionParam.mmsPort);
+
+    if (iedConnectionParam.isOsiParametersEnabled) {
+        Logger::getLogger()->info("\tIED: local AP Title: %s", iedConnectionParam.osiParameters.localApTitle.c_str());
+        Logger::getLogger()->info("\tIED: local AE qualifier: %d", iedConnectionParam.osiParameters.localAeQualifier);
+        Logger::getLogger()->info("\tIED: remote AP Title: %s", iedConnectionParam.osiParameters.remoteApTitle.c_str());
+        Logger::getLogger()->info("\tIED: remote AE qualifier: %d", iedConnectionParam.osiParameters.remoteAeQualifier);
+
+        logOsiSelector("local PSelector",
+                       iedConnectionParam.osiParameters.localPSelector.size,
+                       iedConnectionParam.osiParameters.localPSelector.value);
+
+        logOsiSelector("local SSelector",
+                       iedConnectionParam.osiParameters.localSSelector.size,
+                       iedConnectionParam.osiParameters.localSSelector.value);
+
+        logOsiSelector("local TSelector",
+                       iedConnectionParam.osiParameters.localTSelector.size,
+                       iedConnectionParam.osiParameters.localTSelector.value);
+
+        logOsiSelector("remote PSelector",
+                       iedConnectionParam.osiParameters.remotePSelector.size,
+                       iedConnectionParam.osiParameters.remotePSelector.value);
+
+        logOsiSelector("remote SSelector",
+                       iedConnectionParam.osiParameters.remoteSSelector.size,
+                       iedConnectionParam.osiParameters.remoteSSelector.value);
+
+        logOsiSelector("remote TSelector",
+                       iedConnectionParam.osiParameters.remoteTSelector.size,
+                       iedConnectionParam.osiParameters.remoteTSelector.value);
+    }
 }
 
+void IEC61850ClientConfig::logOsiSelector(const std::string &selectorName,
+                                               const int selectorSize,
+                                               const uint8_t *selectorValues)
+{
+    if (0 != selectorSize) {
+        Logger::getLogger()->info("\t\tOSI Selector '%s': size= %d",
+                                  selectorName.c_str(),
+                                  selectorSize);
+        for (int i = 0; i < selectorSize; i++) {
+            Logger::getLogger()->info("\t\tOSI Selector '%s': [%d]= 0x%02X",
+                    selectorName.c_str(),
+                    i,
+                    selectorValues[i]);
+        }
+    }
+}
 
 void IEC61850ClientConfig::importJsonExchangeConfig(const std::string &exchangeConfig)
 {
