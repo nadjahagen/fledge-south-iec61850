@@ -4,6 +4,7 @@
 #include <string>
 #include <plugin_api.h>
 
+// *INDENT-OFF* (disable 'astyle' tool on this section)
 const std::string configForReconfiguration = QUOTE({
     "plugin" : {
         "description" : "iec61850 south plugin",
@@ -502,5 +503,6 @@ const std::string configProtocolStackInvalidIPAddress = QUOTE({
         })
     }
 });
-
+// *INDENT-ON*
+//
 #endif

@@ -36,7 +36,6 @@ IEC61850Client::IEC61850Client(IEC61850 *iec61850,
       m_iec61850(iec61850)
 {
     m_clientId = IEC61850ClientConfig::buildKey(m_connectionParam);
-
     Logger::getLogger()->debug("IEC61850Client: constructor %s",
                                m_clientId.c_str());
 }
@@ -56,6 +55,7 @@ void IEC61850Client::start()
 void IEC61850Client::stop()
 {
     m_stopOrder = true;
+
     if (m_backgroundLaunchThread.joinable()) {
         m_backgroundLaunchThread.join();
     }
@@ -68,10 +68,8 @@ void IEC61850Client::stop()
 void IEC61850Client::launch()
 {
     initializeConnection();
-
     /** Make subscriptions */
     // TODO
-
     /** Start application loop */
     // Start the demo
     startDemo();
@@ -88,15 +86,13 @@ void IEC61850Client::initializeConnection()
         if (! m_connection->isConnected()) {
             Logger::getLogger()->warn("IEC61850Client: failed to connect with %s",
                                       m_clientId.c_str());
-
         }
 
         // Wait connection establishment
         std::chrono::milliseconds timespan(SECOND_IN_MILLISEC / RECONNECTION_FREQUENCY_IN_HERTZ);
         std::this_thread::sleep_for(timespan);
-
     } while ( (! m_stopOrder) &&
-            (! m_connection->isConnected()));
+              (! m_connection->isConnected()));
 }
 
 void IEC61850Client::createConnection()
@@ -109,7 +105,7 @@ void IEC61850Client::createConnection()
     }
 
     Logger::getLogger()->info("IEC61850Client: create connection with %s",
-                               m_clientId.c_str());
+                              m_clientId.c_str());
     m_connection = std::make_unique<IEC61850ClientConnection>(m_connectionParam);
 }
 
@@ -146,6 +142,7 @@ void IEC61850Client::sendData(Datapoint *datapoint)
         delete datapoint;
         return;
     }
+
     if (nullptr == datapoint) {
         Logger::getLogger()->warn("IEC61850Client: abort 'sendData' (datapoint is empty)");
         return;
@@ -162,6 +159,7 @@ Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<WrappedMms> wra
     if (nullptr == wrappedMms) {
         return nullptr;
     }
+
     if (nullptr == wrappedMms->getMmsValue()) {
         return nullptr;
     }

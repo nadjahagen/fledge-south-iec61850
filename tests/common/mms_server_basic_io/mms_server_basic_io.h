@@ -15,11 +15,11 @@ class MmsServerBasicIO
         void start();
         void stop();
 
-        static void rcbEventHandler(void* parameter,
-                                    ReportControlBlock* rcb,
+        static void rcbEventHandler(void *parameter,
+                                    ReportControlBlock *rcb,
                                     ClientConnection connection,
                                     IedServer_RCBEventType event,
-                                    const char* parameterName,
+                                    const char *parameterName,
                                     MmsDataAccessError serviceError);
     private:
         void runApplication();

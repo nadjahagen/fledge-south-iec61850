@@ -26,7 +26,7 @@
 /**
  *  Lower layer parameters (below the MMS layer) for connection with server
  */
-struct OsiParameters{
+struct OsiParameters {
     std::string localApTitle{""};
     int localAeQualifier{0};
     std::string remoteApTitle{""};
@@ -75,7 +75,7 @@ class ConfigurationException: public std::logic_error
 {
     public:
         explicit ConfigurationException(std::string const &msg):
-                 std::logic_error("Configuration exception: " + msg) {}
+            std::logic_error("Configuration exception: " + msg) {}
 };
 
 
@@ -100,7 +100,8 @@ class IEC61850ClientConfig
 
         void importConfig(const ConfigCategory &newConfig);
 
-        inline static std::string buildKey(const ServerConnectionParameters &serverConn) {
+        inline static std::string buildKey(const ServerConnectionParameters &serverConn)
+        {
             return (serverConn.ipAddress + "_" +
                     std::to_string(serverConn.mmsPort));
         }

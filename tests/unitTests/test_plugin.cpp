@@ -48,20 +48,16 @@ TEST(IEC61850PluginTest, PluginInit)
 {
     ConfigCategory config("TestDefaultConfig", default_config);
     config.setItemsValueFromDefault();
-
     PLUGIN_HANDLE handle = nullptr;
-
     ASSERT_THAT(handle, IsNull());
     handle = plugin_init(&config);
     ASSERT_THAT(handle, NotNull());
-
-    delete static_cast<IEC61850*>(handle);
+    delete static_cast<IEC61850 *>(handle);
 }
 
 TEST(IEC61850PluginTest, startNull)
 {
     PLUGIN_HANDLE handle = nullptr;
-
     ASSERT_THAT(handle, IsNull());
     ASSERT_NO_THROW(plugin_start(handle));
 }
@@ -70,13 +66,10 @@ TEST(IEC61850PluginTest, start)
 {
     PLUGIN_HANDLE handle = nullptr;
     ASSERT_THAT(handle, IsNull());
-
     handle = plugin_init(nullptr);
     ASSERT_THAT(handle, NotNull());
-
     ASSERT_NO_THROW(plugin_start(handle));
-
-    delete static_cast<IEC61850*>(handle);
+    delete static_cast<IEC61850 *>(handle);
 }
 
 void ingestCallback(void *data, Reading reading) {}
@@ -90,28 +83,23 @@ TEST(IEC61850PluginTest, PluginRegisterIngestWithNullHandle)
 TEST(IEC61850PluginTest, PluginRegisterIngest)
 {
     PLUGIN_HANDLE handle = plugin_init(nullptr);
-
     ASSERT_NO_THROW(
         plugin_register_ingest(handle, ingestCallback, NULL));
-
-    delete static_cast<IEC61850*>(handle);
+    delete static_cast<IEC61850 *>(handle);
 }
 
 TEST(IEC61850PluginTest, PluginShutdown)
 {
     PLUGIN_HANDLE handle = plugin_init(nullptr);
     ASSERT_THAT(handle, NotNull());
-
     ASSERT_NO_THROW(plugin_shutdown(handle));
 }
 
 TEST(IEC61850PluginTest, PluginReconfigure)
 {
     std::string new_config(configForReconfiguration);
-
     PLUGIN_HANDLE handle = plugin_init(nullptr);
     ASSERT_THAT(handle, NotNull());
     ASSERT_NO_THROW(plugin_reconfigure(handle, new_config));
-
-    delete static_cast<IEC61850*>(handle);
+    delete static_cast<IEC61850 *>(handle);
 }

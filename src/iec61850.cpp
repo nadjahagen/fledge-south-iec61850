@@ -42,19 +42,18 @@ void IEC61850::start()
     Logger::getLogger()->info("Plugin started");
 
     /* Create the IEC61850 clients */
-    for(auto &serverConfig: m_config->serverConfigDict) {
+    for (auto &serverConfig : m_config->serverConfigDict) {
         std::string key = serverConfig.first;
-
         m_clients[key] = std::make_unique<IEC61850Client>(this,
-                                                          serverConfig.second,
-                                                          m_config->exchangedData);
+                         serverConfig.second,
+                         m_config->exchangedData);
         m_clients[key]->start();
     }
 }
 
 void IEC61850::stop()
 {
-    for(const auto &client: m_clients) {
+    for (const auto &client : m_clients) {
         client.second->stop();
     }
 

@@ -44,7 +44,6 @@ void IEC61850ClientConnection::open()
 {
     Logger::getLogger()->debug("IEC61850ClientConn: open");
     std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
-
     Logger::getLogger()->info("Open connection with: ");
     IEC61850ClientConfig::logIedConnectionParam(m_connectionParam);
 
@@ -63,14 +62,15 @@ void IEC61850ClientConnection::setOsiConnectionParameters()
 {
     MmsConnection mmsConnection = IedConnection_getMmsConnection(m_iedConnection);
     IsoConnectionParameters libiecIsoParams = MmsConnection_getIsoConnectionParameters(mmsConnection);
-
     const OsiParameters &osiParams = m_connectionParam.osiParameters;
+
     // set Remote 'AP Title' and 'AE Qualifier'
     if (! osiParams.remoteApTitle.empty()) {
         IsoConnectionParameters_setRemoteApTitle(libiecIsoParams,
-                                                 osiParams.remoteApTitle.c_str(),
-                                                 osiParams.remoteAeQualifier);
+                osiParams.remoteApTitle.c_str(),
+                osiParams.remoteAeQualifier);
     }
+
     // set Local 'AP Title' and 'AE Qualifier'
     if (! osiParams.localApTitle.empty()) {
         IsoConnectionParameters_setLocalApTitle(libiecIsoParams,
@@ -80,13 +80,13 @@ void IEC61850ClientConnection::setOsiConnectionParameters()
 
     /* change parameters for presentation, session and transport layers */
     IsoConnectionParameters_setRemoteAddresses(libiecIsoParams,
-                                               osiParams.remotePSelector,
-                                               osiParams.remoteSSelector,
-                                               osiParams.localTSelector);
+            osiParams.remotePSelector,
+            osiParams.remoteSSelector,
+            osiParams.localTSelector);
     IsoConnectionParameters_setLocalAddresses(libiecIsoParams,
-                                              osiParams.localPSelector,
-                                              osiParams.localSSelector,
-                                              osiParams.remoteTSelector);
+            osiParams.localPSelector,
+            osiParams.localSSelector,
+            osiParams.remoteTSelector);
 }
 
 void IEC61850ClientConnection::close()
