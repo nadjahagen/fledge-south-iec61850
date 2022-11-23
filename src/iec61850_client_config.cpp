@@ -174,7 +174,7 @@ void IEC61850ClientConfig::importJsonConnectionConfig(const rapidjson::Value &co
 }
 
 void IEC61850ClientConfig::importJsonConnectionOsiConfig(const rapidjson::Value &connOsiConfig,
-        ServerConnectionParameters &iedConnectionParam)
+        ServerConnectionParameters &iedConnectionParam) const
 {
     // Preconditions
     if (! connOsiConfig.IsObject()) {
@@ -217,7 +217,7 @@ void IEC61850ClientConfig::importJsonConnectionOsiConfig(const rapidjson::Value 
 
         if (! std::regex_match(strToCheck, std::regex("[0-9]*"))) {
             throw ConfigurationException("'local_ap_title' is not valid");
-        };
+        }
     }
 
     if (connOsiConfig.HasMember("remote_ap_title")) {
@@ -235,10 +235,17 @@ void IEC61850ClientConfig::importJsonConnectionOsiConfig(const rapidjson::Value 
 
         if (! std::regex_match(strToCheck, std::regex("[0-9]*"))) {
             throw ConfigurationException("'remote_ap_title' is not valid");
-        };
+        }
     }
 
     // Selector
+    importJsonConnectionOsiSelectors(connOsiConfig, osiParams);
+    iedConnectionParam.isOsiParametersEnabled = true;
+}
+
+void IEC61850ClientConfig::importJsonConnectionOsiSelectors(const rapidjson::Value &connOsiConfig,
+                                                           OsiParameters *osiParams) const
+{
     if (connOsiConfig.HasMember("local_psel")) {
         if (! connOsiConfig["local_psel"].IsString()) {
             throw ConfigurationException("bad format for 'local_psel'");
@@ -292,8 +299,6 @@ void IEC61850ClientConfig::importJsonConnectionOsiConfig(const rapidjson::Value 
         std::string inputOsiSelector = connOsiConfig["remote_tsel"].GetString();
         osiParams->remoteTSelector.size = parseOsiTSelector(inputOsiSelector, &osiParams->remoteTSelector);
     }
-
-    iedConnectionParam.isOsiParametersEnabled = true;
 }
 
 OsiSelectorSize
@@ -322,8 +327,9 @@ IEC61850ClientConfig::parseOsiSelector(std::string &inputOsiSelector,
                                        uint8_t *selectorValue,
                                        const uint8_t selectorSize)
 {
-    char *nextToken = strtok(&inputOsiSelector[0], " ,.-");
-    unsigned int count = 0;
+    char *tokenContext = nullptr;
+    const char *nextToken = strtok_r(&inputOsiSelector[0], " ,.-", &tokenContext);
+    uint8_t count = 0;
 
     while (nullptr != nextToken) {
         if (count >= selectorSize) {
@@ -340,9 +346,9 @@ IEC61850ClientConfig::parseOsiSelector(std::string &inputOsiSelector,
 
         try {
             ul = std::stoul(nextToken, nullptr, base);
-        } catch (std::invalid_argument &e) {
+        } catch (std::invalid_argument &) {
             throw ConfigurationException("bad format for 'OSI Selector' (not a byte)");
-        } catch (std::out_of_range &e) {
+        } catch (std::out_of_range &) {
             throw ConfigurationException("bad format for 'OSI Selector (exceed an int)'");
         }
 
@@ -350,16 +356,18 @@ IEC61850ClientConfig::parseOsiSelector(std::string &inputOsiSelector,
             throw ConfigurationException("bad format for 'OSI Selector' (exceed a byte)");
         }
 
-        selectorValue[count] = ul;
+        selectorValue[count] = static_cast<uint8_t>(ul);
         count++;
-        nextToken = strtok(nullptr, " ,.-");
+        nextToken = strtok_r(nullptr, " ,.-", &tokenContext);
     }
 
     return count;
 }
 
 void IEC61850ClientConfig::importJsonApplicationLayerConfig(const rapidjson::Value &/*applicationLayer*/) const
-{}
+{
+    // implementation next...
+}
 
 void IEC61850ClientConfig::logIedConnectionParam(const ServerConnectionParameters &iedConnectionParam)
 {

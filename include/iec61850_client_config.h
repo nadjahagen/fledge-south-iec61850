@@ -62,7 +62,7 @@ struct ExchangedData {
     std::string daPath = "NOT_DEFINED";
 };
 
-using OsiSelectorSize = int;
+using OsiSelectorSize = uint8_t;
 using ServerDictKey = std::string;
 using ServerConfigDict = std::map<ServerDictKey, ServerConnectionParameters, std::less<>>;
 
@@ -116,7 +116,9 @@ class IEC61850ClientConfig
         void importJsonTransportLayerConfig(const rapidjson::Value &transportLayer);
         void importJsonConnectionConfig(const rapidjson::Value &connConfig);
         void importJsonConnectionOsiConfig(const rapidjson::Value &connOsiConfig,
-                                           ServerConnectionParameters &iedConnectionParam);
+                                           ServerConnectionParameters &iedConnectionParam) const;
+        void importJsonConnectionOsiSelectors(const rapidjson::Value &connOsiConfig,
+                                              OsiParameters *osiParams) const;
         void importJsonApplicationLayerConfig(const rapidjson::Value &transportLayer) const;
         void importJsonExchangeConfig(const std::string &exchangeConfig);
 
