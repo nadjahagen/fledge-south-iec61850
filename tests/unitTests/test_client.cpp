@@ -84,7 +84,7 @@ TEST(IEC61850ClientTest, initializeConnectionInOneTry)
     // Configuration of the Mock objects
     MockIEC61850ClientConnection mockConnectedConnection;
     EXPECT_CALL(mockConnectedConnection, isConnected())
-    .Times(2)
+    .Times(3)
     .WillRepeatedly(Return(true));
     // End of configuration of the Mock objects
     // Test Init
@@ -133,7 +133,7 @@ TEST(IEC61850ClientTest, startAndStop)
     empty_mms->setMmsValue(nullptr);
     MockIEC61850ClientConnection mockConnectedConnection;
     EXPECT_CALL(mockConnectedConnection, isConnected())
-    .Times(4)
+    .Times(5)
     .WillRepeatedly(Return(true));
     EXPECT_CALL(mockConnectedConnection, readMms(_, _))
     .Times(2)

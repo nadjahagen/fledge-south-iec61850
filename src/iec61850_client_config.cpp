@@ -19,6 +19,8 @@
 // Fledge headers
 #include <logger.h>
 
+#include <iostream>
+
 const char *const JSON_PROTOCOL_STACK = "protocol_stack";
 const char *const JSON_TRANSPORT_LAYER = "transport_layer";
 const char *const JSON_APPLICATION_LAYER = "application_layer";
@@ -208,6 +210,7 @@ void IEC61850ClientConfig::importJsonConnectionOsiConfig(const rapidjson::Value 
         std::replace(osiParams->localApTitle.begin(),
                      osiParams->localApTitle.end(),
                      ',', '.');
+
         // check 'localApTitle' contains digits and dot only
         std::string strToCheck = osiParams->localApTitle;
         strToCheck.erase(std::remove(strToCheck.begin(), strToCheck.end(), '.'), strToCheck.end());
