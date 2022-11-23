@@ -22,6 +22,7 @@
 #include <libiec61850/iso_connection_parameters.h>
 
 #include <rapidjson/document.h>
+
 /**
  *  Lower layer parameters (below the MMS layer) for connection with server
  */
@@ -38,6 +39,9 @@ struct OsiParameters{
     PSelector remotePSelector;
 };
 
+/**
+ *  Parameters for creating a connection with 1 IEC61850 server
+ */
 struct ServerConnectionParameters {
     std::string ipAddress;
     int mmsPort;
@@ -45,6 +49,9 @@ struct ServerConnectionParameters {
     OsiParameters osiParameters;
 };
 
+/**
+ *  Parameters about the data to transfer to Fledge
+ */
 struct ExchangedData {
     std::string logicalDeviceName = "LD_NOT_DEFINED";
     std::string logicalNodeName = "LN_NOT_DEFINED";
@@ -60,6 +67,10 @@ using ServerDictKey = std::string;
 using ServerConfigDict = std::map<ServerDictKey, ServerConnectionParameters, std::less<>>;
 
 
+
+/** \class ConfigurationException
+ *  \brief a error in the input configuration has been detected
+ */
 class ConfigurationException: public std::logic_error
 {
     public:
@@ -68,6 +79,12 @@ class ConfigurationException: public std::logic_error
 };
 
 
+/** \class IEC61850ClientConfig
+ *  \brief All the configuration for the South plugin
+ *
+ *  The input configuration is parsed and stored
+ *  in data structures
+ */
 class IEC61850ClientConfig
 {
     public :
@@ -106,8 +123,8 @@ class IEC61850ClientConfig
         static OsiSelectorSize parseOsiTSelector(std::string &inputOsiSelector, TSelector *tselector);
         static OsiSelectorSize parseOsiSSelector(std::string &inputOsiSelector, SSelector *sselector);
         static OsiSelectorSize parseOsiSelector(std::string &inputOsiSelector,
-                                                  uint8_t *selectorValue,
-                                                  const uint8_t selectorSize);
+                                                uint8_t *selectorValue,
+                                                const uint8_t selectorSize);
 
         static bool isValidIPAddress(const std::string &addrStr);
 };

@@ -74,13 +74,16 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>All the configuration for the South plugin.  
+ <a href="classIEC61850ClientConfig.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="iec61850__client__config_8h_source.html">iec61850_client_config.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for IEC61850ClientConfig:</div>
 <div class="dyncontent">
 <div class="center"><img src="classIEC61850ClientConfig__coll__graph.png" border="0" usemap="#aIEC61850ClientConfig_coll__map" alt="Collaboration graph"/></div>
 <map name="aIEC61850ClientConfig_coll__map" id="aIEC61850ClientConfig_coll__map">
-<area shape="rect" title=" " alt="" coords="5,95,168,121"/>
+<area shape="rect" title="All the configuration for the South plugin." alt="" coords="5,95,168,121"/>
 <area shape="rect" href="structExchangedData.html" title=" " alt="" coords="25,5,149,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -94,6 +97,10 @@ Public Member Functions</h2></td></tr>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a3e56bbc53ba27081c7e631f453b74ec2"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a3e56bbc53ba27081c7e631f453b74ec2">buildKey</a> (const <a class="el" href="structServerConnectionParameters.html">ServerConnectionParameters</a> &amp;serverConn)</td></tr>
 <tr class="separator:a3e56bbc53ba27081c7e631f453b74ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc9895d3ac659128ab863455f25a65b5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#acc9895d3ac659128ab863455f25a65b5">logIedConnectionParam</a> (const <a class="el" href="structServerConnectionParameters.html">ServerConnectionParameters</a> &amp;iedConnectionParam)</td></tr>
+<tr class="separator:acc9895d3ac659128ab863455f25a65b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a352c13528f5f1d23e4f97cf734a80c44"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a352c13528f5f1d23e4f97cf734a80c44">logOsiSelector</a> (const std::string &amp;selectorName, const int selectorSize, const uint8_t *selectorValues)</td></tr>
+<tr class="separator:a352c13528f5f1d23e4f97cf734a80c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -101,6 +108,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a33c7254298bd08382734593969e2cf07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cd6343bdd78c196b44231a474c6c2d3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a5cd6343bdd78c196b44231a474c6c2d3">assetName</a></td></tr>
 <tr class="separator:a5cd6343bdd78c196b44231a474c6c2d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a246f7b6cae06d475e6735ec72bdf03c1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a246f7b6cae06d475e6735ec72bdf03c1">iedName</a></td></tr>
+<tr class="separator:a246f7b6cae06d475e6735ec72bdf03c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f431a12f2cb4e32690cb3abc1702aad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="iec61850__client__config_8h.html#a6f3c4544911a403a71f5408764420415">ServerConfigDict</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a5f431a12f2cb4e32690cb3abc1702aad">serverConfigDict</a></td></tr>
 <tr class="separator:a5f431a12f2cb4e32690cb3abc1702aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1673e3af37b8fdf50ab47075b47cdd24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structExchangedData.html">ExchangedData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a1673e3af37b8fdf50ab47075b47cdd24">exchangedData</a></td></tr>
@@ -114,6 +123,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a511dd8c5fbaed16b4fb9f5a8d37846c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d1c3bcb5338956dc8ed6b41f975910b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a0d1c3bcb5338956dc8ed6b41f975910b">importJsonConnectionConfig</a> (const rapidjson::Value &amp;connConfig)</td></tr>
 <tr class="separator:a0d1c3bcb5338956dc8ed6b41f975910b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32662331b26f28911c5e901cbb2753dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a32662331b26f28911c5e901cbb2753dc">importJsonConnectionOsiConfig</a> (const rapidjson::Value &amp;connOsiConfig, <a class="el" href="structServerConnectionParameters.html">ServerConnectionParameters</a> &amp;iedConnectionParam)</td></tr>
+<tr class="separator:a32662331b26f28911c5e901cbb2753dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa321b7f7c1628795f64c32ced2bdcba6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#aa321b7f7c1628795f64c32ced2bdcba6">importJsonApplicationLayerConfig</a> (const rapidjson::Value &amp;transportLayer) const</td></tr>
 <tr class="separator:aa321b7f7c1628795f64c32ced2bdcba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af41fdfc6d03200a5169469fea36201c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#af41fdfc6d03200a5169469fea36201c2">importJsonExchangeConfig</a> (const std::string &amp;exchangeConfig)</td></tr>
@@ -121,12 +132,21 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-static-methods" name="pri-static-methods"></a>
 Static Private Member Functions</h2></td></tr>
-<tr class="memitem:a0b0bf846c391e52fe623ea8e3f1be0bd"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a0b0bf846c391e52fe623ea8e3f1be0bd">logParsedIedConnectionParam</a> (const <a class="el" href="structServerConnectionParameters.html">ServerConnectionParameters</a> &amp;iedConnectionParam)</td></tr>
-<tr class="separator:a0b0bf846c391e52fe623ea8e3f1be0bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0c4f51ad9c0cf2b24d22acf3670befe"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="iec61850__client__config_8h.html#a28ce56a97fc719f61f0811645e290654">OsiSelectorSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#ad0c4f51ad9c0cf2b24d22acf3670befe">parseOsiPSelector</a> (std::string &amp;inputOsiSelector, PSelector *pselector)</td></tr>
+<tr class="separator:ad0c4f51ad9c0cf2b24d22acf3670befe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45d878a344f5120c11acae014da78895"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="iec61850__client__config_8h.html#a28ce56a97fc719f61f0811645e290654">OsiSelectorSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#a45d878a344f5120c11acae014da78895">parseOsiTSelector</a> (std::string &amp;inputOsiSelector, TSelector *tselector)</td></tr>
+<tr class="separator:a45d878a344f5120c11acae014da78895"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6be4767b8e1e479c637e19a261547f8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="iec61850__client__config_8h.html#a28ce56a97fc719f61f0811645e290654">OsiSelectorSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#ab6be4767b8e1e479c637e19a261547f8">parseOsiSSelector</a> (std::string &amp;inputOsiSelector, SSelector *sselector)</td></tr>
+<tr class="separator:ab6be4767b8e1e479c637e19a261547f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea906b7796835efae84dd0cf862661f0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="iec61850__client__config_8h.html#a28ce56a97fc719f61f0811645e290654">OsiSelectorSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#aea906b7796835efae84dd0cf862661f0">parseOsiSelector</a> (std::string &amp;inputOsiSelector, uint8_t *selectorValue, const uint8_t selectorSize)</td></tr>
+<tr class="separator:aea906b7796835efae84dd0cf862661f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad941e5508cead20473ecff749145ff24"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConfig.html#ad941e5508cead20473ecff749145ff24">isValidIPAddress</a> (const std::string &amp;addrStr)</td></tr>
 <tr class="separator:ad941e5508cead20473ecff749145ff24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >All the configuration for the South plugin. </p>
+<p >The input configuration is parsed and stored in data structures </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a3e56bbc53ba27081c7e631f453b74ec2" name="a3e56bbc53ba27081c7e631f453b74ec2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3e56bbc53ba27081c7e631f453b74ec2">&#9670;&nbsp;</a></span>buildKey()</h2>
 
@@ -220,8 +240,42 @@ Static Private Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Parse the simple JSON fields of 'connection'</p>
-<p >Parse the 'Address' JSON structure of 'connection'</p>
+
+</div>
+</div>
+<a id="a32662331b26f28911c5e901cbb2753dc" name="a32662331b26f28911c5e901cbb2753dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32662331b26f28911c5e901cbb2753dc">&#9670;&nbsp;</a></span>importJsonConnectionOsiConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IEC61850ClientConfig::importJsonConnectionOsiConfig </td>
+          <td>(</td>
+          <td class="paramtype">const rapidjson::Value &amp;&#160;</td>
+          <td class="paramname"><em>connOsiConfig</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structServerConnectionParameters.html">ServerConnectionParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>iedConnectionParam</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -282,7 +336,7 @@ Static Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p >Parse the input JSON std::string</p>
-<p >Check if 'protocol_stack' is found</p>
+<p >The 'protocol_stack' section is mandatory</p>
 <p >Check if 'transport_layer' is found</p>
 <p >Check if 'application_layer' is found</p>
 
@@ -341,8 +395,8 @@ Static Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0b0bf846c391e52fe623ea8e3f1be0bd" name="a0b0bf846c391e52fe623ea8e3f1be0bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b0bf846c391e52fe623ea8e3f1be0bd">&#9670;&nbsp;</a></span>logParsedIedConnectionParam()</h2>
+<a id="acc9895d3ac659128ab863455f25a65b5" name="acc9895d3ac659128ab863455f25a65b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc9895d3ac659128ab863455f25a65b5">&#9670;&nbsp;</a></span>logIedConnectionParam()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -351,11 +405,203 @@ Static Private Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void IEC61850ClientConfig::logParsedIedConnectionParam </td>
+          <td class="memname">void IEC61850ClientConfig::logIedConnectionParam </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structServerConnectionParameters.html">ServerConnectionParameters</a> &amp;&#160;</td>
           <td class="paramname"><em>iedConnectionParam</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a352c13528f5f1d23e4f97cf734a80c44" name="a352c13528f5f1d23e4f97cf734a80c44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a352c13528f5f1d23e4f97cf734a80c44">&#9670;&nbsp;</a></span>logOsiSelector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IEC61850ClientConfig::logOsiSelector </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>selectorName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>selectorSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>selectorValues</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad0c4f51ad9c0cf2b24d22acf3670befe" name="ad0c4f51ad9c0cf2b24d22acf3670befe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0c4f51ad9c0cf2b24d22acf3670befe">&#9670;&nbsp;</a></span>parseOsiPSelector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="iec61850__client__config_8h.html#a28ce56a97fc719f61f0811645e290654">OsiSelectorSize</a> IEC61850ClientConfig::parseOsiPSelector </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>inputOsiSelector</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PSelector *&#160;</td>
+          <td class="paramname"><em>pselector</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aea906b7796835efae84dd0cf862661f0" name="aea906b7796835efae84dd0cf862661f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea906b7796835efae84dd0cf862661f0">&#9670;&nbsp;</a></span>parseOsiSelector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="iec61850__client__config_8h.html#a28ce56a97fc719f61f0811645e290654">OsiSelectorSize</a> IEC61850ClientConfig::parseOsiSelector </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>inputOsiSelector</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>selectorValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t&#160;</td>
+          <td class="paramname"><em>selectorSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab6be4767b8e1e479c637e19a261547f8" name="ab6be4767b8e1e479c637e19a261547f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6be4767b8e1e479c637e19a261547f8">&#9670;&nbsp;</a></span>parseOsiSSelector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="iec61850__client__config_8h.html#a28ce56a97fc719f61f0811645e290654">OsiSelectorSize</a> IEC61850ClientConfig::parseOsiSSelector </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>inputOsiSelector</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SSelector *&#160;</td>
+          <td class="paramname"><em>sselector</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45d878a344f5120c11acae014da78895" name="a45d878a344f5120c11acae014da78895"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45d878a344f5120c11acae014da78895">&#9670;&nbsp;</a></span>parseOsiTSelector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="iec61850__client__config_8h.html#a28ce56a97fc719f61f0811645e290654">OsiSelectorSize</a> IEC61850ClientConfig::parseOsiTSelector </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>inputOsiSelector</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TSelector *&#160;</td>
+          <td class="paramname"><em>tselector</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -390,6 +636,20 @@ Static Private Member Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="structExchangedData.html">ExchangedData</a> IEC61850ClientConfig::exchangedData</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a246f7b6cae06d475e6735ec72bdf03c1" name="a246f7b6cae06d475e6735ec72bdf03c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a246f7b6cae06d475e6735ec72bdf03c1">&#9670;&nbsp;</a></span>iedName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string IEC61850ClientConfig::iedName</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -431,7 +691,7 @@ Static Private Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 14 2022 17:28:30 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Wed Nov 23 2022 11:37:39 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>

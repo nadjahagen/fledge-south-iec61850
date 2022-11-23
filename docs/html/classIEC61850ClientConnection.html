@@ -90,9 +90,10 @@ Collaboration diagram for IEC61850ClientConnection:</div>
 <div class="dyncontent">
 <div class="center"><img src="classIEC61850ClientConnection__coll__graph.png" border="0" usemap="#aIEC61850ClientConnection_coll__map" alt="Collaboration graph"/></div>
 <map name="aIEC61850ClientConnection_coll__map" id="aIEC61850ClientConnection_coll__map">
-<area shape="rect" title="Create and use a IEC61850 connection with a IED." alt="" coords="119,109,313,136"/>
-<area shape="rect" href="classIEC61850ClientConnectionInterface.html" title=" " alt="" coords="5,5,200,47"/>
-<area shape="rect" href="structServerConnectionParameters.html" title=" " alt="" coords="224,13,435,39"/>
+<area shape="rect" title="Create and use a IEC61850 connection with a IED." alt="" coords="72,199,267,225"/>
+<area shape="rect" href="classIEC61850ClientConnectionInterface.html" title=" " alt="" coords="5,95,200,136"/>
+<area shape="rect" href="structServerConnectionParameters.html" title=" " alt="" coords="224,102,435,129"/>
+<area shape="rect" href="structOsiParameters.html" title=" " alt="" coords="271,5,388,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -138,6 +139,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a0e52da0cdf2f96aa2e6dd0e61db58d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86cc94ee42bf5c1eb722eaef1deab821"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a86cc94ee42bf5c1eb722eaef1deab821">close</a> ()</td></tr>
 <tr class="separator:a86cc94ee42bf5c1eb722eaef1deab821"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a751109ad3de386031f6d1f986315c23c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a751109ad3de386031f6d1f986315c23c">setOsiConnectionParameters</a> ()</td></tr>
+<tr class="separator:a751109ad3de386031f6d1f986315c23c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae872f5989f2f4adc1d4c23ec4d5c646a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#ae872f5989f2f4adc1d4c23ec4d5c646a">FRIEND_TEST</a> (IEC61850ClientConnectionTest, openConnection)</td></tr>
 <tr class="separator:ae872f5989f2f4adc1d4c23ec4d5c646a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -151,6 +154,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:aef69289e59c1b6d4659277ecd31d18cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cf593a22c627bf1be97d0f9b15d793e"><td class="memItemLeft" align="right" valign="top">IedClientError&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a5cf593a22c627bf1be97d0f9b15d793e">m_networkStack_error</a> = IED_ERROR_OK</td></tr>
 <tr class="separator:a5cf593a22c627bf1be97d0f9b15d793e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cbac214f54cf476adb9d253b3b20b7d"><td class="memItemLeft" align="right" valign="top">AcseAuthenticationParameter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a4cbac214f54cf476adb9d253b3b20b7d">m_acseAuthentParams</a> {nullptr}</td></tr>
+<tr class="separator:a4cbac214f54cf476adb9d253b3b20b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Create and use a <a class="el" href="classIEC61850.html">IEC61850</a> connection with a IED. </p>
@@ -547,7 +552,54 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a751109ad3de386031f6d1f986315c23c" name="a751109ad3de386031f6d1f986315c23c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a751109ad3de386031f6d1f986315c23c">&#9670;&nbsp;</a></span>setOsiConnectionParameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void IEC61850ClientConnection::setOsiConnectionParameters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a4cbac214f54cf476adb9d253b3b20b7d" name="a4cbac214f54cf476adb9d253b3b20b7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cbac214f54cf476adb9d253b3b20b7d">&#9670;&nbsp;</a></span>m_acseAuthentParams</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AcseAuthenticationParameter IEC61850ClientConnection::m_acseAuthentParams {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a9439a3490d36b37166714788b9ce1c08" name="a9439a3490d36b37166714788b9ce1c08"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9439a3490d36b37166714788b9ce1c08">&#9670;&nbsp;</a></span>m_connectionParam</h2>
 
@@ -644,7 +696,7 @@ Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 14 2022 17:28:30 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Wed Nov 23 2022 11:37:39 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>
