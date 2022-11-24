@@ -77,6 +77,7 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
 
         // Section: see the class as a white box for unit tests
         FRIEND_TEST(IEC61850ClientConnectionTest, openConnection);
+        FRIEND_TEST(IEC61850ClientConnectionTest, openConnectionWithOsiParams);
 };
 
 #endif  // INCLUDE_IEC61850_CLIENT_CONNECTION_H_
