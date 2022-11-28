@@ -24,15 +24,16 @@
 #include "./iec61850_client_connection.h"
 #include "./wrapped_mms.h"
 
-constexpr const uint32_t SECOND_IN_MILLISEC = 1000;
 constexpr const uint32_t RECONNECTION_FREQUENCY_IN_HERTZ = 1;
-constexpr const uint32_t DEMO_MMS_READ_FREQUENCY_IN_HERTZ = 2;
+constexpr const uint32_t SECOND_IN_MILLISEC = 1000;
 
 IEC61850Client::IEC61850Client(IEC61850 *iec61850,
                                const ServerConnectionParameters &connectionParam,
-                               const ExchangedData &exchangedData)
+                               const ExchangedData &exchangedData,
+                               const ApplicationParameters &applicationParams)
     : m_connectionParam(connectionParam),
       m_exchangedData(exchangedData),
+      m_applicationParams(applicationParams),
       m_iec61850(iec61850)
 {
     m_clientId = IEC61850ClientConfig::buildKey(m_connectionParam);
@@ -246,24 +247,32 @@ void IEC61850Client::readMmsLoop()
         Logger::getLogger()->warn("IEC61850Client: Connection object is null");
     }
 
-    while (m_isDemoLoopActivated) {
-        if (m_connection->isConnected()) {
-            if (m_connection->isNoError()) {
-                readAndExportMms();
-            } else {
-                Logger::getLogger()->info("No data to read");
-            }
+    unsigned int pollingPeriodInMs = m_applicationParams.readPollingPeriodInMs;
+    if (pollingPeriodInMs == 0) {
+        // Force to 1 second
+        pollingPeriodInMs = 1000;
+    }
 
-            std::chrono::milliseconds timespan(SECOND_IN_MILLISEC / DEMO_MMS_READ_FREQUENCY_IN_HERTZ);
-            std::this_thread::sleep_for(timespan);
-        } else {
-            initializeConnection();
-        }
+    while (m_isDemoLoopActivated) {
+        readAndExportMms();
+        std::chrono::milliseconds timespan(pollingPeriodInMs);
+        std::this_thread::sleep_for(timespan);
     }
 }
 
 void IEC61850Client::readAndExportMms()
 {
+    // Preconditions
+    if (! m_connection->isConnected()) {
+        initializeConnection();
+        return;
+    }
+
+    if (! m_connection->isNoError()) {
+        m_connection->logError();
+        return;
+    }
+
     /* read an analog measurement value from server */
     std::shared_ptr<WrappedMms> wrapped_mms;
     wrapped_mms = m_connection->readMms(m_exchangedData.daPath,

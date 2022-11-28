@@ -31,9 +31,11 @@ TEST(IEC61850ClientTest, createOneConnection)
 {
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData);
+                          exchangedData,
+                          applicationParams);
     client.createConnection();
     ASSERT_THAT(client.m_connection, NotNull());
 }
@@ -43,9 +45,11 @@ TEST(IEC61850ClientTest, reuseCreatedConnection)
 {
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData);
+                          exchangedData,
+                          applicationParams);
     // Create connection
     client.createConnection();
     IEC61850ClientConnectionInterface *connection_pointer = client.m_connection.get();
@@ -58,9 +62,11 @@ TEST(IEC61850ClientTest, destroyConnection)
 {
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData);
+                          exchangedData,
+                          applicationParams);
     client.createConnection();
     client.destroyConnection();
     ASSERT_THAT(client.m_connection, IsNull());
@@ -70,9 +76,11 @@ TEST(IEC61850ClientTest, destroyNullConnection)
 {
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData);
+                          exchangedData,
+                          applicationParams);
     client.createConnection();
     client.destroyConnection();
     ASSERT_NO_THROW(client.destroyConnection());
@@ -90,9 +98,11 @@ TEST(IEC61850ClientTest, initializeConnectionInOneTry)
     // Test Init
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData);
+                          exchangedData,
+                          applicationParams);
     client.createConnection(); // create a Foo connection before MockConnection injection
     // Test Body
     std::thread initializeConnectionThread(&IEC61850Client::initializeConnection,
@@ -111,9 +121,11 @@ TEST(IEC61850ClientTest, initializeConnectionFailed)
     // Test Init
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData);
+                          exchangedData,
+                          applicationParams);
     // Test Body
     ASSERT_THAT(client.m_connection, IsNull());
     std::thread initializeConnectionThread(&IEC61850Client::initializeConnection,
@@ -144,9 +156,11 @@ TEST(IEC61850ClientTest, startAndStop)
     // Test Init
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData);
+                          exchangedData,
+                          applicationParams);
     // Test Body
     ASSERT_THAT(client.m_connection, IsNull());
     ASSERT_EQ(false, client.m_stopOrder);
@@ -155,7 +169,7 @@ TEST(IEC61850ClientTest, startAndStop)
     std::thread startClientThread(&IEC61850Client::start,
                                   &client);
     IEC61850ClientTest_injectMockConnection_Test::injectMockConnection(client, &mockConnectedConnection);
-    sleep(2);
+    sleep(3);
     ASSERT_THAT(client.m_connection, NotNull());
     ASSERT_EQ(true, client.m_connection->isConnected());
     ASSERT_EQ(false, client.m_stopOrder);

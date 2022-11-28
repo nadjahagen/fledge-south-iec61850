@@ -70,10 +70,12 @@ static const char *const default_config = QUOTE({
                     ]
                 },
                 "application_layer" : {
+                    "read_polling_period_in_ms" : 1000
                 }
             }
         })
     },
+
     "exchanged_data" : {
         "description" : "exchanged data list",
         "type" : "JSON",

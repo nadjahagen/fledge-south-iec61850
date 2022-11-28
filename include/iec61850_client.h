@@ -44,7 +44,8 @@ class IEC61850Client
 
         explicit IEC61850Client(IEC61850 *iec61850,
                                 const ServerConnectionParameters &connectionParam,
-                                const ExchangedData &exchangedData);
+                                const ExchangedData &exchangedData,
+                                const ApplicationParameters &applicationParams);
 
         ~IEC61850Client();
 
@@ -72,6 +73,7 @@ class IEC61850Client
         // Section: Configuration
         const ServerConnectionParameters &m_connectionParam;
         ExchangedData m_exchangedData;
+        ApplicationParameters m_applicationParams;
 
         // Section: Data formatting for the plugin
         IEC61850 *m_iec61850;

@@ -23,6 +23,8 @@
 
 #include <rapidjson/document.h>
 
+constexpr unsigned int DEFAULT_READ_POLLING_PERIOD_IN_MS = 1000;
+
 /**
  *  Lower layer parameters (below the MMS layer) for connection with server
  */
@@ -62,6 +64,13 @@ struct ExchangedData {
     std::string daPath = "NOT_DEFINED";
 };
 
+/**
+ *  Application parameters about the IEC61850 client
+ */
+struct ApplicationParameters {
+    unsigned int readPollingPeriodInMs = DEFAULT_READ_POLLING_PERIOD_IN_MS;  /** Default polling period: 1 second */
+};
+
 using OsiSelectorSize = uint8_t;
 using ServerDictKey = std::string;
 using ServerConfigDict = std::map<ServerDictKey, ServerConnectionParameters, std::less<>>;
@@ -95,6 +104,8 @@ class IEC61850ClientConfig
 
         ServerConfigDict serverConfigDict;
 
+        ApplicationParameters applicationParams;
+
         // Data model section
         ExchangedData exchangedData;
 
@@ -119,7 +130,7 @@ class IEC61850ClientConfig
                                            ServerConnectionParameters &iedConnectionParam) const;
         void importJsonConnectionOsiSelectors(const rapidjson::Value &connOsiConfig,
                                               OsiParameters *osiParams) const;
-        void importJsonApplicationLayerConfig(const rapidjson::Value &transportLayer) const;
+        void importJsonApplicationLayerConfig(const rapidjson::Value &transportLayer);
         void importJsonExchangeConfig(const std::string &exchangeConfig);
 
         static OsiSelectorSize parseOsiPSelector(std::string &inputOsiSelector, PSelector *pselector);
