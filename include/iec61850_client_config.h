@@ -13,12 +13,14 @@
 
 #include <string>
 #include <map>
+#include <memory>
 
 // Fledge headers
 #include <config_category.h>
 
 // libiec61850 headers
 #include <libiec61850/libiec61850_common_api.h>
+#include <libiec61850/iec61850_common.h>
 #include <libiec61850/iso_connection_parameters.h>
 
 #include <rapidjson/document.h>
@@ -51,18 +53,18 @@ struct ServerConnectionParameters {
     OsiParameters osiParameters;
 };
 
-/**
- *  Parameters about the data to transfer to Fledge
- */
-struct ExchangedData {
-    std::string logicalDeviceName = "LD_NOT_DEFINED";
-    std::string logicalNodeName = "LN_NOT_DEFINED";
-    std::string cdc = "CDC_NOT_DEFINED";
-    std::string dataAttribute = "DA_NOT_DEFINED";
-    std::string fcName = "FC_NOT_DEFINED";
 
-    std::string daPath = "NOT_DEFINED";
+enum DatapointTypeId {
+   MV_DATAPOINT_TYPE = 0,
+   SP_DATAPOINT_TYPE = 1,
+   UNKNOWN_DATAPOINT_TYPE = -1
 };
+
+struct MmsNameNode {
+    std::string mmsName;
+    std::vector<std::shared_ptr<const MmsNameNode>> children;
+};
+
 
 /**
  *  Application parameters about the IEC61850 client
@@ -74,11 +76,25 @@ struct ApplicationParameters {
 using OsiSelectorSize = uint8_t;
 using ServerDictKey = std::string;
 using ServerConfigDict = std::map<ServerDictKey, ServerConnectionParameters, std::less<>>;
+using DatapointLabel = std::string;
+using DataPath = std::string;
 
+/**
+ *  Parameters about the data to transfer to Fledge
+ */
+struct ExchangedData {
+    DatapointLabel label;
+    DatapointTypeId datapointTypeId = UNKNOWN_DATAPOINT_TYPE;
+    DataPath dataPath = "NOT_DEFINED";
+    FunctionalConstraint functionalConstraint = IEC61850_FC_NONE;
+    MmsNameNode mmsNameTree;
+};
+
+using ExchangedDataDict = std::map<DatapointLabel, ExchangedData, std::less<>>;
 
 
 /** \class ConfigurationException
- *  \brief a error in the input configuration has been detected
+ *  \brief an error in the input configuration has been detected
  */
 class ConfigurationException: public std::logic_error
 {
@@ -107,7 +123,7 @@ class IEC61850ClientConfig
         ApplicationParameters applicationParams;
 
         // Data model section
-        ExchangedData exchangedData;
+        ExchangedDataDict exchangedDataDict;
 
         void importConfig(const ConfigCategory &newConfig);
 
@@ -121,6 +137,8 @@ class IEC61850ClientConfig
         static void logOsiSelector(const std::string &selectorName,
                                    const int selectorSize,
                                    const uint8_t *selectorValues);
+        static void logExchangedDataConfig(const ExchangedDataDict &exchangedDataDict);
+        static void logMmsNameTree(const MmsNameNode &mmsNameNode, uint8_t currentDepth = 0);
 
     private:
         void importJsonProtocolConfig(const std::string &protocolConfig);
@@ -131,7 +149,10 @@ class IEC61850ClientConfig
         void importJsonConnectionOsiSelectors(const rapidjson::Value &connOsiConfig,
                                               OsiParameters *osiParams) const;
         void importJsonApplicationLayerConfig(const rapidjson::Value &transportLayer);
-        void importJsonExchangeConfig(const std::string &exchangeConfig);
+        void importJsonExchangedDataConfig(const std::string &exchangedDataConfig);
+        void importJsonDatapointConfig(const rapidjson::Value &datapointConfig);
+        void importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
+                                               ExchangedData &exchangedData);
 
         static OsiSelectorSize parseOsiPSelector(std::string &inputOsiSelector, PSelector *pselector);
         static OsiSelectorSize parseOsiTSelector(std::string &inputOsiSelector, TSelector *tselector);

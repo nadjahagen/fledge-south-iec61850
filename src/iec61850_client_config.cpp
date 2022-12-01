@@ -19,15 +19,18 @@
 // Fledge headers
 #include <logger.h>
 
-#include <iostream>
-
 const char *const JSON_PROTOCOL_STACK = "protocol_stack";
 const char *const JSON_TRANSPORT_LAYER = "transport_layer";
 const char *const JSON_APPLICATION_LAYER = "application_layer";
 const char *const JSON_EXCHANGED_DATA = "exchanged_data";
+const char *const JSON_CONNECTIONS = "connections";
+const char *const JSON_DATAPOINTS = "datapoints";
+const char *const JSON_PROTOCOLS = "protocols";
 
 const char *const DEFAULT_LOG_MIN_LEVEL = "info";
 const char *const DEFAULT_ASSET_NAME = "iec61850";
+
+const char *const IEC61850_PROTOCOL_NAME = "iec61850";
 
 void IEC61850ClientConfig::importConfig(const ConfigCategory &newConfig)
 {
@@ -64,7 +67,7 @@ void IEC61850ClientConfig::importConfig(const ConfigCategory &newConfig)
         throw ConfigurationException("'Exchanged Data' not found");
     }
 
-    importJsonExchangeConfig(inputExchangedData);
+    importJsonExchangedDataConfig(inputExchangedData);
 }
 
 void IEC61850ClientConfig::importJsonProtocolConfig(const std::string &protocolConfig)
@@ -115,19 +118,18 @@ void IEC61850ClientConfig::importJsonTransportLayerConfig(const rapidjson::Value
         throw ConfigurationException("bad format for the mandatory 'ied_name'");
     }
 
-    if (! transportLayer.HasMember("connections")) {
+    if (! transportLayer.HasMember(JSON_CONNECTIONS)) {
         throw ConfigurationException("'Transport Layer' parsing error: no 'connections'");
     }
 
-    if (! transportLayer["connections"].IsArray()) {
+    if (! transportLayer[JSON_CONNECTIONS].IsArray()) {
         throw ConfigurationException("'connections' is not an array -> fail to parse 'Transport Layer'");
     }
 
     iedName = std::string(transportLayer["ied_name"].GetString());
-    const rapidjson::Value &connections = transportLayer["connections"];
 
     /** Parse each 'connection' JSON structure */
-    for (const auto &conn : connections.GetArray()) {
+    for (const auto &conn : transportLayer[JSON_CONNECTIONS].GetArray()) {
         importJsonConnectionConfig(conn);
     }
 }
@@ -425,12 +427,12 @@ void IEC61850ClientConfig::logOsiSelector(const std::string &selectorName,
     }
 }
 
-void IEC61850ClientConfig::importJsonExchangeConfig(const std::string &exchangeConfig)
+void IEC61850ClientConfig::importJsonExchangedDataConfig(const std::string &exchangedDataConfig)
 {
     rapidjson::Document document;
 
     /** Parse the input JSON std::string */
-    if (document.Parse(exchangeConfig.c_str()).HasParseError()) {
+    if (document.Parse(exchangedDataConfig.c_str()).HasParseError()) {
         throw ConfigurationException("'Exchanged data' parsing error");
     }
 
@@ -443,69 +445,139 @@ void IEC61850ClientConfig::importJsonExchangeConfig(const std::string &exchangeC
         throw ConfigurationException("'Exchanged data' empty conf");
     }
 
-    const rapidjson::Value &exchange = document[JSON_EXCHANGED_DATA];
+    const rapidjson::Value &exchangedData = document[JSON_EXCHANGED_DATA];
 
-    /** The 'Logical Device' param is mandatory */
-    if (! exchange.HasMember("Logical Device")) {
-        throw ConfigurationException("the mandatory 'Logical Device' not found");
+    if (! exchangedData.HasMember(JSON_DATAPOINTS)) {
+        throw ConfigurationException("'ExchangedData' parsing error: no 'datapoints'");
     }
 
-    if (! exchange["Logical Device"].IsString()) {
-        throw ConfigurationException("bad format for the mandatory 'Logical Device'");
+    if (! exchangedData[JSON_DATAPOINTS].IsArray()) {
+        throw ConfigurationException("'datapoints' is not an array -> fail to parse 'ExchangedData'");
     }
 
-    exchangedData.logicalDeviceName = std::string(exchange["Logical Device"].GetString());
+    /** Parse each 'datapoint' JSON structure */
+    for (const auto &datapointConfig : exchangedData[JSON_DATAPOINTS].GetArray()) {
+        importJsonDatapointConfig(datapointConfig);
+    }
+    logExchangedDataConfig(exchangedDataDict);
+}
 
-    /** The 'Logical Node' param is mandatory */
-    if (! exchange.HasMember("Logical Node")) {
-        throw ConfigurationException("the mandatory 'Logical Node' not found");
+void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &datapointConfig)
+{
+    // Preconditions
+    if (! datapointConfig.IsObject()) {
+        throw ConfigurationException("'datapoint' is not valid");
     }
 
-    if (! exchange["Logical Node"].IsString()) {
-        throw ConfigurationException("bad format for the mandatory 'Logical Node'");
+    if (! datapointConfig.HasMember("label")) {
+        throw ConfigurationException("the mandatory 'label' not found");
+    }
+    if (! datapointConfig["label"].IsString()) {
+        throw ConfigurationException("bad format for the mandatory 'label'");
     }
 
-    exchangedData.logicalNodeName = std::string(exchange["Logical Node"].GetString());
+    ExchangedData newExchangedData;
+    newExchangedData.label = std::string(datapointConfig["label"].GetString());
 
-    /** The 'CDC' param is mandatory */
-    if (! exchange.HasMember("CDC")) {
-        throw ConfigurationException("the mandatory 'CDC' not found");
+    if (exchangedDataDict.find(newExchangedData.label) != exchangedDataDict.end()) {
+        throw ConfigurationException("the Datapoint label is already defined");
     }
 
-    if (! exchange["CDC"].IsString()) {
-        throw ConfigurationException("bad format for the mandatory 'CDC'");
+    if (! datapointConfig.HasMember(JSON_PROTOCOLS)) {
+        throw ConfigurationException("'datapoints' parsing error: no 'protocols'");
     }
 
-    exchangedData.cdc = std::string(exchange["CDC"].GetString());
-
-    /** The 'Data Attribute' param is mandatory */
-    if (! exchange.HasMember("Data Attribute")) {
-        throw ConfigurationException("the mandatory 'Data Attribute' not found");
+    if (! datapointConfig[JSON_PROTOCOLS].IsArray()) {
+        throw ConfigurationException("'protocols' is not an array -> fail to parse 'datpoints'");
     }
 
-    if (! exchange["Data Attribute"].IsString()) {
-        throw ConfigurationException("bad format for the mandatory 'Data Attribute'");
+    /** Parse the IEC61850 'protocol' JSON structure */
+    for (const auto &protocol : datapointConfig[JSON_PROTOCOLS].GetArray()) {
+        importJsonDatapointProtocolConfig(protocol, newExchangedData);
     }
 
-    exchangedData.dataAttribute = std::string(exchange["Data Attribute"].GetString());
+    exchangedDataDict[newExchangedData.label] = newExchangedData;
+}
 
-    /** The 'Functional Constraint' param is mandatory */
-    if (! exchange.HasMember("Functional Constraint")) {
-        throw ConfigurationException("the mandatory 'Functional Constraint' not found");
+void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
+                                                             ExchangedData &exchangedData)
+{
+    // Preconditions
+    if (! datapointProtocolConfig.IsObject()) {
+        throw ConfigurationException("'protocol' is not valid");
     }
 
-    if (! exchange["Functional Constraint"].IsString()) {
-        throw ConfigurationException("bad format for the mandatory 'Functional Constraint'");
+    if (! datapointProtocolConfig.HasMember("name")) {
+        throw ConfigurationException("the mandatory 'name' not found");
+    }
+    if (! datapointProtocolConfig["name"].IsString()) {
+        throw ConfigurationException("bad format for the mandatory 'name'");
     }
 
-    exchangedData.fcName = std::string(exchange["Functional Constraint"].GetString());
-    exchangedData.daPath = iedName + exchangedData.logicalDeviceName +
-                           "/" +
-                           exchangedData.logicalNodeName +
-                           "." +
-                           exchangedData.cdc +
-                           "." +
-                           exchangedData.dataAttribute;
+    if (! datapointProtocolConfig.HasMember("typeid")) {
+        throw ConfigurationException("the mandatory 'typeid' not found");
+    }
+    if (! datapointProtocolConfig["typeid"].IsString()) {
+        throw ConfigurationException("bad format for the mandatory 'typeid'");
+    }
+
+    if (! datapointProtocolConfig.HasMember("address")) {
+        throw ConfigurationException("the mandatory 'address' not found");
+    }
+    if (! datapointProtocolConfig["address"].IsString()) {
+        throw ConfigurationException("bad format for the mandatory 'address'");
+    }
+
+    if (std::string(datapointProtocolConfig["name"].GetString()) != std::string(IEC61850_PROTOCOL_NAME) ) {
+        Logger::getLogger()->debug("Config: ignore the protocol '%s'", datapointProtocolConfig["name"].GetString());
+        return;
+    }
+
+    exchangedData.dataPath = datapointProtocolConfig["address"].GetString();
+
+    std::string strTypeId = datapointProtocolConfig["typeid"].GetString();
+    if (strTypeId.compare("SP") == 0) {
+        exchangedData.datapointTypeId = SP_DATAPOINT_TYPE;
+        exchangedData.functionalConstraint = FunctionalConstraint_fromString("ST");
+
+        // build the 'name' tree for a SP
+        std::shared_ptr<MmsNameNode> stvalNode = std::make_shared<MmsNameNode>();
+        stvalNode->mmsName = "stVal";
+
+        std::shared_ptr<MmsNameNode> qNode = std::make_shared<MmsNameNode>();
+        qNode->mmsName = "q";
+
+        std::shared_ptr<MmsNameNode> tNode = std::make_shared<MmsNameNode>();
+        tNode->mmsName = "t";
+
+        exchangedData.mmsNameTree.mmsName = "root";
+        exchangedData.mmsNameTree.children.push_back(stvalNode);
+        exchangedData.mmsNameTree.children.push_back(qNode);
+        exchangedData.mmsNameTree.children.push_back(tNode);
+
+    } else if (strTypeId.compare("MV") == 0) {
+        exchangedData.datapointTypeId = MV_DATAPOINT_TYPE;
+        exchangedData.functionalConstraint = FunctionalConstraint_fromString("MX");
+
+        // build the 'name' tree for a MV
+        std::shared_ptr<MmsNameNode> fNode = std::make_shared<MmsNameNode>();
+        fNode->mmsName = "f";
+
+        std::shared_ptr<MmsNameNode> magNode = std::make_shared<MmsNameNode>();
+        magNode->mmsName = "mag";
+        magNode->children.push_back(std::move(fNode));
+
+        std::shared_ptr<MmsNameNode> qNode = std::make_shared<MmsNameNode>();
+        qNode->mmsName = "q";
+
+        std::shared_ptr<MmsNameNode> tNode = std::make_shared<MmsNameNode>();
+        tNode->mmsName = "t";
+
+        exchangedData.mmsNameTree.mmsName = "root";
+        exchangedData.mmsNameTree.children.push_back(magNode);
+        exchangedData.mmsNameTree.children.push_back(qNode);
+        exchangedData.mmsNameTree.children.push_back(tNode);
+    }
 }
 
 bool IEC61850ClientConfig::isValidIPAddress(const std::string &addrStr)
@@ -514,4 +586,34 @@ bool IEC61850ClientConfig::isValidIPAddress(const std::string &addrStr)
     struct sockaddr_in sa;
     int result = inet_pton(AF_INET, addrStr.c_str(), &(sa.sin_addr));
     return (result == 1);
+}
+
+void IEC61850ClientConfig::logExchangedDataConfig(const ExchangedDataDict &exchangedDataDict)
+{
+    Logger::getLogger()->info("Config: Exchanged Data:");
+
+    for (const auto &it : exchangedDataDict) {
+        Logger::getLogger()->info("\tDatapoint: label: %s", it.second.label.c_str());
+        Logger::getLogger()->info("\tDatapoint: type: %d", it.second.datapointTypeId);
+        Logger::getLogger()->info("\tDatapoint: dataPath: %s", it.second.dataPath.c_str());
+        Logger::getLogger()->info("\tDatapoint: FC: %s", FunctionalConstraint_toString(it.second.functionalConstraint));
+
+        logMmsNameTree(it.second.mmsNameTree);
+    }
+}
+
+void IEC61850ClientConfig::logMmsNameTree(const MmsNameNode &mmsNameNode, uint8_t currentDepth)
+{
+    const uint8_t MAX_DEPTH = 8;
+    char padding[MAX_DEPTH];
+    memset(padding, '\0', MAX_DEPTH);
+    for (uint8_t i = 0; i < currentDepth; i++) {padding[i] = '\t';}
+
+    Logger::getLogger()->info("\tDatapoint: %sMmsName: %s", padding, mmsNameNode.mmsName.c_str());
+
+    for (const auto &child : mmsNameNode.children) {
+        if (child) {
+            logMmsNameTree(*child.get(), currentDepth + 1);
+        }
+    }
 }

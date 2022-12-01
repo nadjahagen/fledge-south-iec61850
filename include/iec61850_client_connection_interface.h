@@ -28,7 +28,7 @@ class IEC61850ClientConnectionInterface
         virtual void logError() const = 0;
 
         virtual std::shared_ptr<WrappedMms> readMms(const std::string &daPath,
-                const std::string &fcName) = 0;
+                const FunctionalConstraint &functionalConstraint) = 0;
 
 };
 #endif  // INCLUDE_IEC61850_CLIENT_CONNECTION_INTERFACE_H_

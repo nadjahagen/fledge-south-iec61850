@@ -83,13 +83,37 @@ static const char *const default_config = QUOTE({
         "order" : "4",
         "default" : QUOTE({
             "exchanged_data": {
-                "name" : "iec104client",
+                "name" : "iec61850client",
                 "version" : "1.0",
-                "Logical Device": "GenericIO",
-                "Logical Node": "GGIO1",
-                "CDC" : "AnIn1",
-                "Data Attribute": "mag.f",
-                "Functional Constraint": "MX"
+                "datapoints": [
+                    {
+                        "label":"TS1",
+                        "pivot_id": "IDxxxxxx",
+                        "pivot_type": "SpsTyp",
+                        "pivot_subtypes": [
+                            "transient"
+                        ],
+                        "protocols":[
+                           {
+                              "name":"iec61850",
+                              "address":"simpleIOGenericIO/GGIO1.SPCSO2",
+                              "typeid":"SP"
+                           }
+                        ]
+                    },
+                    {
+                        "label":"TM1",
+                        "pivot_id": "IDxxxxxx",
+                        "pivot_type": "MVTyp",
+                        "protocols":[
+                           {
+                              "name":"iec61850",
+                              "address":"simpleIOGenericIO/GGIO1.AnIn1",
+                              "typeid":"MV"
+                           }
+                        ]
+                    }
+                ]
             }
         })
     }

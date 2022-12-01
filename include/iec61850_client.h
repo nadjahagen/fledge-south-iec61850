@@ -31,6 +31,17 @@
 class IEC61850;
 class WrappedMms;
 
+/** \class MmsParsingException
+ *  \brief an error during the parsing of MMS has been detected
+ */
+class MmsParsingException: public std::logic_error
+{
+    public:
+        explicit MmsParsingException(std::string const &msg):
+            std::logic_error("MMS Parsing exception: " + msg) {}
+};
+
+
 /** \class IEC61850Client
  *  \brief Read from and write to a IED
  *
@@ -44,7 +55,7 @@ class IEC61850Client
 
         explicit IEC61850Client(IEC61850 *iec61850,
                                 const ServerConnectionParameters &connectionParam,
-                                const ExchangedData &exchangedData,
+                                const ExchangedDataDict &exchangedDataDict,
                                 const ApplicationParameters &applicationParams);
 
         ~IEC61850Client();
@@ -72,8 +83,8 @@ class IEC61850Client
 
         // Section: Configuration
         const ServerConnectionParameters &m_connectionParam;
-        ExchangedData m_exchangedData;
-        ApplicationParameters m_applicationParams;
+        const ExchangedDataDict &m_exchangedDataDict;
+        const ApplicationParameters &m_applicationParams;
 
         // Section: Data formatting for the plugin
         IEC61850 *m_iec61850;
@@ -87,12 +98,19 @@ class IEC61850Client
         static Datapoint *createDatapoint(const std::string &dataName,
                                           T primitiveTypeValue);
 
+        static Datapoint *createComplexDatapoint(const std::string &dataName,
+                                                 std::vector<Datapoint*> *&values);
+
+        static Datapoint *buildDatapointFromMms(const MmsValue *mmsValue,
+                                                const MmsNameNode *mmsNameNode);
+
         /**
          * Convert the MMS into Datapoint
          * by extracting the MMS content and creating a new Datapoint
          * Reentrant function, thread safe
          */
-        static Datapoint *convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms);
+        static Datapoint *convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms,
+                                                const ExchangedData &exchangedData);
 
         /**
          * Send a datapoint to Fledge core
