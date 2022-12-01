@@ -550,7 +550,7 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         std::shared_ptr<MmsNameNode> tNode = std::make_shared<MmsNameNode>();
         tNode->mmsName = "t";
 
-        exchangedData.mmsNameTree.mmsName = "root";
+        exchangedData.mmsNameTree.mmsName = exchangedData.label;
         exchangedData.mmsNameTree.children.push_back(stvalNode);
         exchangedData.mmsNameTree.children.push_back(qNode);
         exchangedData.mmsNameTree.children.push_back(tNode);
@@ -573,7 +573,7 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         std::shared_ptr<MmsNameNode> tNode = std::make_shared<MmsNameNode>();
         tNode->mmsName = "t";
 
-        exchangedData.mmsNameTree.mmsName = "root";
+        exchangedData.mmsNameTree.mmsName = exchangedData.label;
         exchangedData.mmsNameTree.children.push_back(magNode);
         exchangedData.mmsNameTree.children.push_back(qNode);
         exchangedData.mmsNameTree.children.push_back(tNode);
