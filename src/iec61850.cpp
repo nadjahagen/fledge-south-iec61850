@@ -61,12 +61,14 @@ void IEC61850::stop()
     m_clients.clear();
 }
 
-void IEC61850::ingest(std::vector<Datapoint *> &points)
+void IEC61850::ingest(std::vector<Datapoint *> &points,
+                      const std::string &readingAssetName)
 {
     std::unique_lock<std::mutex> ingestGuard(m_ingestMutex);
 
     if (m_ingest_callback) {
         /* Callback function used after receiving data */
-        (*m_ingest_callback)(m_data, Reading(m_config->assetName, points));
+        //(*m_ingest_callback)(m_data, Reading(m_config->assetName, points));
+        (*m_ingest_callback)(m_data, Reading(readingAssetName, points));
     }
 }

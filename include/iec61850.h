@@ -47,7 +47,8 @@ class IEC61850: public ClientGatewayInterface, public FledgeProxyInterface
         void start() override;
         void stop() override;
 
-        void ingest(std::vector<Datapoint *> &points) override;
+        void ingest(std::vector<Datapoint *> &points,
+                    const std::string &readingAssetName) override;
         void registerIngest(INGEST_DATA_TYPE data,
                             void (*ingest_cb)(INGEST_DATA_TYPE, Reading)) override  // NOSONAR
         {

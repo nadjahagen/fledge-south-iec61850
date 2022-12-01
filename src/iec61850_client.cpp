@@ -164,7 +164,7 @@ void IEC61850Client::sendData(Datapoint *datapoint)
 
     std::vector<Datapoint *> points(0);
     points.push_back(datapoint);
-    m_iec61850->ingest(points);
+    m_iec61850->ingest(points, datapoint->getName());
 }
 
 Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms,
