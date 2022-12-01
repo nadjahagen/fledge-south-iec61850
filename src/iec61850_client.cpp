@@ -61,8 +61,8 @@ void IEC61850Client::stop()
         m_backgroundLaunchThread.join();
     }
 
-    // Stop the demo
-    stopDemo();
+    // Stop the MMS reading thread
+    stopMmsReading();
     destroyConnection();
 }
 
@@ -72,8 +72,7 @@ void IEC61850Client::launch()
     /** Make subscriptions */
     // TODO
     /** Start application loop */
-    // Start the demo
-    startDemo();
+    startMmsReading();
 }
 
 void IEC61850Client::initializeConnection()
@@ -278,23 +277,23 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
     return datapoint;
 }
 
-// Demo section
+// MMS reading section
 
-void IEC61850Client::startDemo()
+void IEC61850Client::startMmsReading()
 {
-    m_isDemoLoopActivated = true;
-    m_demoLoopThread = std::thread(&IEC61850Client::readMmsLoop, this);
+    m_isMmsReadingActivated = true;
+    m_mmsReadingThread = std::thread(&IEC61850Client::readMmsLoop, this);
 }
 
-void IEC61850Client::stopDemo()
+void IEC61850Client::stopMmsReading()
 {
     // Preconditions
-    if (false == m_isDemoLoopActivated) {
+    if (false == m_isMmsReadingActivated) {
         return;
     }
 
-    m_isDemoLoopActivated = false;
-    m_demoLoopThread.join();
+    m_isMmsReadingActivated = false;
+    m_mmsReadingThread.join();
 }
 
 void IEC61850Client::readMmsLoop()
@@ -311,7 +310,7 @@ void IEC61850Client::readMmsLoop()
     }
 
     try {
-        while (m_isDemoLoopActivated) {
+        while (m_isMmsReadingActivated) {
             readAndExportMms();
             std::chrono::milliseconds timespan(pollingPeriodInMs);
             std::this_thread::sleep_for(timespan);

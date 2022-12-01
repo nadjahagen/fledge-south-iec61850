@@ -129,12 +129,12 @@ class IEC61850Client
         std::atomic<bool> m_stopOrder{false};
         std::unique_ptr<IEC61850ClientConnectionInterface> m_connection;
 
-        // Section: For demo only
-        void startDemo();
-        void stopDemo();
+        // Section: MMS reading (DO and Dataset)
+        void startMmsReading();
+        void stopMmsReading();
         void readMmsLoop();
-        std::atomic<bool> m_isDemoLoopActivated{false};
-        std::thread m_demoLoopThread;
+        std::atomic<bool> m_isMmsReadingActivated{false};
+        std::thread m_mmsReadingThread;
 
         // Section: see the class as a white box for unit tests
         FRIEND_TEST(IEC61850ClientTest, createOneConnection);
