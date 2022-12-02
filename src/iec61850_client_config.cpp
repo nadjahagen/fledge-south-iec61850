@@ -368,12 +368,12 @@ IEC61850ClientConfig::parseOsiSelector(std::string &inputOsiSelector,
 
 void IEC61850ClientConfig::importJsonApplicationLayerConfig(const rapidjson::Value &applicationLayer)
 {
-    if (applicationLayer.HasMember("read_period")) {
-        if (! applicationLayer["read_period"].IsInt()) {
-            throw ConfigurationException("bad format for 'read_period'");
+    if (applicationLayer.HasMember("reading_period")) {
+        if (! applicationLayer["reading_period"].IsInt()) {
+            throw ConfigurationException("bad format for 'reading_period'");
         }
 
-        applicationParams.readPollingPeriodInMs = applicationLayer["read_period"].GetInt();
+        applicationParams.readPollingPeriodInMs = applicationLayer["reading_period"].GetInt();
     }
 }
 

@@ -70,7 +70,7 @@ static const char *const default_config = QUOTE({
                     ]
                 },
                 "application_layer" : {
-                    "read_period" : 1000
+                    "reading_period" : 1000
                 }
             }
         })
