@@ -536,11 +536,11 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
     exchangedData.dataPath = datapointProtocolConfig["address"].GetString();
 
     std::string strTypeId = datapointProtocolConfig["typeid"].GetString();
-    if (strTypeId.compare("SP") == 0) {
-        exchangedData.datapointTypeId = SP_DATAPOINT_TYPE;
+    if (strTypeId.compare("SPS") == 0) {
+        exchangedData.datapointTypeId = SPS_DATAPOINT_TYPE;
         exchangedData.functionalConstraint = FunctionalConstraint_fromString("ST");
 
-        // build the 'name' tree for a SP
+        // build the 'name' tree for a SPS
         std::shared_ptr<MmsNameNode> stvalNode = std::make_shared<MmsNameNode>();
         stvalNode->mmsName = "stVal";
 

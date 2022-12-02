@@ -56,7 +56,7 @@ struct ServerConnectionParameters {
 
 enum DatapointTypeId {
    MV_DATAPOINT_TYPE = 0,
-   SP_DATAPOINT_TYPE = 1,
+   SPS_DATAPOINT_TYPE = 1,
    UNKNOWN_DATAPOINT_TYPE = -1
 };
 

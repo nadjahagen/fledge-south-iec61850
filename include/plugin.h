@@ -96,8 +96,8 @@ static const char *const default_config = QUOTE({
                         "protocols":[
                            {
                               "name":"iec61850",
-                              "address":"simpleIOGenericIO/GGIO1.SPCSO2",
-                              "typeid":"SP"
+                              "address":"simpleIOGenericIO/GGIO1.Ind1",
+                              "typeid":"SPS"
                            }
                         ]
                     },
