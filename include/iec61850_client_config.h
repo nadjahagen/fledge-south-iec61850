@@ -65,12 +65,17 @@ struct MmsNameNode {
     std::vector<std::shared_ptr<const MmsNameNode>> children;
 };
 
+enum ReadMode {
+    DO_READING = 0,
+    DATASET_READING
+};
 
 /**
  *  Application parameters about the IEC61850 client
  */
 struct ApplicationParameters {
     unsigned int readPollingPeriodInMs = DEFAULT_READ_POLLING_PERIOD_IN_MS;  /** Default polling period: 1 second */
+    ReadMode readMode;
 };
 
 using OsiSelectorSize = uint8_t;

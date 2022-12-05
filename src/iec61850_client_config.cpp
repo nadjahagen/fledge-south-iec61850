@@ -375,6 +375,19 @@ void IEC61850ClientConfig::importJsonApplicationLayerConfig(const rapidjson::Val
 
         applicationParams.readPollingPeriodInMs = applicationLayer["reading_period"].GetInt();
     }
+
+    if (applicationLayer.HasMember("read_mode")) {
+        if (! applicationLayer["read_mode"].IsString()) {
+            throw ConfigurationException("bad format for 'read_mode'");
+        }
+
+        std::string inputReadMode = applicationLayer["read_mode"].GetString();
+        if (inputReadMode.compare("dataset") == 0) {
+            applicationParams.readMode = DATASET_READING;
+        } else {
+            applicationParams.readMode = DO_READING;
+        }
+    }
 }
 
 void IEC61850ClientConfig::logIedConnectionParam(const ServerConnectionParameters &iedConnectionParam)

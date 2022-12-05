@@ -27,7 +27,7 @@ class IEC61850ClientConnectionInterface
         virtual bool isNoError() const = 0;
         virtual void logError() const = 0;
 
-        virtual std::shared_ptr<WrappedMms> readMms(const std::string &daPath,
+        virtual std::shared_ptr<WrappedMms> readSingleMms(const std::string &daPath,
                 const FunctionalConstraint &functionalConstraint) = 0;
 
 };

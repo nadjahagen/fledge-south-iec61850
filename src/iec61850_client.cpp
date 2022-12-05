@@ -226,7 +226,7 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
     std::string mmsName = mmsNameNode->mmsName;
     Datapoint *datapoint = nullptr;
 
-    switch (MmsValue_getType(mmsValue))  {
+    switch (MmsValue_getType(mmsValue)) {
         case MMS_STRUCTURE:
         case MMS_ARRAY: {
             uint32_t arraySize = MmsValue_getArraySize(mmsValue);
@@ -380,14 +380,25 @@ void IEC61850Client::readAndExportMms()
     }
 
     /* read the desired MMS from server */
-    for (const auto &it : m_exchangedDataDict) {
-        const ExchangedData &exchangedData = it.second;
-        std::shared_ptr<WrappedMms> wrapped_mms;
-        wrapped_mms = m_connection->readMms(exchangedData.dataPath,
-                                            exchangedData.functionalConstraint);
 
-        if (wrapped_mms != nullptr) {
-            sendData(convertMmsToDatapoint(wrapped_mms, exchangedData));
+    switch (m_applicationParams.readMode) {
+        case DATASET_READING:
+            break;
+
+        case DO_READING:
+        default:
+        {
+            for (const auto &it : m_exchangedDataDict) {
+                const ExchangedData &exchangedData = it.second;
+                std::shared_ptr<WrappedMms> wrapped_mms;
+                wrapped_mms = m_connection->readSingleMms(exchangedData.dataPath,
+                                                          exchangedData.functionalConstraint);
+
+                if (wrapped_mms != nullptr) {
+                    sendData(convertMmsToDatapoint(wrapped_mms, exchangedData));
+                }
+            }
+            break;
         }
     }
 }

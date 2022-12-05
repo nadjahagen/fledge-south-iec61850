@@ -97,8 +97,8 @@ void IEC61850ClientConnection::close()
 }
 
 std::shared_ptr<WrappedMms>
-IEC61850ClientConnection::readMms(const std::string &daPath,
-                                  const FunctionalConstraint &functionalConstraint)
+IEC61850ClientConnection::readSingleMms(const std::string &daPath,
+                                        const FunctionalConstraint &functionalConstraint)
 {
     // Preconditions
     if (! isConnected()) {

@@ -58,8 +58,8 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
         bool isNoError() const override;
         void logError() const override;
 
-        std::shared_ptr<WrappedMms> readMms(const std::string &daPath,
-                                            const FunctionalConstraint &functionalConstraint) override;
+        std::shared_ptr<WrappedMms> readSingleMms(const std::string &daPath,
+                                                  const FunctionalConstraint &functionalConstraint) override;
 
     private:
         void open();
