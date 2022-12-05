@@ -155,7 +155,7 @@ class IEC61850ClientConfig
                                            ServerConnectionParameters &iedConnectionParam) const;
         void importJsonConnectionOsiSelectors(const rapidjson::Value &connOsiConfig,
                                               OsiParameters *osiParams) const;
-        void importJsonApplicationLayerConfig(const rapidjson::Value &transportLayer);
+        void importJsonApplicationLayerConfig(const rapidjson::Value &applicationLayer);
         void importJsonExchangedDataConfig(const std::string &exchangedDataConfig);
         void importJsonDatapointConfig(const rapidjson::Value &datapointConfig);
         void importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,

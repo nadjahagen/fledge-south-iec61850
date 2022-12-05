@@ -246,10 +246,10 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
                  **/
                 auto *dpArray = new std::vector<Datapoint *>;  // NOSONAR
                 for (uint32_t index = 0; index < arraySize; ++index) {
-                    Datapoint *datapoint = nullptr;
-                    datapoint = buildDatapointFromMms(MmsValue_getElement(mmsValue, index),
-                                                      mmsNameNode->children[index].get());
-                    dpArray->push_back(datapoint);
+                    Datapoint *dpChild = nullptr;
+                    dpChild = buildDatapointFromMms(MmsValue_getElement(mmsValue, index),
+                                                    mmsNameNode->children[index].get());
+                    dpArray->push_back(dpChild);
                 }
                 datapoint = createComplexDatapoint(mmsName, dpArray);
             }
