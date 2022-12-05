@@ -57,23 +57,6 @@ const std::string configForReconfiguration = QUOTE({
                 }
             }
         })
-    },
-    "exchanged_data" : {
-        "description" : "exchanged data list",
-        "type" : "JSON",
-        "displayName" : "Exchanged data list",
-        "order" : "4",
-        "value" : QUOTE({
-            "exchanged_data": {
-                "name" : "iec104client",
-                "version" : "1.0",
-                "Logical Device": "GenericIO",
-                "Logical Node": "GGIO1",
-                "CDC" : "AnIn1",
-                "Data Attribute": "mag.f",
-                "Functional Constraint": "MX"
-            }
-        })
     }
 });
 
@@ -118,23 +101,6 @@ const std::string configWithoutLogLevel = QUOTE({
                 },
                 "application_layer" : {
                 }
-            }
-        })
-    },
-    "exchanged_data" : {
-        "description" : "exchanged data list",
-        "type" : "JSON",
-        "displayName" : "Exchanged data list",
-        "order" : "4",
-        "value" : QUOTE({
-            "exchanged_data": {
-                "name" : "iec104client",
-                "version" : "1.0",
-                "Logical Device": "GenericIO",
-                "Logical Node": "GGIO1",
-                "CDC" : "AnIn1",
-                "Data Attribute": "mag.f",
-                "Functional Constraint": "MX"
             }
         })
     }
@@ -557,23 +523,6 @@ const std::string configValidOsiConnectionParameters = QUOTE({
                 },
                 "application_layer" : {
                 }
-            }
-        })
-    },
-    "exchanged_data" : {
-        "description" : "exchanged data list",
-        "type" : "JSON",
-        "displayName" : "Exchanged data list",
-        "order" : "4",
-        "value" : QUOTE({
-            "exchanged_data": {
-                "name" : "iec104client",
-                "version" : "1.0",
-                "Logical Device": "GenericIO",
-                "Logical Node": "GGIO1",
-                "CDC" : "AnIn1",
-                "Data Attribute": "mag.f",
-                "Functional Constraint": "MX"
             }
         })
     }

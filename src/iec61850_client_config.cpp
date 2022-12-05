@@ -51,7 +51,6 @@ void IEC61850ClientConfig::importConfig(const ConfigCategory &newConfig)
     Logger::getLogger()->info("IEC61850ClientConfig: assetName = %s",
                               assetName.c_str());
     std::string inputProtocolStack;
-    std::string inputExchangedData;
 
     try {
         inputProtocolStack = newConfig.getValue(JSON_PROTOCOL_STACK);
@@ -61,13 +60,11 @@ void IEC61850ClientConfig::importConfig(const ConfigCategory &newConfig)
 
     importJsonProtocolConfig(inputProtocolStack);
 
-    try {
-        inputExchangedData = newConfig.getValue(JSON_EXCHANGED_DATA);
-    } catch (...) {
-        throw ConfigurationException("'Exchanged Data' not found");
+    if (newConfig.itemExists(JSON_EXCHANGED_DATA)) {
+        importJsonExchangedDataConfig(newConfig.getValue(JSON_EXCHANGED_DATA));
+    } else {
+        Logger::getLogger()->info("IEC61850ClientConfig: No ExchangedData section");
     }
-
-    importJsonExchangedDataConfig(inputExchangedData);
 }
 
 void IEC61850ClientConfig::importJsonProtocolConfig(const std::string &protocolConfig)

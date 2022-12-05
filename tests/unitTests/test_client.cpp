@@ -30,11 +30,11 @@ class IEC61850ClientTest_injectMockConnection_Test
 TEST(IEC61850ClientTest, createOneConnection)
 {
     ServerConnectionParameters connParam;
-    ExchangedData exchangedData;
+    ExchangedDataDict exchangedDataDict;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData,
+                          exchangedDataDict,
                           applicationParams);
     client.createConnection();
     ASSERT_THAT(client.m_connection, NotNull());
@@ -44,11 +44,11 @@ TEST(IEC61850ClientTest, createOneConnection)
 TEST(IEC61850ClientTest, reuseCreatedConnection)
 {
     ServerConnectionParameters connParam;
-    ExchangedData exchangedData;
+    ExchangedDataDict exchangedDataDict;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData,
+                          exchangedDataDict,
                           applicationParams);
     // Create connection
     client.createConnection();
@@ -61,11 +61,11 @@ TEST(IEC61850ClientTest, reuseCreatedConnection)
 TEST(IEC61850ClientTest, destroyConnection)
 {
     ServerConnectionParameters connParam;
-    ExchangedData exchangedData;
+    ExchangedDataDict exchangedDataDict;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData,
+                          exchangedDataDict,
                           applicationParams);
     client.createConnection();
     client.destroyConnection();
@@ -75,11 +75,11 @@ TEST(IEC61850ClientTest, destroyConnection)
 TEST(IEC61850ClientTest, destroyNullConnection)
 {
     ServerConnectionParameters connParam;
-    ExchangedData exchangedData;
+    ExchangedDataDict exchangedDataDict;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData,
+                          exchangedDataDict,
                           applicationParams);
     client.createConnection();
     client.destroyConnection();
@@ -97,11 +97,11 @@ TEST(IEC61850ClientTest, initializeConnectionInOneTry)
     // End of configuration of the Mock objects
     // Test Init
     ServerConnectionParameters connParam;
-    ExchangedData exchangedData;
+    ExchangedDataDict exchangedDataDict;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData,
+                          exchangedDataDict,
                           applicationParams);
     client.createConnection(); // create a Foo connection before MockConnection injection
     // Test Body
@@ -120,11 +120,11 @@ TEST(IEC61850ClientTest, initializeConnectionFailed)
 {
     // Test Init
     ServerConnectionParameters connParam;
-    ExchangedData exchangedData;
+    ExchangedDataDict exchangedDataDict;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData,
+                          exchangedDataDict,
                           applicationParams);
     // Test Body
     ASSERT_THAT(client.m_connection, IsNull());
@@ -147,7 +147,7 @@ TEST(IEC61850ClientTest, startAndStop)
     EXPECT_CALL(mockConnectedConnection, isConnected())
     .Times(5)
     .WillRepeatedly(Return(true));
-    EXPECT_CALL(mockConnectedConnection, readMms(_, _))
+    EXPECT_CALL(mockConnectedConnection, readSingleMms(_, _))
     .Times(2)
     .WillRepeatedly(Return(empty_mms));
     EXPECT_CALL(mockConnectedConnection, isNoError())
@@ -155,11 +155,14 @@ TEST(IEC61850ClientTest, startAndStop)
     // End of configuration of the Mock objects
     // Test Init
     ServerConnectionParameters connParam;
+    ExchangedDataDict exchangedDataDict;
     ExchangedData exchangedData;
+    exchangedData.dataPath = "Foo.DoPath";
+    exchangedDataDict["foo"] = exchangedData;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
-                          exchangedData,
+                          exchangedDataDict,
                           applicationParams);
     // Test Body
     ASSERT_THAT(client.m_connection, IsNull());
