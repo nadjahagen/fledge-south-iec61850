@@ -188,8 +188,28 @@ Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<WrappedMms> wra
         return nullptr;
     }
 
-    return (buildDatapointFromMms(wrappedMms->getMmsValue(),
-                                  &exchangedData.mmsNameTree));
+    Datapoint *datapoint = buildDatapointFromMms(wrappedMms->getMmsValue(),
+                                                 &exchangedData.mmsNameTree);
+
+    insertTypeInDatapoint(datapoint, exchangedData.datapointType);
+
+    return datapoint;
+}
+
+void IEC61850Client::insertTypeInDatapoint(Datapoint *datapoint,
+                                           const std::string &doType)
+{
+    // Precondition
+    if (!datapoint) {
+        return;
+    }
+
+    DatapointValue &dpv = datapoint->getData();
+
+    if (dpv.getType() == DatapointValue::T_DP_DICT) {
+        dpv.getDpVec()->insert(dpv.getDpVec()->begin(),
+                               createDatapoint("do_type", doType));
+    }
 }
 
 Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,

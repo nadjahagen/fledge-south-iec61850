@@ -104,6 +104,9 @@ class IEC61850Client
         static Datapoint *buildDatapointFromMms(const MmsValue *mmsValue,
                                                 const MmsNameNode *mmsNameNode);
 
+        static void insertTypeInDatapoint(Datapoint *datapoint,
+                                          const std::string &doType);
+
         /**
          * Convert the MMS into Datapoint
          * by extracting the MMS content and creating a new Datapoint

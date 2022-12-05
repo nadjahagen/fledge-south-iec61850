@@ -537,6 +537,7 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
 
     std::string strTypeId = datapointProtocolConfig["typeid"].GetString();
     if (strTypeId.compare("SPS") == 0) {
+        exchangedData.datapointType = "SPS";
         exchangedData.datapointTypeId = SPS_DATAPOINT_TYPE;
         exchangedData.functionalConstraint = FunctionalConstraint_fromString("ST");
 
@@ -556,6 +557,7 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         exchangedData.mmsNameTree.children.push_back(tNode);
 
     } else if (strTypeId.compare("MV") == 0) {
+        exchangedData.datapointType = "MV";
         exchangedData.datapointTypeId = MV_DATAPOINT_TYPE;
         exchangedData.functionalConstraint = FunctionalConstraint_fromString("MX");
 

@@ -77,6 +77,7 @@ using OsiSelectorSize = uint8_t;
 using ServerDictKey = std::string;
 using ServerConfigDict = std::map<ServerDictKey, ServerConnectionParameters, std::less<>>;
 using DatapointLabel = std::string;
+using DatapointTypeStr = std::string;
 using DataPath = std::string;
 
 /**
@@ -84,6 +85,7 @@ using DataPath = std::string;
  */
 struct ExchangedData {
     DatapointLabel label;
+    DatapointTypeStr datapointType;
     DatapointTypeId datapointTypeId = UNKNOWN_DATAPOINT_TYPE;
     DataPath dataPath = "NOT_DEFINED";
     FunctionalConstraint functionalConstraint = IEC61850_FC_NONE;
