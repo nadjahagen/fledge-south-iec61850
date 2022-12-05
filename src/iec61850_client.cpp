@@ -27,6 +27,15 @@
 constexpr const uint32_t RECONNECTION_FREQUENCY_IN_HERTZ = 1;
 constexpr const uint32_t SECOND_IN_MILLISEC = 1000;
 
+/** Name mapping between the DO attributes and the Reading attributes */
+const std::map<std::string, std::string> DO_READING_MAPPING = {
+    {"cdc", "do_type"},
+    {"stVal", "do_value"},
+    {"mag.f", "do_value"},
+    {"q", "do_quality"},
+    {"t", "do_ts"}
+};
+
 IEC61850Client::IEC61850Client(IEC61850 *iec61850,
                                const ServerConnectionParameters &connectionParam,
                                const ExchangedDataDict &exchangedDataDict,
@@ -205,18 +214,25 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
                 throw MmsParsingException("MMS structure does not match");
             }
 
-            /**
-             *  Dynamic allocation with raw pointer: Fledge core will deallocate it.
-             *  See fledge/C/common/datapoint.cpp, the 'deleteNestedDPV()' method.
-             **/
-            auto *dpArray = new std::vector<Datapoint *>;  // NOSONAR
-            for (uint32_t index = 0; index < arraySize; ++index) {
-                Datapoint *datapoint = nullptr;
-                datapoint = buildDatapointFromMms(MmsValue_getElement(mmsValue, index),
-                                                  mmsNameNode->children[index].get());
-                dpArray->push_back(datapoint);
+            if (mmsName.compare("mag") == 0) {
+                // keep only the 1st child, and concatenate the names
+                datapoint = buildDatapointFromMms(MmsValue_getElement(mmsValue, 0),
+                                                  mmsNameNode->children[0].get());
+                datapoint->setName(mmsName + "." + datapoint->getName());
+            } else {
+                /**
+                 *  Dynamic allocation with raw pointer: Fledge core will deallocate it.
+                 *  See fledge/C/common/datapoint.cpp, the 'deleteNestedDPV()' method.
+                 **/
+                auto *dpArray = new std::vector<Datapoint *>;  // NOSONAR
+                for (uint32_t index = 0; index < arraySize; ++index) {
+                    Datapoint *datapoint = nullptr;
+                    datapoint = buildDatapointFromMms(MmsValue_getElement(mmsValue, index),
+                                                      mmsNameNode->children[index].get());
+                    dpArray->push_back(datapoint);
+                }
+                datapoint = createComplexDatapoint(mmsName, dpArray);
             }
-            datapoint = createComplexDatapoint(mmsName, dpArray);
 
             break;
         }
@@ -272,6 +288,14 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
             throw MmsParsingException(std::string("Unsupported MMS data type: ") +
                                       std::string(MmsValue_getTypeString(const_cast<MmsValue*>(mmsValue))));
             break;
+    }
+
+    // Rename the datapoint i.e. the Reading attributes
+    if (DO_READING_MAPPING.find(datapoint->getName()) != DO_READING_MAPPING.end()) {
+        Logger::getLogger()->debug("Datapoint creation: name mapping %s -> %s",
+                    datapoint->getName().c_str(),
+                    DO_READING_MAPPING.at(datapoint->getName()).c_str());
+        datapoint->setName(DO_READING_MAPPING.at(datapoint->getName()));
     }
 
     return datapoint;
