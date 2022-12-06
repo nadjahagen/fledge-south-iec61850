@@ -48,13 +48,13 @@ struct OsiParameters {
  */
 struct ServerConnectionParameters {
     std::string ipAddress;
-    int mmsPort;
+    int mmsPort{0};
     bool isOsiParametersEnabled{false};
     OsiParameters osiParameters;
 };
 
 
-enum DatapointTypeId {
+enum class DatapointTypeId {
    MV_DATAPOINT_TYPE = 0,
    SPS_DATAPOINT_TYPE = 1,
    UNKNOWN_DATAPOINT_TYPE = -1
@@ -65,7 +65,7 @@ struct MmsNameNode {
     std::vector<std::shared_ptr<const MmsNameNode>> children;
 };
 
-enum ReadMode {
+enum class ReadMode {
     DO_READING = 0,
     DATASET_READING
 };
@@ -75,7 +75,7 @@ enum ReadMode {
  */
 struct ApplicationParameters {
     unsigned int readPollingPeriodInMs = DEFAULT_READ_POLLING_PERIOD_IN_MS;  /** Default polling period: 1 second */
-    ReadMode readMode;
+    ReadMode readMode = ReadMode::DO_READING;  /** Default reading mode: DO, not dataset */
 };
 
 using OsiSelectorSize = uint8_t;
@@ -91,7 +91,7 @@ using DataPath = std::string;
 struct ExchangedData {
     DatapointLabel label;
     DatapointTypeStr datapointType;
-    DatapointTypeId datapointTypeId = UNKNOWN_DATAPOINT_TYPE;
+    DatapointTypeId datapointTypeId = DatapointTypeId::UNKNOWN_DATAPOINT_TYPE;
     DataPath dataPath = "NOT_DEFINED";
     FunctionalConstraint functionalConstraint = IEC61850_FC_NONE;
     MmsNameNode mmsNameTree;
@@ -159,7 +159,7 @@ class IEC61850ClientConfig
         void importJsonExchangedDataConfig(const std::string &exchangedDataConfig);
         void importJsonDatapointConfig(const rapidjson::Value &datapointConfig);
         void importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
-                                               ExchangedData &exchangedData);
+                                               ExchangedData &exchangedData) const;
 
         static OsiSelectorSize parseOsiPSelector(std::string &inputOsiSelector, PSelector *pselector);
         static OsiSelectorSize parseOsiTSelector(std::string &inputOsiSelector, TSelector *tselector);

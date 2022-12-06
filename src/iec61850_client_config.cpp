@@ -380,9 +380,9 @@ void IEC61850ClientConfig::importJsonApplicationLayerConfig(const rapidjson::Val
 
         std::string inputReadMode = applicationLayer["read_mode"].GetString();
         if (inputReadMode.compare("dataset") == 0) {
-            applicationParams.readMode = DATASET_READING;
+            applicationParams.readMode = ReadMode::DATASET_READING;
         } else {
-            applicationParams.readMode = DO_READING;
+            applicationParams.readMode = ReadMode::DO_READING;
         }
     }
 }
@@ -510,7 +510,7 @@ void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &dat
 }
 
 void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
-                                                             ExchangedData &exchangedData)
+                                                             ExchangedData &exchangedData) const
 {
     // Preconditions
     if (! datapointProtocolConfig.IsObject()) {
@@ -548,17 +548,17 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
     std::string strTypeId = datapointProtocolConfig["typeid"].GetString();
     if (strTypeId.compare("SPS") == 0) {
         exchangedData.datapointType = "SPS";
-        exchangedData.datapointTypeId = SPS_DATAPOINT_TYPE;
+        exchangedData.datapointTypeId = DatapointTypeId::SPS_DATAPOINT_TYPE;
         exchangedData.functionalConstraint = FunctionalConstraint_fromString("ST");
 
         // build the 'name' tree for a SPS
-        std::shared_ptr<MmsNameNode> stvalNode = std::make_shared<MmsNameNode>();
+        auto stvalNode = std::make_shared<MmsNameNode>();
         stvalNode->mmsName = "stVal";
 
-        std::shared_ptr<MmsNameNode> qNode = std::make_shared<MmsNameNode>();
+        auto qNode = std::make_shared<MmsNameNode>();
         qNode->mmsName = "q";
 
-        std::shared_ptr<MmsNameNode> tNode = std::make_shared<MmsNameNode>();
+        auto tNode = std::make_shared<MmsNameNode>();
         tNode->mmsName = "t";
 
         exchangedData.mmsNameTree.mmsName = exchangedData.label;
@@ -568,21 +568,21 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
 
     } else if (strTypeId.compare("MV") == 0) {
         exchangedData.datapointType = "MV";
-        exchangedData.datapointTypeId = MV_DATAPOINT_TYPE;
+        exchangedData.datapointTypeId = DatapointTypeId::MV_DATAPOINT_TYPE;
         exchangedData.functionalConstraint = FunctionalConstraint_fromString("MX");
 
         // build the 'name' tree for a MV
-        std::shared_ptr<MmsNameNode> fNode = std::make_shared<MmsNameNode>();
+        auto fNode = std::make_shared<MmsNameNode>();
         fNode->mmsName = "f";
 
-        std::shared_ptr<MmsNameNode> magNode = std::make_shared<MmsNameNode>();
+        auto magNode = std::make_shared<MmsNameNode>();
         magNode->mmsName = "mag";
         magNode->children.push_back(std::move(fNode));
 
-        std::shared_ptr<MmsNameNode> qNode = std::make_shared<MmsNameNode>();
+        auto qNode = std::make_shared<MmsNameNode>();
         qNode->mmsName = "q";
 
-        std::shared_ptr<MmsNameNode> tNode = std::make_shared<MmsNameNode>();
+        auto tNode = std::make_shared<MmsNameNode>();
         tNode->mmsName = "t";
 
         exchangedData.mmsNameTree.mmsName = exchangedData.label;
@@ -616,12 +616,10 @@ void IEC61850ClientConfig::logExchangedDataConfig(const ExchangedDataDict &excha
 
 void IEC61850ClientConfig::logMmsNameTree(const MmsNameNode &mmsNameNode, uint8_t currentDepth)
 {
-    const uint8_t MAX_DEPTH = 8;
-    char padding[MAX_DEPTH];
-    memset(padding, '\0', MAX_DEPTH);
-    for (uint8_t i = 0; i < currentDepth; i++) {padding[i] = '\t';}
+    std::string padding;
+    for (uint8_t i = 0; i < currentDepth; i++) {padding.append("\t");}
 
-    Logger::getLogger()->info("\tDatapoint: %sMmsName: %s", padding, mmsNameNode.mmsName.c_str());
+    Logger::getLogger()->info("\tDatapoint: %sMmsName: %s", padding.c_str(), mmsNameNode.mmsName.c_str());
 
     for (const auto &child : mmsNameNode.children) {
         if (child) {

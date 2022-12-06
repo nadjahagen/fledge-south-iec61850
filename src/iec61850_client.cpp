@@ -28,7 +28,7 @@ constexpr const uint32_t RECONNECTION_FREQUENCY_IN_HERTZ = 1;
 constexpr const uint32_t SECOND_IN_MILLISEC = 1000;
 
 /** Name mapping between the DO attributes and the Reading attributes */
-const std::map<std::string, std::string> DO_READING_MAPPING = {
+const std::map<std::string, std::string, std::less<>> DO_READING_MAPPING = {
     {"cdc", "do_type"},
     {"stVal", "do_value"},
     {"mag.f", "do_value"},
@@ -147,7 +147,7 @@ Datapoint *IEC61850Client::createDatapoint(const std::string &dataName,
 Datapoint *IEC61850Client::createComplexDatapoint(const std::string &dataName,
                                                   std::vector<Datapoint*> *&values)
 {
-    DatapointValue value = DatapointValue(values, true);
+    auto value = DatapointValue(values, true);
     /**
      *  Dynamic allocation with raw pointer: Fledge core will deallocate it.
      *  See fledge/C/common/reading.cpp, the 'destructor' method.
@@ -292,7 +292,7 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
 
         case MMS_BIT_STRING: {
             const uint8_t maxSize = 32;
-            char buffer[maxSize];
+            char buffer[maxSize];  // NOSONAR
             memset(buffer, '\0', maxSize);
 
             std::string strval = MmsValue_printToBuffer(mmsValue, buffer, maxSize);
@@ -307,15 +307,16 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
         default :
             throw MmsParsingException(std::string("Unsupported MMS data type: ") +
                                       std::string(MmsValue_getTypeString(const_cast<MmsValue*>(mmsValue))));
-            break;
     }
 
-    // Rename the datapoint i.e. the Reading attributes
-    if (DO_READING_MAPPING.find(datapoint->getName()) != DO_READING_MAPPING.end()) {
-        Logger::getLogger()->debug("Datapoint creation: name mapping %s -> %s",
-                    datapoint->getName().c_str(),
-                    DO_READING_MAPPING.at(datapoint->getName()).c_str());
-        datapoint->setName(DO_READING_MAPPING.at(datapoint->getName()));
+    if (datapoint) {
+        // Rename the datapoint i.e. the Reading attributes
+        if (DO_READING_MAPPING.find(datapoint->getName()) != DO_READING_MAPPING.end()) {
+            Logger::getLogger()->debug("Datapoint creation: name mapping %s -> %s",
+                        datapoint->getName().c_str(),
+                        DO_READING_MAPPING.at(datapoint->getName()).c_str());
+            datapoint->setName(DO_READING_MAPPING.at(datapoint->getName()));
+        }
     }
 
     return datapoint;
@@ -382,11 +383,11 @@ void IEC61850Client::readAndExportMms()
     /* read the desired MMS from server */
 
     switch (m_applicationParams.readMode) {
-        case DATASET_READING:
+        case ReadMode::DATASET_READING:
+            // implementation next
             break;
 
-        case DO_READING:
-        default:
+        case ReadMode::DO_READING:
         {
             for (const auto &it : m_exchangedDataDict) {
                 const ExchangedData &exchangedData = it.second;
@@ -400,5 +401,9 @@ void IEC61850Client::readAndExportMms()
             }
             break;
         }
+        default:
+            Logger::getLogger()->error("Read MMS: unknown reading mode: %u",
+                        m_applicationParams.readMode);
+            break;
     }
 }
