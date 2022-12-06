@@ -71,17 +71,30 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="iec61850__client__config_8h_source.html">iec61850_client_config.h</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for ServerConnectionParameters:</div>
+<div class="dyncontent">
+<div class="center"><img src="structServerConnectionParameters__coll__graph.png" border="0" usemap="#aServerConnectionParameters_coll__map" alt="Collaboration graph"/></div>
+<map name="aServerConnectionParameters_coll__map" id="aServerConnectionParameters_coll__map">
+<area shape="rect" title=" " alt="" coords="5,95,216,121"/>
+<area shape="rect" href="structOsiParameters.html" title=" " alt="" coords="52,5,169,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a3d5945847454dd41c3d1bb29af03c57a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structServerConnectionParameters.html#a3d5945847454dd41c3d1bb29af03c57a">serverName</a></td></tr>
-<tr class="separator:a3d5945847454dd41c3d1bb29af03c57a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5af475d99fdd3e82860b0ea6b472c6a4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structServerConnectionParameters.html#a5af475d99fdd3e82860b0ea6b472c6a4">ipAddress</a></td></tr>
 <tr class="separator:a5af475d99fdd3e82860b0ea6b472c6a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae624fbb1ad2e2796e529943fdd822160"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structServerConnectionParameters.html#ae624fbb1ad2e2796e529943fdd822160">mmsPort</a></td></tr>
-<tr class="separator:ae624fbb1ad2e2796e529943fdd822160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd4aeb0484ea495ec58ea9a11b88909b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structServerConnectionParameters.html#acd4aeb0484ea495ec58ea9a11b88909b">mmsPort</a></td></tr>
+<tr class="separator:acd4aeb0484ea495ec58ea9a11b88909b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade4566cd67e689822389d1ecef719e0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structServerConnectionParameters.html#ade4566cd67e689822389d1ecef719e0b">isOsiParametersEnabled</a> {false}</td></tr>
+<tr class="separator:ade4566cd67e689822389d1ecef719e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeaf19a8c5f89340c3d178224bda0ae7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structOsiParameters.html">OsiParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structServerConnectionParameters.html#afeaf19a8c5f89340c3d178224bda0ae7">osiParameters</a></td></tr>
+<tr class="separator:afeaf19a8c5f89340c3d178224bda0ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Data Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Parameters for creating a connection with 1 <a class="el" href="classIEC61850.html">IEC61850</a> server </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a5af475d99fdd3e82860b0ea6b472c6a4" name="a5af475d99fdd3e82860b0ea6b472c6a4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5af475d99fdd3e82860b0ea6b472c6a4">&#9670;&nbsp;</a></span>ipAddress</h2>
 
@@ -96,28 +109,42 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae624fbb1ad2e2796e529943fdd822160" name="ae624fbb1ad2e2796e529943fdd822160"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae624fbb1ad2e2796e529943fdd822160">&#9670;&nbsp;</a></span>mmsPort</h2>
+<a id="ade4566cd67e689822389d1ecef719e0b" name="ade4566cd67e689822389d1ecef719e0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade4566cd67e689822389d1ecef719e0b">&#9670;&nbsp;</a></span>isOsiParametersEnabled</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t ServerConnectionParameters::mmsPort</td>
+          <td class="memname">bool ServerConnectionParameters::isOsiParametersEnabled {false}</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a3d5945847454dd41c3d1bb29af03c57a" name="a3d5945847454dd41c3d1bb29af03c57a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d5945847454dd41c3d1bb29af03c57a">&#9670;&nbsp;</a></span>serverName</h2>
+<a id="acd4aeb0484ea495ec58ea9a11b88909b" name="acd4aeb0484ea495ec58ea9a11b88909b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd4aeb0484ea495ec58ea9a11b88909b">&#9670;&nbsp;</a></span>mmsPort</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string ServerConnectionParameters::serverName</td>
+          <td class="memname">int ServerConnectionParameters::mmsPort</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afeaf19a8c5f89340c3d178224bda0ae7" name="afeaf19a8c5f89340c3d178224bda0ae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeaf19a8c5f89340c3d178224bda0ae7">&#9670;&nbsp;</a></span>osiParameters</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structOsiParameters.html">OsiParameters</a> ServerConnectionParameters::osiParameters</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -130,7 +157,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 14 2022 17:28:30 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Wed Nov 23 2022 11:37:39 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>

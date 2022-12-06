@@ -74,20 +74,28 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="iec61850__client__config_8h_source.html">./iec61850_client_config.h</a>&quot;</code><br />
 <code>#include &lt;arpa/inet.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;regex&gt;</code><br />
 <code>#include &lt;logger.h&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for iec61850_client_config.cpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="iec61850__client__config_8cpp__incl.png" border="0" usemap="#asrc_2iec61850__client__config_8cpp" alt=""/></div>
 <map name="asrc_2iec61850__client__config_8cpp" id="asrc_2iec61850__client__config_8cpp">
-<area shape="rect" title=" " alt="" coords="264,5,411,47"/>
-<area shape="rect" href="iec61850__client__config_8h.html" title=" " alt="" coords="77,95,267,121"/>
-<area shape="rect" title=" " alt="" coords="291,95,383,121"/>
-<area shape="rect" title=" " alt="" coords="408,95,483,121"/>
-<area shape="rect" title=" " alt="" coords="5,169,64,196"/>
-<area shape="rect" title=" " alt="" coords="88,169,139,196"/>
-<area shape="rect" title=" " alt="" coords="163,169,298,196"/>
-<area shape="rect" title=" " alt="" coords="323,169,485,196"/>
+<area shape="rect" title=" " alt="" coords="568,5,715,47"/>
+<area shape="rect" href="iec61850__client__config_8h.html" title=" " alt="" coords="225,95,415,121"/>
+<area shape="rect" title=" " alt="" coords="439,95,531,121"/>
+<area shape="rect" title=" " alt="" coords="555,95,626,121"/>
+<area shape="rect" title=" " alt="" coords="651,95,736,121"/>
+<area shape="rect" title=" " alt="" coords="760,95,819,121"/>
+<area shape="rect" title=" " alt="" coords="843,95,917,121"/>
+<area shape="rect" title=" " alt="" coords="5,177,64,203"/>
+<area shape="rect" title=" " alt="" coords="88,177,139,203"/>
+<area shape="rect" title=" " alt="" coords="163,177,298,203"/>
+<area shape="rect" title=" " alt="" coords="323,169,499,211"/>
+<area shape="rect" title=" " alt="" coords="523,169,722,211"/>
+<area shape="rect" title=" " alt="" coords="747,177,909,203"/>
 </map>
 </div>
 </div><table class="memberdecls">
@@ -103,38 +111,18 @@ Variables</h2></td></tr>
 <tr class="separator:a94f1dae3e6b9d693f544fb6211920500"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57ee4a57ea9b8611ae34ca5a29d1a880"><td class="memItemLeft" align="right" valign="top">const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iec61850__client__config_8cpp.html#a57ee4a57ea9b8611ae34ca5a29d1a880">DEFAULT_LOG_MIN_LEVEL</a> = &quot;info&quot;</td></tr>
 <tr class="separator:a57ee4a57ea9b8611ae34ca5a29d1a880"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc7cf4376b288892fcba51b1cb5557c0"><td class="memItemLeft" align="right" valign="top">const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iec61850__client__config_8cpp.html#adc7cf4376b288892fcba51b1cb5557c0">DEFAULT_SERVER_NAME</a> = &quot;simpleIO&quot;</td></tr>
-<tr class="separator:adc7cf4376b288892fcba51b1cb5557c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65908dd477e64b3abed1030c962c679f"><td class="memItemLeft" align="right" valign="top">const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iec61850__client__config_8cpp.html#a65908dd477e64b3abed1030c962c679f">DEFAULT_AP_NAME</a> = &quot;accessPoint0&quot;</td></tr>
-<tr class="separator:a65908dd477e64b3abed1030c962c679f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6336442a12179df667d3a65e57da28ce"><td class="memItemLeft" align="right" valign="top">const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iec61850__client__config_8cpp.html#a6336442a12179df667d3a65e57da28ce">DEFAULT_IED_IP_ADDRESS</a> = &quot;127.0.0.1&quot;</td></tr>
-<tr class="separator:a6336442a12179df667d3a65e57da28ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8cbc8cb056cb919929882917616b5f0"><td class="memItemLeft" align="right" valign="top">constexpr const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iec61850__client__config_8cpp.html#ac8cbc8cb056cb919929882917616b5f0">DEFAULT_MMS_PORT</a> = 8102</td></tr>
-<tr class="separator:ac8cbc8cb056cb919929882917616b5f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aef9ecd2d23ad9e9ff72228abde32b8"><td class="memItemLeft" align="right" valign="top">const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="iec61850__client__config_8cpp.html#a9aef9ecd2d23ad9e9ff72228abde32b8">DEFAULT_ASSET_NAME</a> = &quot;iec61850&quot;</td></tr>
+<tr class="separator:a9aef9ecd2d23ad9e9ff72228abde32b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="a65908dd477e64b3abed1030c962c679f" name="a65908dd477e64b3abed1030c962c679f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a65908dd477e64b3abed1030c962c679f">&#9670;&nbsp;</a></span>DEFAULT_AP_NAME</h2>
+<a id="a9aef9ecd2d23ad9e9ff72228abde32b8" name="a9aef9ecd2d23ad9e9ff72228abde32b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aef9ecd2d23ad9e9ff72228abde32b8">&#9670;&nbsp;</a></span>DEFAULT_ASSET_NAME</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const char* const DEFAULT_AP_NAME = &quot;accessPoint0&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a6336442a12179df667d3a65e57da28ce" name="a6336442a12179df667d3a65e57da28ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6336442a12179df667d3a65e57da28ce">&#9670;&nbsp;</a></span>DEFAULT_IED_IP_ADDRESS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const char* const DEFAULT_IED_IP_ADDRESS = &quot;127.0.0.1&quot;</td>
+          <td class="memname">const char* const DEFAULT_ASSET_NAME = &quot;iec61850&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -149,42 +137,6 @@ Variables</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">const char* const DEFAULT_LOG_MIN_LEVEL = &quot;info&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac8cbc8cb056cb919929882917616b5f0" name="ac8cbc8cb056cb919929882917616b5f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8cbc8cb056cb919929882917616b5f0">&#9670;&nbsp;</a></span>DEFAULT_MMS_PORT</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr const uint16_t DEFAULT_MMS_PORT = 8102</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="adc7cf4376b288892fcba51b1cb5557c0" name="adc7cf4376b288892fcba51b1cb5557c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc7cf4376b288892fcba51b1cb5557c0">&#9670;&nbsp;</a></span>DEFAULT_SERVER_NAME</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const char* const DEFAULT_SERVER_NAME = &quot;simpleIO&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -250,7 +202,7 @@ Variables</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 14 2022 17:28:30 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Wed Nov 23 2022 11:37:39 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>

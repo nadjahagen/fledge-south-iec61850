@@ -42,13 +42,12 @@ extern "C" {
     PLUGIN_INFORMATION *plugin_info()
     {
         Logger::getLogger()->info("61850 Config is %s", info.config);
-        return const_cast<PLUGIN_INFORMATION*>(&info);  // NOSONAR (Fledge API)
+        return const_cast<PLUGIN_INFORMATION *>(&info); // NOSONAR (Fledge API)
     }
 
     PLUGIN_HANDLE plugin_init(ConfigCategory *config)  // NOSONAR (Fledge API)
     {
         Logger::getLogger()->setMinLevel("info");
-
         IEC61850 *iec61850;
         Logger::getLogger()->info("Initializing the plugin");
 
@@ -58,12 +57,10 @@ extern "C" {
             if (config) {
                 iec61850->setConfig(*config);
             }
-        }
-        catch (std::exception &e) {
+        } catch (std::exception &e) {
             Logger::getLogger()->error("%s", e.what());
             throw;
-        }
-        catch (...) {
+        } catch (...) {
             Logger::getLogger()->error("Error: unknown exception caught");
             throw;
         }
@@ -126,12 +123,10 @@ extern "C" {
             iec61850->setConfig(config);
             Logger::getLogger()->setMinLevel(iec61850->getLogMinLevel());
             iec61850->start();
-        }
-        catch (std::exception &e) {
+        } catch (std::exception &e) {
             Logger::getLogger()->error("%s", e.what());
             throw;
-        }
-        catch (...) {
+        } catch (...) {
             Logger::getLogger()->error("Error: unknown exception caught");
             throw;
         }

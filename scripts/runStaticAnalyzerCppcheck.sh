@@ -23,4 +23,4 @@ ${CPPCHECK} --enable=all --inconclusive  \
     -I ${ROOT_DIR_PROJECT}/include/ -I ${ROOT_DIR_PROJECT}/build -I /usr/local/include/ \
     -I $FLEDGE_ROOT/C/common/include/ \
     -I $FLEDGE_ROOT/C/services/common/include/ \
-    --template='{file}({line}):({severity}) {message}' ${ROOT_DIR_PROJECT}/*cpp
+    --template='{file}({line}):({severity}) {message}' ${ROOT_DIR_PROJECT}/src/*cpp

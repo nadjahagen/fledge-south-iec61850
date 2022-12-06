@@ -60,11 +60,11 @@ static const char *const default_config = QUOTE({
                     "ied_name" : "simpleIO",
                     "connections" : [
                         {
-                            "srv_ip": "0.0.0.0",
+                            "srv_ip" : "0.0.0.0",
                             "port" : 102
                         },
                         {
-                            "srv_ip": "0.0.0.0",
+                            "srv_ip" : "0.0.0.0",
                             "port" : 8102
                         }
                     ]
