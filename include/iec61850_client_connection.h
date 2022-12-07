@@ -76,8 +76,11 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
         AcseAuthenticationParameter m_acseAuthentParams{nullptr};
 
         // Section: see the class as a white box for unit tests
-        FRIEND_TEST(IEC61850ClientConnectionTest, openConnection);
-        FRIEND_TEST(IEC61850ClientConnectionTest, openConnectionWithOsiParams);
+        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, openConnection);
+        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, openConnectionWithOsiParams);
+        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, readSingleValidMms);
+        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, readSingleMmsButNotConnected);
+        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, readBadSingleMms);
 };
 
 #endif  // INCLUDE_IEC61850_CLIENT_CONNECTION_H_

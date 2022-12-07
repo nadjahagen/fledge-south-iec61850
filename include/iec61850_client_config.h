@@ -25,6 +25,9 @@
 
 #include <rapidjson/document.h>
 
+// For white box unit tests
+#include <gtest/gtest_prod.h>
+
 constexpr unsigned int DEFAULT_READ_POLLING_PERIOD_IN_MS = 1000;
 
 /**
@@ -169,6 +172,25 @@ class IEC61850ClientConfig
                                                 const uint8_t selectorSize);
 
         static bool isValidIPAddress(const std::string &addrStr);
+
+        // Section: see the class as a white box for unit tests
+        FRIEND_TEST(IEC61850ClientConfigTest, importValidExchangedData);
+        FRIEND_TEST(IEC61850ClientConfigTest, importExchangedDataWithParsingError);
+        FRIEND_TEST(IEC61850ClientConfigTest, importExchangedDataWithMissingSection);
+        FRIEND_TEST(IEC61850ClientConfigTest, importExchangedDataWithMissingDatapointSection);
+        FRIEND_TEST(IEC61850ClientConfigTest, importExchangedDataWithDatapointNotArray);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingLabel);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithBadFormatLabel);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithSameLabel);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingProtocol);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithProtocolNotArray);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryName);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithNameBadFormat);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryTypeId);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithTypeIdBadFormat);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryAddress);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithAddressBadFormat);
+        FRIEND_TEST(IEC61850ClientConfigTest, importValidExchangedDataWithIgnoredProtocols);
 };
 
 #endif  // INCLUDE_IEC61850_CLIENT_CONFIG_H_

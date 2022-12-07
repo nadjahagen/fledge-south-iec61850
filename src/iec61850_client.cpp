@@ -189,7 +189,8 @@ Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<WrappedMms> wra
     }
 
     Datapoint *datapoint = buildDatapointFromMms(wrappedMms->getMmsValue(),
-                                                 &exchangedData.mmsNameTree);
+                                                 &exchangedData.mmsNameTree,
+                                                 exchangedData.dataPath);
 
     insertTypeInDatapoint(datapoint, exchangedData.datapointType);
 
@@ -213,7 +214,8 @@ void IEC61850Client::insertTypeInDatapoint(Datapoint *datapoint,
 }
 
 Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
-                                                 const MmsNameNode *mmsNameNode)
+                                                 const MmsNameNode *mmsNameNode,
+                                                 const DataPath &dataPath)
 {
     // Preconditions
     if (nullptr == mmsValue) {
@@ -237,7 +239,8 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
             if (mmsName.compare("mag") == 0) {
                 // keep only the 1st child, and concatenate the names
                 datapoint = buildDatapointFromMms(MmsValue_getElement(mmsValue, 0),
-                                                  mmsNameNode->children[0].get());
+                                                  mmsNameNode->children[0].get(),
+                                                  dataPath);
                 datapoint->setName(mmsName + "." + datapoint->getName());
             } else {
                 /**
@@ -248,7 +251,8 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
                 for (uint32_t index = 0; index < arraySize; ++index) {
                     Datapoint *dpChild = nullptr;
                     dpChild = buildDatapointFromMms(MmsValue_getElement(mmsValue, index),
-                                                    mmsNameNode->children[index].get());
+                                                    mmsNameNode->children[index].get(),
+                                                    dataPath);
                     dpArray->push_back(dpChild);
                 }
                 datapoint = createComplexDatapoint(mmsName, dpArray);
@@ -301,7 +305,9 @@ Datapoint *IEC61850Client::buildDatapointFromMms(const MmsValue *mmsValue,
         }
 
         case MMS_DATA_ACCESS_ERROR:
-            Logger::getLogger()->warn("MMS access error, please reconfigure");
+            Logger::getLogger()->error("MMS access error (num %d), failed to access to: %s",
+                                       MmsValue_getDataAccessError(mmsValue),
+                                       dataPath.c_str());
             break;
 
         default :
@@ -395,9 +401,7 @@ void IEC61850Client::readAndExportMms()
                 wrapped_mms = m_connection->readSingleMms(exchangedData.dataPath,
                                                           exchangedData.functionalConstraint);
 
-                if (wrapped_mms != nullptr) {
-                    sendData(convertMmsToDatapoint(wrapped_mms, exchangedData));
-                }
+                sendData(convertMmsToDatapoint(wrapped_mms, exchangedData));
             }
             break;
         }

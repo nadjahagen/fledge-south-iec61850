@@ -102,7 +102,8 @@ class IEC61850Client
                                                  std::vector<Datapoint*> *&values);
 
         static Datapoint *buildDatapointFromMms(const MmsValue *mmsValue,
-                                                const MmsNameNode *mmsNameNode);
+                                                const MmsNameNode *mmsNameNode,
+                                                const DataPath &dataPath);
 
         static void insertTypeInDatapoint(Datapoint *datapoint,
                                           const std::string &doType);
@@ -148,6 +149,17 @@ class IEC61850Client
         FRIEND_TEST(IEC61850ClientTest, initializeConnectionInOneTry);
         FRIEND_TEST(IEC61850ClientTest, initializeConnectionFailed);
         FRIEND_TEST(IEC61850ClientTest, startAndStop);
+        FRIEND_TEST(IEC61850ClientTest, buildIntegerDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildUnsignedIntegerDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildBoolDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildFloatDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildDoubleDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildTimestampDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildBitStringDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildVisibleStringDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildComplexDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildComplexMxDatapoint);
+        FRIEND_TEST(IEC61850ClientTest, buildComplexDatapointWithErroneousStructure);
 };
 
 #endif  // INCLUDE_IEC61850_CLIENT_H_

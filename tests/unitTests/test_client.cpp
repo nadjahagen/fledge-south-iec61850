@@ -184,3 +184,315 @@ TEST(IEC61850ClientTest, startAndStop)
     // Test teardown
     startClientThread.join();
 }
+
+TEST(IEC61850ClientTest, buildIntegerDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.mmsNameTree.mmsName = "my_int";
+
+    MmsValue *mmsValue = MmsValue_newInteger(32);
+    MmsValue_setInt32(mmsValue, -31416);
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValue);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "my_int");
+    ASSERT_EQ(dp->getData().getTypeStr(), "INTEGER");
+    ASSERT_EQ(dp->getData().toInt(), -31416);
+}
+
+TEST(IEC61850ClientTest, buildUnsignedIntegerDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.mmsNameTree.mmsName = "my_uint";
+
+    MmsValue *mmsValue = MmsValue_newUnsigned(32);
+    MmsValue_setUint32(mmsValue, -31416);
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValue);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "my_uint");
+    ASSERT_EQ(dp->getData().getTypeStr(), "INTEGER");
+    ASSERT_EQ(dp->getData().toInt(), 4294935880);
+}
+
+TEST(IEC61850ClientTest, buildBoolDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.mmsNameTree.mmsName = "stVal";
+
+    MmsValue *mmsValue = MmsValue_newBoolean(false);
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValue);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "do_value");
+    ASSERT_EQ(dp->getData().getTypeStr(), "INTEGER");
+    ASSERT_EQ(dp->getData().toInt(), 0);
+}
+
+TEST(IEC61850ClientTest, buildFloatDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.mmsNameTree.mmsName = "stVal";
+
+    MmsValue *mmsValue = MmsValue_newFloat(-3.1416);
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValue);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "do_value");
+    ASSERT_EQ(dp->getData().getTypeStr(), "FLOAT");
+    ASSERT_LT(abs(-3.1416 - dp->getData().toDouble()), 10e-7);
+}
+
+TEST(IEC61850ClientTest, buildDoubleDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.mmsNameTree.mmsName = "stVal";
+
+    MmsValue *mmsValue = MmsValue_newDouble(-3.1416e-7);
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValue);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "do_value");
+    ASSERT_EQ(dp->getData().getTypeStr(), "FLOAT");
+    ASSERT_LT(abs(-3.1416e-7 - dp->getData().toDouble()), 10e-15);
+}
+
+TEST(IEC61850ClientTest, buildTimestampDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.mmsNameTree.mmsName = "t";
+
+    MmsValue *mmsValue = MmsValue_newUtcTime(1670316432);
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValue);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "do_ts");
+    ASSERT_EQ(dp->getData().getTypeStr(), "INTEGER");
+    ASSERT_EQ(dp->getData().toInt(), 1670316432);
+}
+
+TEST(IEC61850ClientTest, buildBitStringDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.mmsNameTree.mmsName = "q";
+
+    MmsValue *mmsValue = MmsValue_newBitString(27);
+    MmsValue_setBitStringFromInteger(mmsValue, 1026); // "0b10000000010"
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValue);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "do_quality");
+    ASSERT_EQ(dp->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().toStringValue(), "010000000010000000000000000");
+}
+
+TEST(IEC61850ClientTest, buildVisibleStringDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.mmsNameTree.mmsName = "str";
+
+    MmsValue *mmsValue = MmsValue_newVisibleString("fooStr");
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValue);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "str");
+    ASSERT_EQ(dp->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().toStringValue(), "fooStr");
+}
+
+TEST(IEC61850ClientTest, buildComplexDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.datapointType = "my_cdc";
+    exchangedData.mmsNameTree.mmsName = "complexDp";
+
+    auto node1 = std::make_shared<MmsNameNode>();
+    node1->mmsName = "1";
+    exchangedData.mmsNameTree.children.push_back(node1);
+
+    auto node2 = std::make_shared<MmsNameNode>();
+    node2->mmsName = "2";
+    exchangedData.mmsNameTree.children.push_back(node2);
+
+    auto node3 = std::make_shared<MmsNameNode>();
+    node3->mmsName = "3";
+    exchangedData.mmsNameTree.children.push_back(node3);
+
+    MmsValue *mmsValueArray = MmsValue_createEmptyArray(3);
+
+    MmsValue *mmsValue1 = MmsValue_newVisibleString("first");
+    MmsValue *mmsValue2 = MmsValue_newVisibleString("second");
+    MmsValue *mmsValue3 = MmsValue_newVisibleString("third");
+
+    MmsValue_setElement(mmsValueArray, 0, mmsValue1);
+    MmsValue_setElement(mmsValueArray, 1, mmsValue2);
+    MmsValue_setElement(mmsValueArray, 2, mmsValue3);
+
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValueArray);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "complexDp");
+    ASSERT_EQ(dp->getData().getTypeStr(), "DP_DICT");
+    ASSERT_EQ(dp->getData().getDpVec()->size(), 4);
+    ASSERT_EQ(dp->getData().getDpVec()->at(0)->getName(), "do_type");
+    ASSERT_EQ(dp->getData().getDpVec()->at(0)->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().getDpVec()->at(0)->getData().toStringValue(), "my_cdc");
+
+    ASSERT_EQ(dp->getData().getDpVec()->at(1)->getName(), "1");
+    ASSERT_EQ(dp->getData().getDpVec()->at(1)->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().getDpVec()->at(1)->getData().toStringValue(), "first");
+
+    ASSERT_EQ(dp->getData().getDpVec()->at(2)->getName(), "2");
+    ASSERT_EQ(dp->getData().getDpVec()->at(2)->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().getDpVec()->at(2)->getData().toStringValue(), "second");
+
+    ASSERT_EQ(dp->getData().getDpVec()->at(3)->getName(), "3");
+    ASSERT_EQ(dp->getData().getDpVec()->at(3)->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().getDpVec()->at(3)->getData().toStringValue(), "third");
+}
+
+TEST(IEC61850ClientTest, buildComplexMxDatapoint)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.datapointType = "my_cdc";
+    exchangedData.mmsNameTree.mmsName = "complexDp";
+
+    auto subnode1 = std::make_shared<MmsNameNode>();
+    subnode1->mmsName = "float or int";
+
+    auto node1 = std::make_shared<MmsNameNode>();
+    node1->mmsName = "mag";
+    node1->children.push_back(subnode1);
+    exchangedData.mmsNameTree.children.push_back(node1);
+
+    auto node2 = std::make_shared<MmsNameNode>();
+    node2->mmsName = "2";
+    exchangedData.mmsNameTree.children.push_back(node2);
+
+    auto node3 = std::make_shared<MmsNameNode>();
+    node3->mmsName = "3";
+    exchangedData.mmsNameTree.children.push_back(node3);
+
+    MmsValue *mmsValueArray = MmsValue_createEmptyArray(3);
+
+    MmsValue *mmsValue1 = MmsValue_createEmptyArray(1);
+    MmsValue *mmsSubValue1 = MmsValue_newVisibleString("first");
+    MmsValue_setElement(mmsValue1, 0, mmsSubValue1);
+
+    MmsValue *mmsValue2 = MmsValue_newVisibleString("second");
+    MmsValue *mmsValue3 = MmsValue_newVisibleString("third");
+
+    MmsValue_setElement(mmsValueArray, 0, mmsValue1);
+    MmsValue_setElement(mmsValueArray, 1, mmsValue2);
+    MmsValue_setElement(mmsValueArray, 2, mmsValue3);
+
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValueArray);
+
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+
+    ASSERT_EQ(dp->getName(), "complexDp");
+    ASSERT_EQ(dp->getData().getTypeStr(), "DP_DICT");
+    ASSERT_EQ(dp->getData().getDpVec()->size(), 4);
+    ASSERT_EQ(dp->getData().getDpVec()->at(0)->getName(), "do_type");
+    ASSERT_EQ(dp->getData().getDpVec()->at(0)->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().getDpVec()->at(0)->getData().toStringValue(), "my_cdc");
+
+    ASSERT_EQ(dp->getData().getDpVec()->at(1)->getName(), "mag.float or int");
+    ASSERT_EQ(dp->getData().getDpVec()->at(1)->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().getDpVec()->at(1)->getData().toStringValue(), "first");
+
+    ASSERT_EQ(dp->getData().getDpVec()->at(2)->getName(), "2");
+    ASSERT_EQ(dp->getData().getDpVec()->at(2)->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().getDpVec()->at(2)->getData().toStringValue(), "second");
+
+    ASSERT_EQ(dp->getData().getDpVec()->at(3)->getName(), "3");
+    ASSERT_EQ(dp->getData().getDpVec()->at(3)->getData().getTypeStr(), "STRING");
+    ASSERT_EQ(dp->getData().getDpVec()->at(3)->getData().toStringValue(), "third");
+}
+
+TEST(IEC61850ClientTest, buildComplexDatapointWithErroneousStructure)
+{
+    ServerConnectionParameters connParam;
+    ApplicationParameters applicationParams;
+    ExchangedData exchangedData;
+    exchangedData.datapointType = "my_cdc";
+    exchangedData.mmsNameTree.mmsName = "complexDp";
+
+    auto subnode1 = std::make_shared<MmsNameNode>();
+    subnode1->mmsName = "float or int";
+
+    auto node1 = std::make_shared<MmsNameNode>();
+    node1->mmsName = "mag";
+    node1->children.push_back(subnode1);
+    exchangedData.mmsNameTree.children.push_back(node1);
+
+    auto node2 = std::make_shared<MmsNameNode>();
+    node2->mmsName = "2";
+    exchangedData.mmsNameTree.children.push_back(node2);
+
+    auto node3 = std::make_shared<MmsNameNode>();
+    node3->mmsName = "3";
+    exchangedData.mmsNameTree.children.push_back(node3);
+
+    MmsValue *mmsValueArray = MmsValue_createEmptyArray(2);
+
+    MmsValue *mmsValue1 = MmsValue_createEmptyArray(1);
+    MmsValue *mmsSubValue1 = MmsValue_newVisibleString("first");
+    MmsValue_setElement(mmsValue1, 0, mmsSubValue1);
+
+    MmsValue *mmsValue3 = MmsValue_newVisibleString("third");
+
+    MmsValue_setElement(mmsValueArray, 0, mmsValue1);
+    MmsValue_setElement(mmsValueArray, 1, mmsValue3);
+
+    auto wrappedMms = std::make_shared<WrappedMms>();
+    wrappedMms->setMmsValue(mmsValueArray);
+
+    try {
+        auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, exchangedData);
+        FAIL();
+    } catch (MmsParsingException e) {
+        ASSERT_STREQ(e.what(), "MMS Parsing exception: MMS structure does not match");
+    } catch (...) {
+        FAIL();
+    }
+}
