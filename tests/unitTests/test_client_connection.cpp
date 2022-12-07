@@ -45,6 +45,7 @@ TEST(IEC61850ClientConnectionTest, openConnectionWithOsiParams)
     connParam.osiParameters.remoteSSelector = {2, {0, 1} };
     connParam.osiParameters.localPSelector = {4, {0x12, 0x34, 0x56, 0x78} };
     connParam.osiParameters.remotePSelector = {4, {0x87, 0x65, 0x43, 0x21} };
+    connParam.isOsiParametersEnabled = true;
 
     connParam.ipAddress = "127.0.0.1";
     connParam.mmsPort = 8102;
