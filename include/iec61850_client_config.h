@@ -91,7 +91,7 @@ using DataPath = std::string;
 /**
  *  Parameters about the data to transfer to Fledge
  */
-struct ExchangedData {
+struct DatapointConfig {
     DatapointLabel label;
     DatapointTypeStr datapointType;
     DatapointTypeId datapointTypeId = DatapointTypeId::UNKNOWN_DATAPOINT_TYPE;
@@ -100,7 +100,7 @@ struct ExchangedData {
     MmsNameNode mmsNameTree;
 };
 
-using ExchangedDataDict = std::map<DatapointLabel, ExchangedData, std::less<>>;
+using ExchangedData = std::map<DatapointLabel, DatapointConfig, std::less<>>;
 
 
 /** \class ConfigurationException
@@ -133,7 +133,7 @@ class IEC61850ClientConfig
         ApplicationParameters applicationParams;
 
         // Data model section
-        ExchangedDataDict exchangedDataDict;
+        ExchangedData exchangedData;
 
         void importConfig(const ConfigCategory &newConfig);
 
@@ -147,7 +147,7 @@ class IEC61850ClientConfig
         static void logOsiSelector(const std::string &selectorName,
                                    const int selectorSize,
                                    const uint8_t *selectorValues);
-        static void logExchangedDataConfig(const ExchangedDataDict &exchangedDataDict);
+        static void logExchangedData(const ExchangedData &exchangedData);
         static void logMmsNameTree(const MmsNameNode &mmsNameNode, uint8_t currentDepth = 0);
 
     private:
@@ -160,9 +160,9 @@ class IEC61850ClientConfig
                                               OsiParameters *osiParams) const;
         void importJsonApplicationLayerConfig(const rapidjson::Value &applicationLayer);
         void importJsonExchangedDataConfig(const std::string &exchangedDataConfig);
-        void importJsonDatapointConfig(const rapidjson::Value &datapointConfig);
+        void importJsonDatapointConfig(const rapidjson::Value &jsonDatapointConfig);
         void importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
-                                               ExchangedData &exchangedData) const;
+                                               DatapointConfig &datapointConfig) const;
 
         static OsiSelectorSize parseOsiPSelector(std::string &inputOsiSelector, PSelector *pselector);
         static OsiSelectorSize parseOsiTSelector(std::string &inputOsiSelector, TSelector *tselector);

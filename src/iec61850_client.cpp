@@ -38,10 +38,10 @@ const std::map<std::string, std::string, std::less<>> DO_READING_MAPPING = {
 
 IEC61850Client::IEC61850Client(IEC61850 *iec61850,
                                const ServerConnectionParameters &connectionParam,
-                               const ExchangedDataDict &exchangedDataDict,
+                               const ExchangedData &exchangedData,
                                const ApplicationParameters &applicationParams)
     : m_connectionParam(connectionParam),
-      m_exchangedDataDict(exchangedDataDict),
+      m_exchangedData(exchangedData),
       m_applicationParams(applicationParams),
       m_iec61850(iec61850)
 {
@@ -177,7 +177,7 @@ void IEC61850Client::sendData(Datapoint *datapoint)
 }
 
 Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms,
-                                                 const ExchangedData &exchangedData)
+                                                 const DatapointConfig &datapointConfig)
 {
     // Precondition
     if (nullptr == wrappedMms) {
@@ -189,10 +189,10 @@ Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<WrappedMms> wra
     }
 
     Datapoint *datapoint = buildDatapointFromMms(wrappedMms->getMmsValue(),
-                                                 &exchangedData.mmsNameTree,
-                                                 exchangedData.dataPath);
+                                                 &datapointConfig.mmsNameTree,
+                                                 datapointConfig.dataPath);
 
-    insertTypeInDatapoint(datapoint, exchangedData.datapointType);
+    insertTypeInDatapoint(datapoint, datapointConfig.datapointType);
 
     return datapoint;
 }
@@ -395,13 +395,13 @@ void IEC61850Client::readAndExportMms()
 
         case ReadMode::DO_READING:
         {
-            for (const auto &it : m_exchangedDataDict) {
-                const ExchangedData &exchangedData = it.second;
+            for (const auto &it : m_exchangedData) {
+                const DatapointConfig &dpConfig = it.second;
                 std::shared_ptr<WrappedMms> wrapped_mms;
-                wrapped_mms = m_connection->readSingleMms(exchangedData.dataPath,
-                                                          exchangedData.functionalConstraint);
+                wrapped_mms = m_connection->readSingleMms(dpConfig.dataPath,
+                                                          dpConfig.functionalConstraint);
 
-                sendData(convertMmsToDatapoint(wrapped_mms, exchangedData));
+                sendData(convertMmsToDatapoint(wrapped_mms, dpConfig));
             }
             break;
         }

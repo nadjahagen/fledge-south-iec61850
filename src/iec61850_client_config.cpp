@@ -455,62 +455,62 @@ void IEC61850ClientConfig::importJsonExchangedDataConfig(const std::string &exch
         throw ConfigurationException("'Exchanged data' empty conf");
     }
 
-    const rapidjson::Value &exchangedData = document[JSON_EXCHANGED_DATA];
+    const rapidjson::Value &jsonExchangedData = document[JSON_EXCHANGED_DATA];
 
-    if (! exchangedData.HasMember(JSON_DATAPOINTS)) {
+    if (! jsonExchangedData.HasMember(JSON_DATAPOINTS)) {
         throw ConfigurationException("'ExchangedData' parsing error: no 'datapoints'");
     }
 
-    if (! exchangedData[JSON_DATAPOINTS].IsArray()) {
+    if (! jsonExchangedData[JSON_DATAPOINTS].IsArray()) {
         throw ConfigurationException("'datapoints' is not an array -> fail to parse 'ExchangedData'");
     }
 
     /** Parse each 'datapoint' JSON structure */
-    for (const auto &datapointConfig : exchangedData[JSON_DATAPOINTS].GetArray()) {
-        importJsonDatapointConfig(datapointConfig);
+    for (const auto &jsonDatapointConfig : jsonExchangedData[JSON_DATAPOINTS].GetArray()) {
+        importJsonDatapointConfig(jsonDatapointConfig);
     }
-    logExchangedDataConfig(exchangedDataDict);
+    logExchangedData(exchangedData);
 }
 
-void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &datapointConfig)
+void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &jsonDatapointConfig)
 {
     // Preconditions
-    if (! datapointConfig.IsObject()) {
+    if (! jsonDatapointConfig.IsObject()) {
         throw ConfigurationException("'datapoint' is not valid");
     }
 
-    if (! datapointConfig.HasMember("label")) {
+    if (! jsonDatapointConfig.HasMember("label")) {
         throw ConfigurationException("the mandatory 'label' not found");
     }
-    if (! datapointConfig["label"].IsString()) {
+    if (! jsonDatapointConfig["label"].IsString()) {
         throw ConfigurationException("bad format for the mandatory 'label'");
     }
 
-    ExchangedData newExchangedData;
-    newExchangedData.label = std::string(datapointConfig["label"].GetString());
+    DatapointConfig newDatapointConfig;
+    newDatapointConfig.label = std::string(jsonDatapointConfig["label"].GetString());
 
-    if (exchangedDataDict.find(newExchangedData.label) != exchangedDataDict.end()) {
+    if (exchangedData.find(newDatapointConfig.label) != exchangedData.end()) {
         throw ConfigurationException("the Datapoint label is already defined");
     }
 
-    if (! datapointConfig.HasMember(JSON_PROTOCOLS)) {
+    if (! jsonDatapointConfig.HasMember(JSON_PROTOCOLS)) {
         throw ConfigurationException("'datapoints' parsing error: no 'protocols'");
     }
 
-    if (! datapointConfig[JSON_PROTOCOLS].IsArray()) {
-        throw ConfigurationException("'protocols' is not an array -> fail to parse 'datpoints'");
+    if (! jsonDatapointConfig[JSON_PROTOCOLS].IsArray()) {
+        throw ConfigurationException("'protocols' is not an array -> fail to parse 'datapoints'");
     }
 
     /** Parse the IEC61850 'protocol' JSON structure */
-    for (const auto &protocol : datapointConfig[JSON_PROTOCOLS].GetArray()) {
-        importJsonDatapointProtocolConfig(protocol, newExchangedData);
+    for (const auto &protocol : jsonDatapointConfig[JSON_PROTOCOLS].GetArray()) {
+        importJsonDatapointProtocolConfig(protocol, newDatapointConfig);
     }
 
-    exchangedDataDict[newExchangedData.label] = newExchangedData;
+    exchangedData[newDatapointConfig.label] = newDatapointConfig;
 }
 
 void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
-                                                             ExchangedData &exchangedData) const
+                                                             DatapointConfig &datapointConfig) const
 {
     // Preconditions
     if (! datapointProtocolConfig.IsObject()) {
@@ -543,13 +543,13 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         return;
     }
 
-    exchangedData.dataPath = datapointProtocolConfig["address"].GetString();
+    datapointConfig.dataPath = datapointProtocolConfig["address"].GetString();
 
     std::string strTypeId = datapointProtocolConfig["typeid"].GetString();
     if (strTypeId.compare("SPS") == 0) {
-        exchangedData.datapointType = "SPS";
-        exchangedData.datapointTypeId = DatapointTypeId::SPS_DATAPOINT_TYPE;
-        exchangedData.functionalConstraint = FunctionalConstraint_fromString("ST");
+        datapointConfig.datapointType = "SPS";
+        datapointConfig.datapointTypeId = DatapointTypeId::SPS_DATAPOINT_TYPE;
+        datapointConfig.functionalConstraint = FunctionalConstraint_fromString("ST");
 
         // build the 'name' tree for a SPS
         auto stvalNode = std::make_shared<MmsNameNode>();
@@ -561,15 +561,15 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         auto tNode = std::make_shared<MmsNameNode>();
         tNode->mmsName = "t";
 
-        exchangedData.mmsNameTree.mmsName = exchangedData.label;
-        exchangedData.mmsNameTree.children.push_back(stvalNode);
-        exchangedData.mmsNameTree.children.push_back(qNode);
-        exchangedData.mmsNameTree.children.push_back(tNode);
+        datapointConfig.mmsNameTree.mmsName = datapointConfig.label;
+        datapointConfig.mmsNameTree.children.push_back(stvalNode);
+        datapointConfig.mmsNameTree.children.push_back(qNode);
+        datapointConfig.mmsNameTree.children.push_back(tNode);
 
     } else if (strTypeId.compare("MV") == 0) {
-        exchangedData.datapointType = "MV";
-        exchangedData.datapointTypeId = DatapointTypeId::MV_DATAPOINT_TYPE;
-        exchangedData.functionalConstraint = FunctionalConstraint_fromString("MX");
+        datapointConfig.datapointType = "MV";
+        datapointConfig.datapointTypeId = DatapointTypeId::MV_DATAPOINT_TYPE;
+        datapointConfig.functionalConstraint = FunctionalConstraint_fromString("MX");
 
         // build the 'name' tree for a MV
         auto fNode = std::make_shared<MmsNameNode>();
@@ -585,10 +585,10 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         auto tNode = std::make_shared<MmsNameNode>();
         tNode->mmsName = "t";
 
-        exchangedData.mmsNameTree.mmsName = exchangedData.label;
-        exchangedData.mmsNameTree.children.push_back(magNode);
-        exchangedData.mmsNameTree.children.push_back(qNode);
-        exchangedData.mmsNameTree.children.push_back(tNode);
+        datapointConfig.mmsNameTree.mmsName = datapointConfig.label;
+        datapointConfig.mmsNameTree.children.push_back(magNode);
+        datapointConfig.mmsNameTree.children.push_back(qNode);
+        datapointConfig.mmsNameTree.children.push_back(tNode);
     }
 }
 
@@ -600,17 +600,18 @@ bool IEC61850ClientConfig::isValidIPAddress(const std::string &addrStr)
     return (result == 1);
 }
 
-void IEC61850ClientConfig::logExchangedDataConfig(const ExchangedDataDict &exchangedDataDict)
+void IEC61850ClientConfig::logExchangedData(const ExchangedData &exchangedData)
 {
     Logger::getLogger()->info("Config: Exchanged Data:");
 
-    for (const auto &it : exchangedDataDict) {
-        Logger::getLogger()->info("\tDatapoint: label: %s", it.second.label.c_str());
-        Logger::getLogger()->info("\tDatapoint: type: %d", it.second.datapointTypeId);
-        Logger::getLogger()->info("\tDatapoint: dataPath: %s", it.second.dataPath.c_str());
-        Logger::getLogger()->info("\tDatapoint: FC: %s", FunctionalConstraint_toString(it.second.functionalConstraint));
+    for (const auto &dictEntry : exchangedData) {
+        const DatapointConfig &dpConfig = dictEntry.second;
+        Logger::getLogger()->info("\tDatapoint: label: %s", dpConfig.label.c_str());
+        Logger::getLogger()->info("\tDatapoint: type: %d", dpConfig.datapointTypeId);
+        Logger::getLogger()->info("\tDatapoint: dataPath: %s", dpConfig.dataPath.c_str());
+        Logger::getLogger()->info("\tDatapoint: FC: %s", FunctionalConstraint_toString(dpConfig.functionalConstraint));
 
-        logMmsNameTree(it.second.mmsNameTree);
+        logMmsNameTree(dpConfig.mmsNameTree);
     }
 }
 

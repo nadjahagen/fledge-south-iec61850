@@ -55,7 +55,7 @@ class IEC61850Client
 
         explicit IEC61850Client(IEC61850 *iec61850,
                                 const ServerConnectionParameters &connectionParam,
-                                const ExchangedDataDict &exchangedDataDict,
+                                const ExchangedData &exchangedData,
                                 const ApplicationParameters &applicationParams);
 
         ~IEC61850Client();
@@ -83,7 +83,7 @@ class IEC61850Client
 
         // Section: Configuration
         const ServerConnectionParameters &m_connectionParam;
-        const ExchangedDataDict &m_exchangedDataDict;
+        const ExchangedData &m_exchangedData;
         const ApplicationParameters &m_applicationParams;
 
         // Section: Data formatting for the plugin
@@ -114,7 +114,7 @@ class IEC61850Client
          * Reentrant function, thread safe
          */
         static Datapoint *convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms,
-                                                const ExchangedData &exchangedData);
+                                                const DatapointConfig &datapointConfig);
 
         /**
          * Send a datapoint to Fledge core
