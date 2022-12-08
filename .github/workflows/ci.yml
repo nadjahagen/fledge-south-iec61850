@@ -91,11 +91,12 @@ jobs:
           chmod +x mkversion
           export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib
           mkdir build
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Coverage
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Coverage -DFUNCTIONAL_TESTS=on
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Release
           cd build
           make
           make iec61850_coverage_sonar
+          make iec61850_functional_tests
       - name: Run sonar-scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

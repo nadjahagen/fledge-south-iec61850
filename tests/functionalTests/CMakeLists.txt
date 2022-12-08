@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(RunTests)
+project(RunFunctionalTests)
 
 # Supported options:
 # -DFLEDGE_INCLUDE
@@ -29,7 +29,7 @@ set(NEEDED_FLEDGE_LIBS common-lib services-common-lib)
 
 # Find source files
 file(GLOB SOURCES ../../src/*.cpp)
-file(GLOB unittests "*.cpp"
+file(GLOB functionaltests "*.cpp"
                     "../common/mms_server_basic_io/mms_server_basic_io.cpp"
                     "../common/mms_server_basic_io/static_model.c")
 
@@ -60,10 +60,14 @@ include_directories(${FLEDGE_INCLUDE_DIRS})
 # Add Fledge lib path
 link_directories(${FLEDGE_LIB_DIRS})
 
-# Link runTests with what we want to test and the GTest and pthread library
-add_executable(${PROJECT_NAME} ${unittests} ${SOURCES} version.h)
+# Link Tests with what we want to test and the GTest and pthread library
+add_executable(${PROJECT_NAME} ${functionaltests} ${SOURCES} version.h)
 
 target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${NEEDED_FLEDGE_LIBS})
 target_link_libraries(${PROJECT_NAME} -L/usr/local/lib -liec61850)
 target_link_libraries(${PROJECT_NAME} -lpthread -ldl -lgmock)
+
+add_custom_target(iec61850_functional_tests
+    COMMAND ./RunFunctionalTests
+)

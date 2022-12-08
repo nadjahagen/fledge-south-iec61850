@@ -124,3 +124,7 @@ if(DOXYGEN_FOUND)
   add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMENT "Generating documentation with Doxygen" VERBATIM)
 endif(DOXYGEN_FOUND)
 
+# Functional tests
+if(FUNCTIONAL_TESTS)
+    add_subdirectory(tests/functionalTests)
+endif()

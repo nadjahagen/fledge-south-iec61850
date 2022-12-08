@@ -35,7 +35,7 @@ RapidJson
   $ sudo apt-get install rapidjson-dev
 
 
-GoogleTest and Gcovr (for Unit Tests only)
+GoogleTest and Gcovr (for Unit Tests, or Functional Tests only)
 ^^^^^^^^^^
  * for Debian:
 .. code-block:: console
@@ -84,8 +84,10 @@ To build with unit tests and code coverage:
 
   $ mkdir build
   $ cd build
-  $ cmake -DCMAKE_BUILD_TYPE=Coverage ..
+  $ cmake -DCMAKE_BUILD_TYPE=Coverage -DFUNCTIONAL_TESTS=on ..
   $ make
+  $ make iec61850_coverage_html
+  $ make iec61850_functional_tests
 
 - By default the Fledge develop package header files and libraries
   are expected to be located in /usr/include/fledge and /usr/lib/fledge
