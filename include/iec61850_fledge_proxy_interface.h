@@ -18,6 +18,9 @@ using INGEST_DATA_TYPE = void*;
 
 class Datapoint;
 
+/**
+ *  \brief Interface with the Fledge API, for sending 'Reading' datapoint
+ */
 class FledgeProxyInterface
 {
     public :

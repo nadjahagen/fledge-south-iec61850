@@ -58,17 +58,25 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
         bool isNoError() const override;
         void logError() const override;
 
-        std::shared_ptr<WrappedMms> readSingleMms(const std::string &daPath,
+        /**
+         * \brief Read an object (DO: Data Object) of the Server data model
+         *
+         * Reentrant function, thread safe
+         */
+        std::shared_ptr<WrappedMms> readDO(const std::string &doPath,
                                                   const FunctionalConstraint &functionalConstraint) override;
 
     private:
+        /** \brief Open a connection with an IEC61850 server */
         void open();
+
+        /** \brief Close the connection with an IEC61850 server */
         void close();
 
         void setOsiConnectionParameters();
 
         ServerConnectionParameters m_connectionParam;
-        std::mutex m_iedConnectionMutex; // libiec61850 thread safe?: protect the IedConnection
+        std::mutex m_iedConnectionMutex;  /**< Protect the libiec61850 'IedConnection' resource */
 
         // libiec61850 objects
         IedConnection       m_iedConnection = nullptr;
@@ -78,8 +86,8 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
         // Section: see the class as a white box for unit tests
         FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, openConnection);
         FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, openConnectionWithOsiParams);
-        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, readSingleValidMms);
-        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, readSingleMmsButNotConnected);
+        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, readDOValidMms);
+        FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, readDOButNotConnected);
         FRIEND_TEST(IEC61850ClientConnectionTestWithIEC61850Server, readBadSingleMms);
 };
 

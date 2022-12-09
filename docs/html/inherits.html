@@ -69,65 +69,71 @@ $(function() {
 <div class="textblock">
 <p><a href="hierarchy.html">Go to the textual class hierarchy</a></p>
 </div><table border="0" cellspacing="10" cellpadding="0">
-<tr><td><img src="inherit_graph_0.png" border="0" usemap="#aClientGatewayInterface" alt=""/>
+<tr><td><img src="inherit_graph_0.png" border="0" usemap="#aApplicationParameters" alt=""/>
+<map name="aApplicationParameters" id="aApplicationParameters">
+<area shape="rect" href="structApplicationParameters.html" title="Application parameters about the IEC61850 client." alt="" coords="5,5,175,32"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_1.png" border="0" usemap="#aClientGatewayInterface" alt=""/>
 <map name="aClientGatewayInterface" id="aClientGatewayInterface">
 <area shape="rect" href="classClientGatewayInterface.html" title=" " alt="" coords="5,5,181,32"/>
-<area shape="rect" href="classIEC61850.html" title=" " alt="" coords="229,31,312,57"/>
-<area shape="rect" href="classFledgeProxyInterface.html" title=" " alt="" coords="13,56,174,83"/>
+<area shape="rect" href="classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge." alt="" coords="229,31,312,57"/>
+<area shape="rect" href="classFledgeProxyInterface.html" title="Interface with the Fledge API, for sending &#39;Reading&#39; datapoint." alt="" coords="13,56,174,83"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_1.png" border="0" usemap="#aExchangedData" alt=""/>
-<map name="aExchangedData" id="aExchangedData">
-<area shape="rect" href="structExchangedData.html" title=" " alt="" coords="5,5,129,32"/>
+<tr><td><img src="inherit_graph_2.png" border="0" usemap="#aDatapointConfig" alt=""/>
+<map name="aDatapointConfig" id="aDatapointConfig">
+<area shape="rect" href="structDatapointConfig.html" title="Parameters about the data to transfer to Fledge." alt="" coords="5,5,132,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_2.png" border="0" usemap="#aIEC61850Client" alt=""/>
+<tr><td><img src="inherit_graph_3.png" border="0" usemap="#aIEC61850Client" alt=""/>
 <map name="aIEC61850Client" id="aIEC61850Client">
-<area shape="rect" href="classIEC61850Client.html" title="Read from and write to a IED." alt="" coords="5,5,127,32"/>
+<area shape="rect" href="classIEC61850Client.html" title="Read from and write to a IED through an IEC61850 connection." alt="" coords="5,5,127,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_3.png" border="0" usemap="#aIEC61850ClientConfig" alt=""/>
+<tr><td><img src="inherit_graph_4.png" border="0" usemap="#aIEC61850ClientConfig" alt=""/>
 <map name="aIEC61850ClientConfig" id="aIEC61850ClientConfig">
 <area shape="rect" href="classIEC61850ClientConfig.html" title="All the configuration for the South plugin." alt="" coords="5,5,168,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_4.png" border="0" usemap="#aIEC61850ClientConnectionInterface" alt=""/>
+<tr><td><img src="inherit_graph_5.png" border="0" usemap="#aIEC61850ClientConnectionInterface" alt=""/>
 <map name="aIEC61850ClientConnectionInterface" id="aIEC61850ClientConnectionInterface">
 <area shape="rect" href="classIEC61850ClientConnectionInterface.html" title=" " alt="" coords="5,5,200,47"/>
 <area shape="rect" href="classIEC61850ClientConnection.html" title="Create and use a IEC61850 connection with a IED." alt="" coords="248,13,443,39"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_5.png" border="0" usemap="#aMms" alt=""/>
-<map name="aMms" id="aMms">
-<area shape="rect" href="classMms.html" title="Encapsulate an MmsValue pointer." alt="" coords="5,5,60,32"/>
+<tr><td><img src="inherit_graph_6.png" border="0" usemap="#aMmsNameNode" alt=""/>
+<map name="aMmsNameNode" id="aMmsNameNode">
+<area shape="rect" href="structMmsNameNode.html" title="Node for the MMS name tree (name for each element of a complex MMS)" alt="" coords="5,5,132,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_6.png" border="0" usemap="#aOsiParameters" alt=""/>
+<tr><td><img src="inherit_graph_7.png" border="0" usemap="#aOsiParameters" alt=""/>
 <map name="aOsiParameters" id="aOsiParameters">
-<area shape="rect" href="structOsiParameters.html" title=" " alt="" coords="5,5,123,32"/>
+<area shape="rect" href="structOsiParameters.html" title="Lower layer parameters (below the MMS layer) for connection with server." alt="" coords="5,5,123,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_7.png" border="0" usemap="#aServerConnectionParameters" alt=""/>
+<tr><td><img src="inherit_graph_8.png" border="0" usemap="#aServerConnectionParameters" alt=""/>
 <map name="aServerConnectionParameters" id="aServerConnectionParameters">
-<area shape="rect" href="structServerConnectionParameters.html" title=" " alt="" coords="5,5,216,32"/>
+<area shape="rect" href="structServerConnectionParameters.html" title="Parameters for creating a connection with 1 IEC61850 server." alt="" coords="5,5,216,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_8.png" border="0" usemap="#astd_1_1logic__error" alt=""/>
+<tr><td><img src="inherit_graph_9.png" border="0" usemap="#astd_1_1logic__error" alt=""/>
 <map name="astd_1_1logic__error" id="astd_1_1logic__error">
-<area shape="rect" title=" " alt="" coords="5,5,124,32"/>
-<area shape="rect" href="classConfigurationException.html" title="a error in the input configuration has been detected" alt="" coords="172,5,345,32"/>
+<area shape="rect" title=" " alt="" coords="5,31,124,57"/>
+<area shape="rect" href="classConfigurationException.html" title="Error in the input configuration." alt="" coords="172,5,345,32"/>
+<area shape="rect" href="classMmsParsingException.html" title="Error during the parsing of MMS." alt="" coords="176,56,341,83"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_9.png" border="0" usemap="#aWrappedMms" alt=""/>
+<tr><td><img src="inherit_graph_10.png" border="0" usemap="#aWrappedMms" alt=""/>
 <map name="aWrappedMms" id="aWrappedMms">
-<area shape="rect" href="classWrappedMms.html" title=" " alt="" coords="5,5,117,32"/>
+<area shape="rect" href="classWrappedMms.html" title="Encapsulate an MmsValue pointer." alt="" coords="5,5,117,32"/>
 </map>
 </td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 23 2022 11:37:39 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Fri Dec 9 2022 15:07:12 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>

@@ -23,7 +23,7 @@ class MockIEC61850ClientConnection : public IEC61850ClientConnectionInterface
         MOCK_METHOD(bool, isNoError, (), (const, override));
         MOCK_METHOD(void, logError, (), (const, override));
         MOCK_METHOD(std::shared_ptr<WrappedMms>,
-                    readSingleMms, (const std::string &daPath,
-                                    const FunctionalConstraint &functionalConstraint), (override));
+                    readDO, (const std::string &doPath,
+                             const FunctionalConstraint &functionalConstraint), (override));
 };
 #endif  // INCLUDE_MOCK_IEC61850_CLIENT_CONNECTION_H_

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['cdc_0',['cdc',['../structExchangedData.html#a8d1bb926a816930c712e8b80cb8ef65a',1,'ExchangedData']]]
+  ['children_0',['children',['../structMmsNameNode.html#a2c2f5116f4b8d3b4a59fec019f222fa0',1,'MmsNameNode']]]
 ];

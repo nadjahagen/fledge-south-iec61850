@@ -13,7 +13,6 @@
 
 #include <memory>
 #include <thread>  // NOLINT
-#include <mutex>   // NOLINT
 #include <atomic>
 
 // Fledge headers
@@ -32,7 +31,7 @@ class IEC61850;
 class WrappedMms;
 
 /** \class MmsParsingException
- *  \brief an error during the parsing of MMS has been detected
+ *  \brief Error during the parsing of MMS
  */
 class MmsParsingException: public std::logic_error
 {
@@ -43,7 +42,7 @@ class MmsParsingException: public std::logic_error
 
 
 /** \class IEC61850Client
- *  \brief Read from and write to a IED
+ *  \brief Read from and write to a IED through an IEC61850 connection
  *
  *  Handle IEC61850 data objects
  *  for reading data
@@ -69,12 +68,12 @@ class IEC61850Client
         IEC61850Client &operator = (IEC61850Client &&) = default;
 
         /**
-         * Open the connection with the IED
+         * \brief Open the connection with the IED
          */
         void start();
 
         /**
-         * Close the connection with the IED
+         * \brief Close the connection with the IED
          */
         void stop();
 
@@ -86,11 +85,11 @@ class IEC61850Client
         const ExchangedData &m_exchangedData;
         const ApplicationParameters &m_applicationParams;
 
-        // Section: Data formatting for the plugin
-        IEC61850 *m_iec61850;
+        IEC61850 *m_iec61850; /**< plugin main object to which to forward the reading data */
 
         /**
-         * Create the Datapoint object that will be ingest by Fledge
+         * \brief Create the Datapoint object that will be ingest by Fledge
+         *
          * (dynamic allocation, deallocation by Fledge core).
          * Reentrant function, thread safe
          */
@@ -98,6 +97,11 @@ class IEC61850Client
         static Datapoint *createDatapoint(const std::string &dataName,
                                           T primitiveTypeValue);
 
+        /**
+         * \brief Create a complex Datapoint object, that contains array of Datapoint
+         *
+         * Reentrant function, thread safe
+         */
         static Datapoint *createComplexDatapoint(const std::string &dataName,
                                                  std::vector<Datapoint*> *&values);
 
@@ -109,19 +113,22 @@ class IEC61850Client
                                           const std::string &doType);
 
         /**
-         * Convert the MMS into Datapoint
-         * by extracting the MMS content and creating a new Datapoint
+         * \brief Convert the MMS into Datapoint
+         *
+         * by extracting the MMS content and creating a new Datapoint.
          * Reentrant function, thread safe
          */
         static Datapoint *convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms,
                                                 const DatapointConfig &datapointConfig);
 
         /**
-         * Send a datapoint to Fledge core
+         * \brief Send a Datapoint to Fledge
+         *
          * Reentrant function, thread safe
          */
         void sendData(Datapoint *datapoint);
 
+        /** \brief Use the IEC61850 connection for reading DO or Dataset */
         void readAndExportMms();
 
         // Section: Client initialization with connection creation
@@ -134,10 +141,18 @@ class IEC61850Client
         std::unique_ptr<IEC61850ClientConnectionInterface> m_connection;
 
         // Section: MMS reading (DO and Dataset)
+        /** \brief Start the MMS reading loop (DO or Dataset) */
         void startMmsReading();
+
+        /** \brief Stop the MMS reading loop (DO or Dataset) */
         void stopMmsReading();
+
+        /** \brief Loop for MMS reading (DO or Dataset) */
         void readMmsLoop();
+
         std::atomic<bool> m_isMmsReadingActivated{false};
+
+        /** \brief Thread for for MMS reading loop (DO or Dataset) */
         std::thread m_mmsReadingThread;
 
         // Section: see the class as a white box for unit tests

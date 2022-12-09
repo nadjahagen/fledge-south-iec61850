@@ -398,8 +398,8 @@ void IEC61850Client::readAndExportMms()
             for (const auto &it : m_exchangedData) {
                 const DatapointConfig &dpConfig = it.second;
                 std::shared_ptr<WrappedMms> wrapped_mms;
-                wrapped_mms = m_connection->readSingleMms(dpConfig.dataPath,
-                                                          dpConfig.functionalConstraint);
+                wrapped_mms = m_connection->readDO(dpConfig.dataPath,
+                                                   dpConfig.functionalConstraint);
 
                 sendData(convertMmsToDatapoint(wrapped_mms, dpConfig));
             }

@@ -12,7 +12,7 @@
  */
 
 
-/** \class Mms
+/** \class WrappedMms
  *  \brief Encapsulate an MmsValue pointer
  *
  *  Encapsulate an MmsValue pointer for automatically deleting the

@@ -70,14 +70,17 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Interface with the Fledge API, for sending 'Reading' datapoint.  
+ <a href="classFledgeProxyInterface.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="iec61850__fledge__proxy__interface_8h_source.html">iec61850_fledge_proxy_interface.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for FledgeProxyInterface:</div>
 <div class="dyncontent">
 <div class="center"><img src="classFledgeProxyInterface__inherit__graph.png" border="0" usemap="#aFledgeProxyInterface_inherit__map" alt="Inheritance graph"/></div>
 <map name="aFledgeProxyInterface_inherit__map" id="aFledgeProxyInterface_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,5,167,32"/>
-<area shape="rect" href="classIEC61850.html" title=" " alt="" coords="45,80,127,107"/>
+<area shape="rect" title="Interface with the Fledge API, for sending &#39;Reading&#39; datapoint." alt="" coords="5,5,167,32"/>
+<area shape="rect" href="classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge." alt="" coords="45,80,127,107"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -85,12 +88,14 @@ Inheritance diagram for FledgeProxyInterface:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae7515b4ec2b6948a0d1f2fe6b4aa723d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFledgeProxyInterface.html#ae7515b4ec2b6948a0d1f2fe6b4aa723d">~FledgeProxyInterface</a> ()=default</td></tr>
 <tr class="separator:ae7515b4ec2b6948a0d1f2fe6b4aa723d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89579a4956a3370a6defddf594f8a3e9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFledgeProxyInterface.html#a89579a4956a3370a6defddf594f8a3e9">ingest</a> (std::vector&lt; Datapoint * &gt; &amp;points)=0</td></tr>
-<tr class="separator:a89579a4956a3370a6defddf594f8a3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac645de2cc29cab06b21565c0cb4eff23"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFledgeProxyInterface.html#ac645de2cc29cab06b21565c0cb4eff23">ingest</a> (std::vector&lt; Datapoint * &gt; &amp;points, const std::string &amp;readingAssetName)=0</td></tr>
+<tr class="separator:ac645de2cc29cab06b21565c0cb4eff23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac560f978a00847c4c60fe64e3427af70"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFledgeProxyInterface.html#ac560f978a00847c4c60fe64e3427af70">registerIngest</a> (<a class="el" href="iec61850__fledge__proxy__interface_8h.html#a9f14645e21c946b517e22e6563938004">INGEST_DATA_TYPE</a> data, void(*ingest_cb)(<a class="el" href="iec61850__fledge__proxy__interface_8h.html#a9f14645e21c946b517e22e6563938004">INGEST_DATA_TYPE</a>, Reading))=0</td></tr>
 <tr class="separator:ac560f978a00847c4c60fe64e3427af70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Interface with the Fledge API, for sending 'Reading' datapoint. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae7515b4ec2b6948a0d1f2fe6b4aa723d" name="ae7515b4ec2b6948a0d1f2fe6b4aa723d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae7515b4ec2b6948a0d1f2fe6b4aa723d">&#9670;&nbsp;</a></span>~FledgeProxyInterface()</h2>
 
@@ -117,8 +122,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a89579a4956a3370a6defddf594f8a3e9" name="a89579a4956a3370a6defddf594f8a3e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a89579a4956a3370a6defddf594f8a3e9">&#9670;&nbsp;</a></span>ingest()</h2>
+<a id="ac645de2cc29cab06b21565c0cb4eff23" name="ac645de2cc29cab06b21565c0cb4eff23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac645de2cc29cab06b21565c0cb4eff23">&#9670;&nbsp;</a></span>ingest()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -130,8 +135,18 @@ Public Member Functions</h2></td></tr>
           <td class="memname">virtual void FledgeProxyInterface::ingest </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; Datapoint * &gt; &amp;&#160;</td>
-          <td class="paramname"><em>points</em></td><td>)</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>readingAssetName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -141,7 +156,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classIEC61850.html#a47f81dbe2f55fdbd3c404aa9ab4c5dc6">IEC61850</a>.</p>
+<p>Implemented in <a class="el" href="classIEC61850.html#aaff3d60f235c4dc3753026eed5c1154f">IEC61850</a>.</p>
 
 </div>
 </div>
@@ -189,7 +204,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 23 2022 11:37:39 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Fri Dec 9 2022 15:07:12 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>

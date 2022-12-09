@@ -14,13 +14,14 @@
 // Fledge headers
 #include <config_category.h>
 
-/**
- * Default configuration
- */
 
 #define PLUGIN_NAME "iec61850"  // NOSONAR (Fledge API)
 
 // *INDENT-OFF* (disable 'astyle' tool on this section)
+
+/**
+ * \brief Default configuration, automatically loaded, if the user do not override the parameters
+ */
 static const char *const default_config = QUOTE({
     "plugin" : {
         "description" : "iec61850 south plugin",

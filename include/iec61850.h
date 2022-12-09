@@ -26,6 +26,9 @@
 #include "./iec61850_client.h"
 #include "./iec61850_client_config.h"
 
+/** \class IEC61850
+ *  \brief Main class for managing the IEC61850 clients and sending data to Fledge
+ */
 class IEC61850: public ClientGatewayInterface, public FledgeProxyInterface
 {
     public:
@@ -58,11 +61,11 @@ class IEC61850: public ClientGatewayInterface, public FledgeProxyInterface
 
 
     private:
-
         void                (*m_ingest_callback)(void *, Reading) {}; // NOLINT
         INGEST_DATA_TYPE    m_data = nullptr;
-        std::mutex          m_ingestMutex;
+        std::mutex          m_ingestMutex;  /**< Protect the Fledge 'feed' process */
 
+        /** Set of IEC61850 clients, connected or not to IEC61850 server */
         std::map<std::string, std::unique_ptr<IEC61850Client>, std::less<>> m_clients;
 
         std::shared_ptr<IEC61850ClientConfig> m_config;

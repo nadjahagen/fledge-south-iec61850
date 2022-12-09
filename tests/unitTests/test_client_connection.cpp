@@ -79,7 +79,7 @@ TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, openConnectionWithOsiPara
     conn.logError();
 }
 
-TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, readSingleValidMms)
+TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, readDOValidMms)
 {
     // Test Init
     ServerConnectionParameters connParam;
@@ -94,8 +94,8 @@ TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, readSingleValidMms)
     ASSERT_EQ(true, conn.isNoError());
 
 
-    auto wrappedMms = conn.readSingleMms("simpleIOGenericIO/GGIO1.AnIn1",
-                                         FunctionalConstraint_fromString("MX"));
+    auto wrappedMms = conn.readDO("simpleIOGenericIO/GGIO1.AnIn1",
+                                  FunctionalConstraint_fromString("MX"));
 
     auto mmsValue = wrappedMms->getMmsValue();
     ASSERT_THAT(mmsValue, NotNull());
@@ -115,7 +115,7 @@ TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, readSingleValidMms)
     ASSERT_GT(floatValue, -1.0);
 }
 
-TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, readSingleMmsButNotConnected)
+TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, readDOButNotConnected)
 {
     // Test Init
     ServerConnectionParameters connParam;
@@ -132,8 +132,8 @@ TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, readSingleMmsButNotConnec
     // shutdown the server
     m_mmsServer->stop();
 
-    auto wrappedMms = conn.readSingleMms("simpleIOGenericIO/GGIO1.AnIn1",
-                                         FunctionalConstraint_fromString("MX"));
+    auto wrappedMms = conn.readDO("simpleIOGenericIO/GGIO1.AnIn1",
+                                  FunctionalConstraint_fromString("MX"));
 
     ASSERT_THAT(wrappedMms, IsNull());
     ASSERT_EQ(false, conn.isConnected());
@@ -155,8 +155,8 @@ TEST_F(IEC61850ClientConnectionTestWithIEC61850Server, readBadSingleMms)
     ASSERT_EQ(true, conn.isConnected());
     ASSERT_EQ(true, conn.isNoError());
 
-    auto wrappedMms = conn.readSingleMms("simpleIOGenericIO/foo_doesnt_exist",
-                                         FunctionalConstraint_fromString("MX"));
+    auto wrappedMms = conn.readDO("simpleIOGenericIO/foo_doesnt_exist",
+                                  FunctionalConstraint_fromString("MX"));
 
     ASSERT_THAT(wrappedMms->getMmsValue(), NotNull());
     ASSERT_EQ(MmsValue_getType(const_cast<MmsValue*>(wrappedMms->getMmsValue())), MMS_DATA_ACCESS_ERROR);

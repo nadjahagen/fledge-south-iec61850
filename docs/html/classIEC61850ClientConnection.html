@@ -72,7 +72,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Create and use a <a class="el" href="classIEC61850.html">IEC61850</a> connection with a IED.  
+<p>Create and use a <a class="el" href="classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge.">IEC61850</a> connection with a IED.  
  <a href="classIEC61850ClientConnection.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="iec61850__client__connection_8h_source.html">iec61850_client_connection.h</a>&gt;</code></p>
@@ -92,8 +92,8 @@ Collaboration diagram for IEC61850ClientConnection:</div>
 <map name="aIEC61850ClientConnection_coll__map" id="aIEC61850ClientConnection_coll__map">
 <area shape="rect" title="Create and use a IEC61850 connection with a IED." alt="" coords="72,199,267,225"/>
 <area shape="rect" href="classIEC61850ClientConnectionInterface.html" title=" " alt="" coords="5,95,200,136"/>
-<area shape="rect" href="structServerConnectionParameters.html" title=" " alt="" coords="224,102,435,129"/>
-<area shape="rect" href="structOsiParameters.html" title=" " alt="" coords="271,5,388,32"/>
+<area shape="rect" href="structServerConnectionParameters.html" title="Parameters for creating a connection with 1 IEC61850 server." alt="" coords="224,102,435,129"/>
+<area shape="rect" href="structOsiParameters.html" title="Lower layer parameters (below the MMS layer) for connection with server." alt="" coords="271,5,388,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -119,8 +119,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a01a86cd0bd0a08ab97ff362adc7c028c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab286964633b325f88effe5bac9ae6935"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#ab286964633b325f88effe5bac9ae6935">logError</a> () const override</td></tr>
 <tr class="separator:ab286964633b325f88effe5bac9ae6935"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a037ca466513f89fde83e4856116d0149"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a037ca466513f89fde83e4856116d0149">readMms</a> (const std::string &amp;daPath, const std::string &amp;fcName) override</td></tr>
-<tr class="separator:a037ca466513f89fde83e4856116d0149"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1908f70259fedcf41a42033ae32a4bd4"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a1908f70259fedcf41a42033ae32a4bd4">readDO</a> (const std::string &amp;doPath, const FunctionalConstraint &amp;functionalConstraint) override</td></tr>
+<tr class="memdesc:a1908f70259fedcf41a42033ae32a4bd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read an object (DO: Data Object) of the Server data model.  <a href="classIEC61850ClientConnection.html#a1908f70259fedcf41a42033ae32a4bd4">More...</a><br /></td></tr>
+<tr class="separator:a1908f70259fedcf41a42033ae32a4bd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classIEC61850ClientConnectionInterface"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classIEC61850ClientConnectionInterface')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classIEC61850ClientConnectionInterface.html">IEC61850ClientConnectionInterface</a></td></tr>
 <tr class="memitem:ad4809c7fa10938543eeb6c5b15c793ce inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnectionInterface.html#ad4809c7fa10938543eeb6c5b15c793ce">~IEC61850ClientConnectionInterface</a> ()=default</td></tr>
 <tr class="separator:ad4809c7fa10938543eeb6c5b15c793ce inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,19 +131,29 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5a63e4b757085a7fc00205984a93490d inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a808b5c0d45c9cae0a23f00c6bba8efdb inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnectionInterface.html#a808b5c0d45c9cae0a23f00c6bba8efdb">logError</a> () const =0</td></tr>
 <tr class="separator:a808b5c0d45c9cae0a23f00c6bba8efdb inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ccaa77d9375288d28714a282ea2a571 inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnectionInterface.html#a4ccaa77d9375288d28714a282ea2a571">readMms</a> (const std::string &amp;daPath, const std::string &amp;fcName)=0</td></tr>
-<tr class="separator:a4ccaa77d9375288d28714a282ea2a571 inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f994fb0dad21fdd75ae4416e91e6590 inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnectionInterface.html#a9f994fb0dad21fdd75ae4416e91e6590">readDO</a> (const std::string &amp;daPath, const FunctionalConstraint &amp;functionalConstraint)=0</td></tr>
+<tr class="separator:a9f994fb0dad21fdd75ae4416e91e6590 inherit pub_methods_classIEC61850ClientConnectionInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a0e52da0cdf2f96aa2e6dd0e61db58d2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a0e52da0cdf2f96aa2e6dd0e61db58d2e">open</a> ()</td></tr>
+<tr class="memdesc:a0e52da0cdf2f96aa2e6dd0e61db58d2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open a connection with an <a class="el" href="classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge.">IEC61850</a> server.  <a href="classIEC61850ClientConnection.html#a0e52da0cdf2f96aa2e6dd0e61db58d2e">More...</a><br /></td></tr>
 <tr class="separator:a0e52da0cdf2f96aa2e6dd0e61db58d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86cc94ee42bf5c1eb722eaef1deab821"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a86cc94ee42bf5c1eb722eaef1deab821">close</a> ()</td></tr>
+<tr class="memdesc:a86cc94ee42bf5c1eb722eaef1deab821"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close the connection with an <a class="el" href="classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge.">IEC61850</a> server.  <a href="classIEC61850ClientConnection.html#a86cc94ee42bf5c1eb722eaef1deab821">More...</a><br /></td></tr>
 <tr class="separator:a86cc94ee42bf5c1eb722eaef1deab821"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a751109ad3de386031f6d1f986315c23c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a751109ad3de386031f6d1f986315c23c">setOsiConnectionParameters</a> ()</td></tr>
 <tr class="separator:a751109ad3de386031f6d1f986315c23c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae872f5989f2f4adc1d4c23ec4d5c646a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#ae872f5989f2f4adc1d4c23ec4d5c646a">FRIEND_TEST</a> (IEC61850ClientConnectionTest, openConnection)</td></tr>
-<tr class="separator:ae872f5989f2f4adc1d4c23ec4d5c646a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f792b4398fdb5d52eb7d74863793bd2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a4f792b4398fdb5d52eb7d74863793bd2">FRIEND_TEST</a> (IEC61850ClientConnectionTestWithIEC61850Server, openConnection)</td></tr>
+<tr class="separator:a4f792b4398fdb5d52eb7d74863793bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77c2571de81751558b93a423bd7d4ae6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a77c2571de81751558b93a423bd7d4ae6">FRIEND_TEST</a> (IEC61850ClientConnectionTestWithIEC61850Server, openConnectionWithOsiParams)</td></tr>
+<tr class="separator:a77c2571de81751558b93a423bd7d4ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7417e5b77c24dacc430d1f3960b2cef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#ae7417e5b77c24dacc430d1f3960b2cef">FRIEND_TEST</a> (IEC61850ClientConnectionTestWithIEC61850Server, readDOValidMms)</td></tr>
+<tr class="separator:ae7417e5b77c24dacc430d1f3960b2cef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7117ac8239342e2642825ffafc6515e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a7117ac8239342e2642825ffafc6515e1">FRIEND_TEST</a> (IEC61850ClientConnectionTestWithIEC61850Server, readDOButNotConnected)</td></tr>
+<tr class="separator:a7117ac8239342e2642825ffafc6515e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a056080486818fa510c358f977503eb7d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnection.html#a056080486818fa510c358f977503eb7d">FRIEND_TEST</a> (IEC61850ClientConnectionTestWithIEC61850Server, readBadSingleMms)</td></tr>
+<tr class="separator:a056080486818fa510c358f977503eb7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -158,7 +169,7 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a4cbac214f54cf476adb9d253b3b20b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Create and use a <a class="el" href="classIEC61850.html">IEC61850</a> connection with a IED. </p>
+<div class="textblock"><p >Create and use a <a class="el" href="classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge.">IEC61850</a> connection with a IED. </p>
 <p >Wrap a libiec61850 'IedConnection' object for opening connection with a distant IED, sending 'operation' or 'reading' order, receiving asynchronous reports </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1bdffe1e3ab0202ecd5429e54784f9f4" name="a1bdffe1e3ab0202ecd5429e54784f9f4"></a>
@@ -316,10 +327,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Close the connection with an <a class="el" href="classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge.">IEC61850</a> server. </p>
+
 </div>
 </div>
-<a id="ae872f5989f2f4adc1d4c23ec4d5c646a" name="ae872f5989f2f4adc1d4c23ec4d5c646a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae872f5989f2f4adc1d4c23ec4d5c646a">&#9670;&nbsp;</a></span>FRIEND_TEST()</h2>
+<a id="a4f792b4398fdb5d52eb7d74863793bd2" name="a4f792b4398fdb5d52eb7d74863793bd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f792b4398fdb5d52eb7d74863793bd2">&#9670;&nbsp;</a></span>FRIEND_TEST() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -330,13 +343,157 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">IEC61850ClientConnection::FRIEND_TEST </td>
           <td>(</td>
-          <td class="paramtype">IEC61850ClientConnectionTest&#160;</td>
+          <td class="paramtype">IEC61850ClientConnectionTestWithIEC61850Server&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">openConnection&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a77c2571de81751558b93a423bd7d4ae6" name="a77c2571de81751558b93a423bd7d4ae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77c2571de81751558b93a423bd7d4ae6">&#9670;&nbsp;</a></span>FRIEND_TEST() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">IEC61850ClientConnection::FRIEND_TEST </td>
+          <td>(</td>
+          <td class="paramtype">IEC61850ClientConnectionTestWithIEC61850Server&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">openConnectionWithOsiParams&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a056080486818fa510c358f977503eb7d" name="a056080486818fa510c358f977503eb7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a056080486818fa510c358f977503eb7d">&#9670;&nbsp;</a></span>FRIEND_TEST() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">IEC61850ClientConnection::FRIEND_TEST </td>
+          <td>(</td>
+          <td class="paramtype">IEC61850ClientConnectionTestWithIEC61850Server&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">readBadSingleMms&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7117ac8239342e2642825ffafc6515e1" name="a7117ac8239342e2642825ffafc6515e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7117ac8239342e2642825ffafc6515e1">&#9670;&nbsp;</a></span>FRIEND_TEST() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">IEC61850ClientConnection::FRIEND_TEST </td>
+          <td>(</td>
+          <td class="paramtype">IEC61850ClientConnectionTestWithIEC61850Server&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">readDOButNotConnected&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae7417e5b77c24dacc430d1f3960b2cef" name="ae7417e5b77c24dacc430d1f3960b2cef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7417e5b77c24dacc430d1f3960b2cef">&#9670;&nbsp;</a></span>FRIEND_TEST() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">IEC61850ClientConnection::FRIEND_TEST </td>
+          <td>(</td>
+          <td class="paramtype">IEC61850ClientConnectionTestWithIEC61850Server&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">readDOValidMms&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -458,6 +615,8 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Open a connection with an <a class="el" href="classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge.">IEC61850</a> server. </p>
+
 </div>
 </div>
 <a id="a33d90c70db3d4e20c09e49ba42d8bde9" name="a33d90c70db3d4e20c09e49ba42d8bde9"></a>
@@ -514,8 +673,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a037ca466513f89fde83e4856116d0149" name="a037ca466513f89fde83e4856116d0149"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a037ca466513f89fde83e4856116d0149">&#9670;&nbsp;</a></span>readMms()</h2>
+<a id="a1908f70259fedcf41a42033ae32a4bd4" name="a1908f70259fedcf41a42033ae32a4bd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1908f70259fedcf41a42033ae32a4bd4">&#9670;&nbsp;</a></span>readDO()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -524,16 +683,16 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt; IEC61850ClientConnection::readMms </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt; IEC61850ClientConnection::readDO </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>daPath</em>, </td>
+          <td class="paramname"><em>doPath</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>fcName</em>&#160;</td>
+          <td class="paramtype">const FunctionalConstraint &amp;&#160;</td>
+          <td class="paramname"><em>functionalConstraint</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -548,7 +707,10 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classIEC61850ClientConnectionInterface.html#a4ccaa77d9375288d28714a282ea2a571">IEC61850ClientConnectionInterface</a>.</p>
+<p>Read an object (DO: Data Object) of the Server data model. </p>
+<p >Reentrant function, thread safe </p>
+
+<p>Implements <a class="el" href="classIEC61850ClientConnectionInterface.html#a9f994fb0dad21fdd75ae4416e91e6590">IEC61850ClientConnectionInterface</a>.</p>
 
 </div>
 </div>
@@ -663,6 +825,7 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p >Protect the libiec61850 'IedConnection' resource </p>
 
 </div>
 </div>
@@ -696,7 +859,7 @@ Private Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 23 2022 11:37:39 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Fri Dec 9 2022 15:07:12 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>

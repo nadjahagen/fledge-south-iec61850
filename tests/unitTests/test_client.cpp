@@ -147,7 +147,7 @@ TEST(IEC61850ClientTest, startAndStop)
     EXPECT_CALL(mockConnectedConnection, isConnected())
     .Times(5)
     .WillRepeatedly(Return(true));
-    EXPECT_CALL(mockConnectedConnection, readSingleMms(_, _))
+    EXPECT_CALL(mockConnectedConnection, readDO(_, _))
     .Times(2)
     .WillRepeatedly(Return(empty_mms));
     EXPECT_CALL(mockConnectedConnection, isNoError())

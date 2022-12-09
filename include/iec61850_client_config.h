@@ -31,7 +31,7 @@
 constexpr unsigned int DEFAULT_READ_POLLING_PERIOD_IN_MS = 1000;
 
 /**
- *  Lower layer parameters (below the MMS layer) for connection with server
+ *  \brief Lower layer parameters (below the MMS layer) for connection with server
  */
 struct OsiParameters {
     std::string localApTitle{""};
@@ -47,7 +47,7 @@ struct OsiParameters {
 };
 
 /**
- *  Parameters for creating a connection with 1 IEC61850 server
+ *  \brief Parameters for creating a connection with 1 IEC61850 server
  */
 struct ServerConnectionParameters {
     std::string ipAddress;
@@ -57,24 +57,33 @@ struct ServerConnectionParameters {
 };
 
 
+/**
+ *  \brief Defined types of Datapoint
+ */
 enum class DatapointTypeId {
    MV_DATAPOINT_TYPE = 0,
    SPS_DATAPOINT_TYPE = 1,
    UNKNOWN_DATAPOINT_TYPE = -1
 };
 
+/**
+ *  \brief Node for the MMS name tree (name for each element of a complex MMS)
+ */
 struct MmsNameNode {
     std::string mmsName;
     std::vector<std::shared_ptr<const MmsNameNode>> children;
 };
 
+/**
+ *  \brief Mode of the reading activity: list of DO or list of Dataset
+ */
 enum class ReadMode {
     DO_READING = 0,
     DATASET_READING
 };
 
 /**
- *  Application parameters about the IEC61850 client
+ *  \brief Application parameters about the IEC61850 client
  */
 struct ApplicationParameters {
     unsigned int readPollingPeriodInMs = DEFAULT_READ_POLLING_PERIOD_IN_MS;  /** Default polling period: 1 second */
@@ -89,22 +98,25 @@ using DatapointTypeStr = std::string;
 using DataPath = std::string;
 
 /**
- *  Parameters about the data to transfer to Fledge
+ *  \brief Parameters about the data to transfer to Fledge
  */
 struct DatapointConfig {
-    DatapointLabel label;
-    DatapointTypeStr datapointType;
+    DatapointLabel label;  /**< name for the Datapoint */
+    DatapointTypeStr datapointType; /**< to define the structure of the datapoint */
     DatapointTypeId datapointTypeId = DatapointTypeId::UNKNOWN_DATAPOINT_TYPE;
-    DataPath dataPath = "NOT_DEFINED";
+    DataPath dataPath = "NOT_DEFINED";  /**< Object path in the IEC61850 data mode */
     FunctionalConstraint functionalConstraint = IEC61850_FC_NONE;
-    MmsNameNode mmsNameTree;
+    MmsNameNode mmsNameTree;  /**< name of each subelement of the MMS and datapoint */
 };
 
+/**
+ *  \brief Collection of Datapoint configuration, extracted from the input JSON configuration
+ */
 using ExchangedData = std::map<DatapointLabel, DatapointConfig, std::less<>>;
 
 
 /** \class ConfigurationException
- *  \brief an error in the input configuration has been detected
+ *  \brief Error in the input configuration
  */
 class ConfigurationException: public std::logic_error
 {

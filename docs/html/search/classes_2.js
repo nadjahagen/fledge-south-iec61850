@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['fledgeproxyinterface_0',['FledgeProxyInterface',['../classFledgeProxyInterface.html',1,'']]]
+  ['datapointconfig_0',['DatapointConfig',['../structDatapointConfig.html',1,'']]]
 ];

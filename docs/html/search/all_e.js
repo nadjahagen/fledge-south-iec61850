@@ -9,8 +9,9 @@ var searchData=
   ['setconfig_6',['setConfig',['../classIEC61850.html#a7540a61b79b5ef92c7dd11566b8a37cc',1,'IEC61850']]],
   ['setmmsvalue_7',['setMmsValue',['../classWrappedMms.html#a398cf74542c9aa9ac313102e7762f1bb',1,'WrappedMms']]],
   ['setosiconnectionparameters_8',['setOsiConnectionParameters',['../classIEC61850ClientConnection.html#a751109ad3de386031f6d1f986315c23c',1,'IEC61850ClientConnection']]],
-  ['start_9',['start',['../classIEC61850.html#ac318b3c8def302413db1b5905cc09e56',1,'IEC61850::start()'],['../classIEC61850Client.html#a71cc4d7991168a3c5d845971333dbd40',1,'IEC61850Client::start()'],['../classClientGatewayInterface.html#ae077edf9bf8b7a01ea3c30430e5355fb',1,'ClientGatewayInterface::start()']]],
-  ['startdemo_10',['startDemo',['../classIEC61850Client.html#aa91f77c4878bf4cd1d6b722dddf9250d',1,'IEC61850Client']]],
-  ['stop_11',['stop',['../classIEC61850.html#a5c45bb9e02bff4a6861113b0e5326315',1,'IEC61850::stop()'],['../classIEC61850Client.html#a5f610246c301538fcb313d7ea2ac58d5',1,'IEC61850Client::stop()'],['../classClientGatewayInterface.html#ae25e2bf238cf95aee870773eb8682f69',1,'ClientGatewayInterface::stop()']]],
-  ['stopdemo_12',['stopDemo',['../classIEC61850Client.html#a4c49ec032ec668571ed751ae06f9f783',1,'IEC61850Client']]]
+  ['sps_5fdatapoint_5ftype_9',['SPS_DATAPOINT_TYPE',['../iec61850__client__config_8h.html#a6f812243e800d6b03c24f17a1d9cfbe9ae4507a31d3ee1a8ad33ab3f29a806466',1,'iec61850_client_config.h']]],
+  ['start_10',['start',['../classClientGatewayInterface.html#ae077edf9bf8b7a01ea3c30430e5355fb',1,'ClientGatewayInterface::start()'],['../classIEC61850Client.html#a71cc4d7991168a3c5d845971333dbd40',1,'IEC61850Client::start()'],['../classIEC61850.html#ac318b3c8def302413db1b5905cc09e56',1,'IEC61850::start()']]],
+  ['startmmsreading_11',['startMmsReading',['../classIEC61850Client.html#a432f5cc7712e29406eb1dcbea7312fa9',1,'IEC61850Client']]],
+  ['stop_12',['stop',['../classIEC61850.html#a5c45bb9e02bff4a6861113b0e5326315',1,'IEC61850::stop()'],['../classIEC61850Client.html#a5f610246c301538fcb313d7ea2ac58d5',1,'IEC61850Client::stop()'],['../classClientGatewayInterface.html#ae25e2bf238cf95aee870773eb8682f69',1,'ClientGatewayInterface::stop()']]],
+  ['stopmmsreading_13',['stopMmsReading',['../classIEC61850Client.html#aad6c033fa4e6e90081060f1bde89f5e8',1,'IEC61850Client']]]
 ];

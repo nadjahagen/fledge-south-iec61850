@@ -441,12 +441,12 @@ void IEC61850ClientConfig::importJsonExchangedDataConfig(const std::string &exch
 {
     rapidjson::Document document;
 
-    /** Parse the input JSON std::string */
+    /** Parse the input JSON std::string. */
     if (document.Parse(exchangedDataConfig.c_str()).HasParseError()) {
         throw ConfigurationException("'Exchanged data' parsing error");
     }
 
-    /** The 'exchanged_data' section is mandatory */
+    /** The 'exchanged_data' section is mandatory: throw exception if not found. */
     if (!document.IsObject()) {
         throw ConfigurationException("'Exchanged data' empty conf");
     }
@@ -465,7 +465,7 @@ void IEC61850ClientConfig::importJsonExchangedDataConfig(const std::string &exch
         throw ConfigurationException("'datapoints' is not an array -> fail to parse 'ExchangedData'");
     }
 
-    /** Parse each 'datapoint' JSON structure */
+    /** Parse each 'datapoint' JSON structure. */
     for (const auto &jsonDatapointConfig : jsonExchangedData[JSON_DATAPOINTS].GetArray()) {
         importJsonDatapointConfig(jsonDatapointConfig);
     }
@@ -501,7 +501,7 @@ void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &jso
         throw ConfigurationException("'protocols' is not an array -> fail to parse 'datapoints'");
     }
 
-    /** Parse the IEC61850 'protocol' JSON structure */
+    /** Parse the IEC61850 'protocol' JSON structure of Datapoint configuration. */
     for (const auto &protocol : jsonDatapointConfig[JSON_PROTOCOLS].GetArray()) {
         importJsonDatapointProtocolConfig(protocol, newDatapointConfig);
     }
@@ -551,7 +551,7 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         datapointConfig.datapointTypeId = DatapointTypeId::SPS_DATAPOINT_TYPE;
         datapointConfig.functionalConstraint = FunctionalConstraint_fromString("ST");
 
-        // build the 'name' tree for a SPS
+        /** Build the 'name' tree for a SPS. */
         auto stvalNode = std::make_shared<MmsNameNode>();
         stvalNode->mmsName = "stVal";
 
@@ -571,7 +571,7 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         datapointConfig.datapointTypeId = DatapointTypeId::MV_DATAPOINT_TYPE;
         datapointConfig.functionalConstraint = FunctionalConstraint_fromString("MX");
 
-        // build the 'name' tree for a MV
+        /** Build the 'name' tree for a MV. */
         auto fNode = std::make_shared<MmsNameNode>();
         fNode->mmsName = "f";
 

@@ -1,0 +1,4 @@
+<map id="DatapointConfig" name="DatapointConfig">
+<area shape="rect" id="node1" title="Parameters about the data to transfer to Fledge." alt="" coords="5,95,132,121"/>
+<area shape="rect" id="node2" href="$structMmsNameNode.html" title="Node for the MMS name tree (name for each element of a complex MMS)" alt="" coords="5,5,132,32"/>
+</map>

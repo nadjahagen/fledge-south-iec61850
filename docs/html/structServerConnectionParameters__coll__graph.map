@@ -1,0 +1,4 @@
+<map id="ServerConnectionParameters" name="ServerConnectionParameters">
+<area shape="rect" id="node1" title="Parameters for creating a connection with 1 IEC61850 server." alt="" coords="5,95,216,121"/>
+<area shape="rect" id="node2" href="$structOsiParameters.html" title="Lower layer parameters (below the MMS layer) for connection with server." alt="" coords="52,5,169,32"/>
+</map>
