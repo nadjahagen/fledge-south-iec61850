@@ -572,12 +572,12 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         datapointConfig.functionalConstraint = FunctionalConstraint_fromString("MX");
 
         /** Build the 'name' tree for a MV. */
-        auto fNode = std::make_shared<MmsNameNode>();
-        fNode->mmsName = "f";
+        auto valNode = std::make_shared<MmsNameNode>();
+        valNode->mmsName = "value";
 
         auto magNode = std::make_shared<MmsNameNode>();
         magNode->mmsName = "mag";
-        magNode->children.push_back(std::move(fNode));
+        magNode->children.push_back(std::move(valNode));
 
         auto qNode = std::make_shared<MmsNameNode>();
         qNode->mmsName = "q";
@@ -589,6 +589,8 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         datapointConfig.mmsNameTree.children.push_back(magNode);
         datapointConfig.mmsNameTree.children.push_back(qNode);
         datapointConfig.mmsNameTree.children.push_back(tNode);
+    } else {
+        Logger::getLogger()->error("Config: datapoint typeid '%s' not supported yet", strTypeId.c_str());
     }
 }
 

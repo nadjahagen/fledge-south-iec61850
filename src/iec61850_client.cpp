@@ -31,7 +31,7 @@ constexpr const uint32_t SECOND_IN_MILLISEC = 1000;
 const std::map<std::string, std::string, std::less<>> DO_READING_MAPPING = {
     {"cdc", "do_type"},
     {"stVal", "do_value"},
-    {"mag.f", "do_value"},
+    {"mag.value", "do_value"},
     {"q", "do_quality"},
     {"t", "do_ts"}
 };
