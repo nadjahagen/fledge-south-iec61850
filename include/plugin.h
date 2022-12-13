@@ -118,6 +118,40 @@ static const char *const default_config = QUOTE({
                 ]
             }
         })
+    },
+
+    "exchanged_datasets" : {
+        "description" : "exchanged dataset list",
+        "type" : "JSON",
+        "displayName" : "Exchanged dataset list",
+        "order" : "5",
+        "default" : QUOTE({
+            "exchanged_datasets": {
+                "name" : "SAMPLE",
+                "version" : "1.0",
+                "datasets": [
+                    {
+                        "dataset_ref":"simpleIOGenericIO/LLN0.Events",
+                        "data_objects":[
+                            {
+                                "label":"TS1",
+                                "typeid":"SPS"
+                            },
+                            {
+                                "label":"TS2",
+                                "typeid":"SPS"
+                            }
+                        ]
+                    },
+                    {
+                        "dataset_ref":"simpleIOGenericIO/LLN0.Events2"
+                    },
+                    {
+                        "dataset_ref":"simpleIOGenericIO/LLN0.Measurements"
+                    }
+                ]
+            }
+        })
     }
 });
 // *INDENT-ON*

@@ -23,8 +23,11 @@ const char *const JSON_PROTOCOL_STACK = "protocol_stack";
 const char *const JSON_TRANSPORT_LAYER = "transport_layer";
 const char *const JSON_APPLICATION_LAYER = "application_layer";
 const char *const JSON_EXCHANGED_DATA = "exchanged_data";
+const char *const JSON_EXCHANGED_DATASETS = "exchanged_datasets";
 const char *const JSON_CONNECTIONS = "connections";
 const char *const JSON_DATAPOINTS = "datapoints";
+const char *const JSON_DATASETS = "datasets";
+const char *const JSON_DATA_OBJECTS = "data_objects";
 const char *const JSON_PROTOCOLS = "protocols";
 
 const char *const DEFAULT_LOG_MIN_LEVEL = "info";
@@ -64,6 +67,12 @@ void IEC61850ClientConfig::importConfig(const ConfigCategory &newConfig)
         importJsonExchangedDataConfig(newConfig.getValue(JSON_EXCHANGED_DATA));
     } else {
         Logger::getLogger()->info("IEC61850ClientConfig: No ExchangedData section");
+    }
+
+    if (newConfig.itemExists(JSON_EXCHANGED_DATASETS)) {
+        importJsonExchangedDatasetsConfig(newConfig.getValue(JSON_EXCHANGED_DATASETS));
+    } else {
+        Logger::getLogger()->info("IEC61850ClientConfig: No ExchangedDatasets section");
     }
 }
 
@@ -472,6 +481,42 @@ void IEC61850ClientConfig::importJsonExchangedDataConfig(const std::string &exch
     logExchangedData(exchangedData);
 }
 
+void IEC61850ClientConfig::importJsonExchangedDatasetsConfig(const std::string &exchangedDatasetsConfig)
+{
+    rapidjson::Document document;
+
+    /** Parse the input JSON std::string. */
+    if (document.Parse(exchangedDatasetsConfig.c_str()).HasParseError()) {
+        throw ConfigurationException("'Exchanged datasets' parsing error");
+    }
+
+    /** The 'exchanged_datasets' section is mandatory: throw exception if not found. */
+    if (!document.IsObject()) {
+        throw ConfigurationException("'Exchanged datasets' empty conf");
+    }
+
+    if (!document.HasMember(JSON_EXCHANGED_DATASETS) || !document[JSON_EXCHANGED_DATASETS].IsObject()) {
+        throw ConfigurationException("'Exchanged datasets' empty conf");
+    }
+
+    const rapidjson::Value &jsonExchangedDatasets = document[JSON_EXCHANGED_DATASETS];
+
+    if (! jsonExchangedDatasets.HasMember(JSON_DATASETS)) {
+        throw ConfigurationException("'ExchangedDatasets' parsing error: no 'datasets'");
+    }
+
+    if (! jsonExchangedDatasets[JSON_DATASETS].IsArray()) {
+        throw ConfigurationException("'datasets' is not an array -> fail to parse 'ExchangedDatasets'");
+    }
+
+    /** Parse each 'dataset' JSON structure. */
+    for (const auto &jsonDatasetConfig : jsonExchangedDatasets[JSON_DATASETS].GetArray()) {
+        importJsonDatasetConfig(jsonDatasetConfig);
+    }
+
+    logExchangedDatasets(exchangedDatasets);
+}
+
 void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &jsonDatapointConfig)
 {
     // Preconditions
@@ -509,6 +554,53 @@ void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &jso
     exchangedData[newDatapointConfig.label] = newDatapointConfig;
 }
 
+void IEC61850ClientConfig::importJsonDatasetConfig(const rapidjson::Value &jsonDatasetConfig)
+{
+    // Preconditions
+    if (! jsonDatasetConfig.IsObject()) {
+        throw ConfigurationException("'dataset' is not valid");
+    }
+    if (! jsonDatasetConfig.HasMember("dataset_ref")) {
+        throw ConfigurationException("the mandatory 'dataset_ref' not found");
+    }
+    if (! jsonDatasetConfig["dataset_ref"].IsString()) {
+        throw ConfigurationException("bad format for the mandatory 'dataset_ref'");
+    }
+    if (! jsonDatasetConfig.HasMember(JSON_DATA_OBJECTS)) {
+        Logger::getLogger()->warn("Config: ignore the 'datasets': no 'data_objects' section");
+        return;
+    }
+    if (! jsonDatasetConfig[JSON_DATA_OBJECTS].IsArray()) {
+        Logger::getLogger()->warn("Config: ignore the 'datasets': 'data_objects' not an array");
+        return;
+    }
+    // end of preconditions
+
+    std::string datasetRef = std::string(jsonDatasetConfig["dataset_ref"].GetString());
+    if (datasetRef.empty()) {
+        throw ConfigurationException("the mandatory 'dataset_ref' is empty");
+    }
+
+    ExchangedData exchangedDataset;
+
+    /** Parse each 'data_objects' JSON structure */
+    for (const auto &jsonDataObject : jsonDatasetConfig[JSON_DATA_OBJECTS].GetArray()) {
+        DatapointConfig newDatapointConfig;
+
+        if (jsonDataObject.HasMember("label")) {
+            newDatapointConfig.label = std::string(jsonDataObject["label"].GetString());
+
+            if (exchangedDataset.find(newDatapointConfig.label) != exchangedDataset.end()) {
+                throw ConfigurationException("the Datapoint label is already defined");
+            }
+        }
+        setDatapointType(jsonDataObject, newDatapointConfig);
+        exchangedDataset[newDatapointConfig.label] = newDatapointConfig;
+    }
+
+    exchangedDatasets[datasetRef] = exchangedDataset;
+}
+
 void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
                                                              DatapointConfig &datapointConfig) const
 {
@@ -544,12 +636,17 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
     }
 
     datapointConfig.dataPath = datapointProtocolConfig["address"].GetString();
+    setDatapointType(datapointProtocolConfig, datapointConfig);
+}
 
-    std::string strTypeId = datapointProtocolConfig["typeid"].GetString();
+void IEC61850ClientConfig::setDatapointType(const rapidjson::Value &jsonConfig,
+                                            DatapointConfig &dpConfigToComplete)
+{
+    std::string strTypeId = jsonConfig["typeid"].GetString();
     if (strTypeId.compare("SPS") == 0) {
-        datapointConfig.datapointType = "SPS";
-        datapointConfig.datapointTypeId = DatapointTypeId::SPS_DATAPOINT_TYPE;
-        datapointConfig.functionalConstraint = FunctionalConstraint_fromString("ST");
+        dpConfigToComplete.datapointType = "SPS";
+        dpConfigToComplete.datapointTypeId = DatapointTypeId::SPS_DATAPOINT_TYPE;
+        dpConfigToComplete.functionalConstraint = FunctionalConstraint_fromString("ST");
 
         /** Build the 'name' tree for a SPS. */
         auto stvalNode = std::make_shared<MmsNameNode>();
@@ -561,15 +658,15 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         auto tNode = std::make_shared<MmsNameNode>();
         tNode->mmsName = "t";
 
-        datapointConfig.mmsNameTree.mmsName = datapointConfig.label;
-        datapointConfig.mmsNameTree.children.push_back(stvalNode);
-        datapointConfig.mmsNameTree.children.push_back(qNode);
-        datapointConfig.mmsNameTree.children.push_back(tNode);
+        dpConfigToComplete.mmsNameTree.mmsName = dpConfigToComplete.label;
+        dpConfigToComplete.mmsNameTree.children.push_back(stvalNode);
+        dpConfigToComplete.mmsNameTree.children.push_back(qNode);
+        dpConfigToComplete.mmsNameTree.children.push_back(tNode);
 
     } else if (strTypeId.compare("MV") == 0) {
-        datapointConfig.datapointType = "MV";
-        datapointConfig.datapointTypeId = DatapointTypeId::MV_DATAPOINT_TYPE;
-        datapointConfig.functionalConstraint = FunctionalConstraint_fromString("MX");
+        dpConfigToComplete.datapointType = "MV";
+        dpConfigToComplete.datapointTypeId = DatapointTypeId::MV_DATAPOINT_TYPE;
+        dpConfigToComplete.functionalConstraint = FunctionalConstraint_fromString("MX");
 
         /** Build the 'name' tree for a MV. */
         auto valNode = std::make_shared<MmsNameNode>();
@@ -585,10 +682,10 @@ void IEC61850ClientConfig::importJsonDatapointProtocolConfig(const rapidjson::Va
         auto tNode = std::make_shared<MmsNameNode>();
         tNode->mmsName = "t";
 
-        datapointConfig.mmsNameTree.mmsName = datapointConfig.label;
-        datapointConfig.mmsNameTree.children.push_back(magNode);
-        datapointConfig.mmsNameTree.children.push_back(qNode);
-        datapointConfig.mmsNameTree.children.push_back(tNode);
+        dpConfigToComplete.mmsNameTree.mmsName = dpConfigToComplete.label;
+        dpConfigToComplete.mmsNameTree.children.push_back(magNode);
+        dpConfigToComplete.mmsNameTree.children.push_back(qNode);
+        dpConfigToComplete.mmsNameTree.children.push_back(tNode);
     } else {
         Logger::getLogger()->error("Config: datapoint typeid '%s' not supported yet", strTypeId.c_str());
     }
@@ -614,6 +711,18 @@ void IEC61850ClientConfig::logExchangedData(const ExchangedData &exchangedData)
         Logger::getLogger()->info("\tDatapoint: FC: %s", FunctionalConstraint_toString(dpConfig.functionalConstraint));
 
         logMmsNameTree(dpConfig.mmsNameTree);
+    }
+}
+
+void IEC61850ClientConfig::logExchangedDatasets(const ExchangedDatasets &exchangedDatasets)
+{
+    Logger::getLogger()->info("Config: Exchanged Datasets:");
+
+    for (const auto &datasetDictEntry : exchangedDatasets) {
+        const ExchangedData &l_exchangedData = datasetDictEntry.second;
+
+        Logger::getLogger()->info("\tDataset: ref: %s", datasetDictEntry.first.c_str());
+        logExchangedData(l_exchangedData);
     }
 }
 
