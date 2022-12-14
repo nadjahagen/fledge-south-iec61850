@@ -72,7 +72,7 @@ static const char *const default_config = QUOTE({
                 },
                 "application_layer" : {
                     "reading_period" : 1000,
-                    "read_mode" : "do"
+                    "read_mode" : "dataset"
                 }
             }
         })

@@ -39,9 +39,11 @@ const std::map<std::string, std::string, std::less<>> DO_READING_MAPPING = {
 IEC61850Client::IEC61850Client(IEC61850 *iec61850,
                                const ServerConnectionParameters &connectionParam,
                                const ExchangedData &exchangedData,
+                               const ExchangedDatasets &exchangedDatasets,
                                const ApplicationParameters &applicationParams)
     : m_connectionParam(connectionParam),
       m_exchangedData(exchangedData),
+      m_exchangedDatasets(exchangedDatasets),
       m_applicationParams(applicationParams),
       m_iec61850(iec61850)
 {
@@ -176,19 +178,15 @@ void IEC61850Client::sendData(Datapoint *datapoint)
     m_iec61850->ingest(points, datapoint->getName());
 }
 
-Datapoint *IEC61850Client::convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms,
+Datapoint *IEC61850Client::convertMmsToDatapoint(const MmsValue *mmsValue,
                                                  const DatapointConfig &datapointConfig)
 {
     // Precondition
-    if (nullptr == wrappedMms) {
+    if (nullptr == mmsValue) {
         return nullptr;
     }
 
-    if (nullptr == wrappedMms->getMmsValue()) {
-        return nullptr;
-    }
-
-    Datapoint *datapoint = buildDatapointFromMms(wrappedMms->getMmsValue(),
+    Datapoint *datapoint = buildDatapointFromMms(mmsValue,
                                                  &datapointConfig.mmsNameTree,
                                                  datapointConfig.dataPath);
 
@@ -390,18 +388,45 @@ void IEC61850Client::readAndExportMms()
 
     switch (m_applicationParams.readMode) {
         case ReadMode::DATASET_READING:
-            // implementation next
+            /** In case of DATASET_READING: */
+            for (const auto &it : m_exchangedDatasets) {
+                const std::string datasetRef = it.first;
+                const ExchangedData &exchangedDataset = it.second;
+
+                /** Read the complete Dataset, */
+                std::shared_ptr<WrappedMms> wrapped_mms;
+                wrapped_mms = m_connection->readDataset(datasetRef);
+
+                /** Split the dataset, to create 1 reading per DataObject. */
+                const MmsValue * const mmsValue = wrapped_mms->getMmsValue();
+                if (   (mmsValue == nullptr)
+                    || (MmsValue_getType(mmsValue) != MMS_ARRAY)
+                    || (MmsValue_getArraySize(mmsValue) != exchangedDataset.size())) {
+                    throw MmsParsingException("Dataset structure does not match");
+                }
+
+                uint32_t datasetIndex = 0;
+                for (const auto &dpConfig : exchangedDataset) {
+                    sendData(convertMmsToDatapoint(MmsValue_getElement(mmsValue, datasetIndex),
+                                                   dpConfig));
+                    datasetIndex++;
+                }
+            }
             break;
 
         case ReadMode::DO_READING:
         {
-            for (const auto &it : m_exchangedData) {
-                const DatapointConfig &dpConfig = it.second;
+            /** In case of DO_READING: */
+            for (const auto &dpConfig : m_exchangedData) {
                 std::shared_ptr<WrappedMms> wrapped_mms;
+
+                /** Read the DataObject, */
                 wrapped_mms = m_connection->readDO(dpConfig.dataPath,
                                                    dpConfig.functionalConstraint);
 
-                sendData(convertMmsToDatapoint(wrapped_mms, dpConfig));
+                if (wrapped_mms) {
+                    sendData(convertMmsToDatapoint(wrapped_mms->getMmsValue(), dpConfig));
+                }
             }
             break;
         }

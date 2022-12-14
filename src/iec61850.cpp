@@ -47,6 +47,7 @@ void IEC61850::start()
         m_clients[key] = std::make_unique<IEC61850Client>(this,
                          serverConfig.second,
                          m_config->exchangedData,
+                         m_config->exchangedDatasets,
                          m_config->applicationParams);
         m_clients[key]->start();
     }

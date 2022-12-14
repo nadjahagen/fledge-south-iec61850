@@ -12,6 +12,7 @@
  */
 
 #include <string>
+#include <vector>
 #include <map>
 #include <memory>
 
@@ -113,7 +114,7 @@ struct DatapointConfig {
 /**
  *  \brief Collection of Datapoint configuration, extracted from the input JSON configuration
  */
-using ExchangedData = std::map<DatapointLabel, DatapointConfig, std::less<>>;
+using ExchangedData = std::vector<DatapointConfig>;
 
 using ExchangedDatasets = std::map<DatasetRef, ExchangedData, std::less<>>;
 

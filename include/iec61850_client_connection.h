@@ -64,7 +64,14 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
          * Reentrant function, thread safe
          */
         std::shared_ptr<WrappedMms> readDO(const std::string &doPath,
-                                                  const FunctionalConstraint &functionalConstraint) override;
+                                           const FunctionalConstraint &functionalConstraint) override;
+
+        /**
+         * \brief Read a dataset of the Server data model
+         *
+         * Reentrant function, thread safe
+         */
+        std::shared_ptr<WrappedMms> readDataset(const std::string &datasetRef) override;
 
     private:
         /** \brief Open a connection with an IEC61850 server */

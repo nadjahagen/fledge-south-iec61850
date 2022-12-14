@@ -113,3 +113,26 @@ IEC61850ClientConnection::readDO(const std::string &doPath,
                              functionalConstraint));
     return wrapped_mms;
 }
+
+std::shared_ptr<WrappedMms>
+IEC61850ClientConnection::readDataset(const std::string &datasetRef)
+{
+    // Preconditions
+    if (! isConnected()) {
+        return nullptr;
+    }
+
+    auto wrapped_mms = std::make_shared<WrappedMms>();
+    std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
+
+    ClientDataSet readDataset = IedConnection_readDataSetValues(m_iedConnection,
+                                                                &m_networkStack_error,
+                                                                datasetRef.c_str(),
+                                                                NULL);
+
+    /** Keep only the MmsValue, not the full ClientDataSet structure */
+    wrapped_mms->setMmsValue(MmsValue_clone(ClientDataSet_getValues(readDataset)));
+
+    ClientDataSet_destroy(readDataset);
+    return wrapped_mms;
+}

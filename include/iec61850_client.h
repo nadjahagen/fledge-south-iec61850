@@ -55,6 +55,7 @@ class IEC61850Client
         explicit IEC61850Client(IEC61850 *iec61850,
                                 const ServerConnectionParameters &connectionParam,
                                 const ExchangedData &exchangedData,
+                                const ExchangedDatasets &exchangedDatasets,
                                 const ApplicationParameters &applicationParams);
 
         ~IEC61850Client();
@@ -83,6 +84,7 @@ class IEC61850Client
         // Section: Configuration
         const ServerConnectionParameters &m_connectionParam;
         const ExchangedData &m_exchangedData;
+        const ExchangedDatasets &m_exchangedDatasets;
         const ApplicationParameters &m_applicationParams;
 
         IEC61850 *m_iec61850; /**< plugin main object to which to forward the reading data */
@@ -118,7 +120,7 @@ class IEC61850Client
          * by extracting the MMS content and creating a new Datapoint.
          * Reentrant function, thread safe
          */
-        static Datapoint *convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms,
+        static Datapoint *convertMmsToDatapoint(const MmsValue *mmsValue,
                                                 const DatapointConfig &datapointConfig);
 
         /**

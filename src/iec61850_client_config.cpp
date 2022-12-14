@@ -534,10 +534,6 @@ void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &jso
     DatapointConfig newDatapointConfig;
     newDatapointConfig.label = std::string(jsonDatapointConfig["label"].GetString());
 
-    if (exchangedData.find(newDatapointConfig.label) != exchangedData.end()) {
-        throw ConfigurationException("the Datapoint label is already defined");
-    }
-
     if (! jsonDatapointConfig.HasMember(JSON_PROTOCOLS)) {
         throw ConfigurationException("'datapoints' parsing error: no 'protocols'");
     }
@@ -551,7 +547,7 @@ void IEC61850ClientConfig::importJsonDatapointConfig(const rapidjson::Value &jso
         importJsonDatapointProtocolConfig(protocol, newDatapointConfig);
     }
 
-    exchangedData[newDatapointConfig.label] = newDatapointConfig;
+    exchangedData.push_back(newDatapointConfig);
 }
 
 void IEC61850ClientConfig::importJsonDatasetConfig(const rapidjson::Value &jsonDatasetConfig)
@@ -589,13 +585,9 @@ void IEC61850ClientConfig::importJsonDatasetConfig(const rapidjson::Value &jsonD
 
         if (jsonDataObject.HasMember("label")) {
             newDatapointConfig.label = std::string(jsonDataObject["label"].GetString());
-
-            if (exchangedDataset.find(newDatapointConfig.label) != exchangedDataset.end()) {
-                throw ConfigurationException("the Datapoint label is already defined");
-            }
         }
         setDatapointType(jsonDataObject, newDatapointConfig);
-        exchangedDataset[newDatapointConfig.label] = newDatapointConfig;
+        exchangedDataset.push_back(newDatapointConfig);
     }
 
     exchangedDatasets[datasetRef] = exchangedDataset;
@@ -703,8 +695,7 @@ void IEC61850ClientConfig::logExchangedData(const ExchangedData &exchangedData)
 {
     Logger::getLogger()->info("Config: Exchanged Data:");
 
-    for (const auto &dictEntry : exchangedData) {
-        const DatapointConfig &dpConfig = dictEntry.second;
+    for (const auto &dpConfig : exchangedData) {
         Logger::getLogger()->info("\tDatapoint: label: %s", dpConfig.label.c_str());
         Logger::getLogger()->info("\tDatapoint: type: %d", dpConfig.datapointTypeId);
         Logger::getLogger()->info("\tDatapoint: dataPath: %s", dpConfig.dataPath.c_str());
