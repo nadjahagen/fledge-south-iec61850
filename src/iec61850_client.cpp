@@ -358,16 +358,16 @@ void IEC61850Client::readMmsLoop()
         pollingPeriodInMs = 1000;
     }
 
-    try {
-        while (m_isMmsReadingActivated) {
+    while (m_isMmsReadingActivated) {
+        try {
             readAndExportMms();
-            std::chrono::milliseconds timespan(pollingPeriodInMs);
-            std::this_thread::sleep_for(timespan);
+        } catch (std::exception &e) {
+            Logger::getLogger()->error("%s", e.what());
+        } catch (...) {
+            Logger::getLogger()->error("Error: unknown exception caught");
         }
-    } catch (std::exception &e) {
-        Logger::getLogger()->error("%s", e.what());
-    } catch (...) {
-        Logger::getLogger()->error("Error: unknown exception caught");
+        std::chrono::milliseconds timespan(pollingPeriodInMs);
+        std::this_thread::sleep_for(timespan);
     }
 }
 
