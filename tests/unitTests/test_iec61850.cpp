@@ -103,8 +103,8 @@ TEST(IEC61850Test, registerIngestCallback)
                             ingestDemoCallback);
     ASSERT_THAT(iec61850.m_data, NotNull());
     ASSERT_EQ(ingestDataType, iec61850.m_data);
-    iec61850.ingest(points1);
-    iec61850.ingest(points2);
-    iec61850.ingest(points3);
+    iec61850.ingest(points1, "TM1");
+    iec61850.ingest(points2, "TS1");
+    iec61850.ingest(points3, "TM1");
     ASSERT_EQ(global_ingestCallback_count, 3);
 }

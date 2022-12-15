@@ -91,8 +91,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5a63e4b757085a7fc00205984a93490d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a808b5c0d45c9cae0a23f00c6bba8efdb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnectionInterface.html#a808b5c0d45c9cae0a23f00c6bba8efdb">logError</a> () const =0</td></tr>
 <tr class="separator:a808b5c0d45c9cae0a23f00c6bba8efdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ccaa77d9375288d28714a282ea2a571"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnectionInterface.html#a4ccaa77d9375288d28714a282ea2a571">readMms</a> (const std::string &amp;daPath, const std::string &amp;fcName)=0</td></tr>
-<tr class="separator:a4ccaa77d9375288d28714a282ea2a571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f994fb0dad21fdd75ae4416e91e6590"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIEC61850ClientConnectionInterface.html#a9f994fb0dad21fdd75ae4416e91e6590">readDO</a> (const std::string &amp;daPath, const FunctionalConstraint &amp;functionalConstraint)=0</td></tr>
+<tr class="separator:a9f994fb0dad21fdd75ae4416e91e6590"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad4809c7fa10938543eeb6c5b15c793ce" name="ad4809c7fa10938543eeb6c5b15c793ce"></a>
@@ -202,8 +202,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a4ccaa77d9375288d28714a282ea2a571" name="a4ccaa77d9375288d28714a282ea2a571"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ccaa77d9375288d28714a282ea2a571">&#9670;&nbsp;</a></span>readMms()</h2>
+<a id="a9f994fb0dad21fdd75ae4416e91e6590" name="a9f994fb0dad21fdd75ae4416e91e6590"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f994fb0dad21fdd75ae4416e91e6590">&#9670;&nbsp;</a></span>readDO()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -212,7 +212,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt; IEC61850ClientConnectionInterface::readMms </td>
+          <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classWrappedMms.html">WrappedMms</a> &gt; IEC61850ClientConnectionInterface::readDO </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>daPath</em>, </td>
@@ -220,8 +220,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>fcName</em>&#160;</td>
+          <td class="paramtype">const FunctionalConstraint &amp;&#160;</td>
+          <td class="paramname"><em>functionalConstraint</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -236,7 +236,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classIEC61850ClientConnection.html#a037ca466513f89fde83e4856116d0149">IEC61850ClientConnection</a>.</p>
+<p>Implemented in <a class="el" href="classIEC61850ClientConnection.html#a1908f70259fedcf41a42033ae32a4bd4">IEC61850ClientConnection</a>.</p>
 
 </div>
 </div>
@@ -246,7 +246,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 23 2022 11:37:39 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
+Generated on Fri Dec 9 2022 15:07:12 for iec61850 by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
 </small></address>
 </body>
 </html>

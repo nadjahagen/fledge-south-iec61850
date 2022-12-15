@@ -14,13 +14,14 @@
 // Fledge headers
 #include <config_category.h>
 
-/**
- * Default configuration
- */
 
 #define PLUGIN_NAME "iec61850"  // NOSONAR (Fledge API)
 
 // *INDENT-OFF* (disable 'astyle' tool on this section)
+
+/**
+ * \brief Default configuration, automatically loaded, if the user do not override the parameters
+ */
 static const char *const default_config = QUOTE({
     "plugin" : {
         "description" : "iec61850 south plugin",
@@ -70,10 +71,13 @@ static const char *const default_config = QUOTE({
                     ]
                 },
                 "application_layer" : {
+                    "reading_period" : 1000,
+                    "read_mode" : "do"
                 }
             }
         })
     },
+
     "exchanged_data" : {
         "description" : "exchanged data list",
         "type" : "JSON",
@@ -81,13 +85,37 @@ static const char *const default_config = QUOTE({
         "order" : "4",
         "default" : QUOTE({
             "exchanged_data": {
-                "name" : "iec104client",
+                "name" : "iec61850client",
                 "version" : "1.0",
-                "Logical Device": "GenericIO",
-                "Logical Node": "GGIO1",
-                "CDC" : "AnIn1",
-                "Data Attribute": "mag.f",
-                "Functional Constraint": "MX"
+                "datapoints": [
+                    {
+                        "label":"TS1",
+                        "pivot_id": "IDxxxxxx",
+                        "pivot_type": "SpsTyp",
+                        "pivot_subtypes": [
+                            "transient"
+                        ],
+                        "protocols":[
+                           {
+                              "name":"iec61850",
+                              "address":"simpleIOGenericIO/GGIO1.Ind1",
+                              "typeid":"SPS"
+                           }
+                        ]
+                    },
+                    {
+                        "label":"TM1",
+                        "pivot_id": "IDxxxxxx",
+                        "pivot_type": "MVTyp",
+                        "protocols":[
+                           {
+                              "name":"iec61850",
+                              "address":"simpleIOGenericIO/GGIO1.AnIn1",
+                              "typeid":"MV"
+                           }
+                        ]
+                    }
+                ]
             }
         })
     }

@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structExchangedData.html" title=" " alt="" coords="5,5,129,32"/>
+<area shape="rect" id="node1" href="$classClientGatewayInterface.html" title=" " alt="" coords="5,5,181,32"/>
+<area shape="rect" id="node2" href="$classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge." alt="" coords="229,31,312,57"/>
+<area shape="rect" id="node3" href="$classFledgeProxyInterface.html" title="Interface with the Fledge API, for sending &#39;Reading&#39; datapoint." alt="" coords="13,56,174,83"/>
 </map>

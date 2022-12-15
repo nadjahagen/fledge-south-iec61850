@@ -21,10 +21,13 @@
 #include "./plugin.h"
 #include "./iec61850.h"
 
+/**
+ * \brief Function pointer type for the 'Reading' object processing.
+ */
 using INGEST_CB = void (*)(void *, Reading);
 
 /**
- * The 61850 plugin interface
+ * \brief The 61850 plugin interface
  */
 extern "C" {
     static const PLUGIN_INFORMATION info = {
@@ -37,7 +40,7 @@ extern "C" {
     };
 
     /**
-     * Return the information about this plugin
+     * \brief Return the information about this plugin
      */
     PLUGIN_INFORMATION *plugin_info()
     {
@@ -45,6 +48,9 @@ extern "C" {
         return const_cast<PLUGIN_INFORMATION *>(&info); // NOSONAR (Fledge API)
     }
 
+    /**
+     * \brief Initialize the plugin with a JSON configuration
+     */
     PLUGIN_HANDLE plugin_init(ConfigCategory *config)  // NOSONAR (Fledge API)
     {
         Logger::getLogger()->setMinLevel("info");
@@ -69,7 +75,7 @@ extern "C" {
     }
 
     /**
-     * Start the Async handling for the plugin
+     * \brief Start the asynchronous Fledge feeding with MMS readings
      */
     void plugin_start(PLUGIN_HANDLE handle)
     {
@@ -84,7 +90,7 @@ extern "C" {
     }
 
     /**
-     * Register ingest callback
+     * \brief Register ingest callback
      */
     void plugin_register_ingest(PLUGIN_HANDLE handle, INGEST_CB ingestCallback, void *data)  // NOSONAR (Fledge API)
     {
@@ -97,7 +103,7 @@ extern "C" {
     }
 
     /**
-     * Poll for a plugin reading
+     * \brief Poll for a plugin reading (not used)
      */
     Reading plugin_poll(PLUGIN_HANDLE)  // NOSONAR (Fledge API)
     {
@@ -106,8 +112,7 @@ extern "C" {
     }
 
     /**
-     * Reconfigure the plugin
-     *
+     * \brief Reconfigure the plugin
      */
     void plugin_reconfigure(PLUGIN_HANDLE handle, std::string &newConfig)  // NOSONAR (Fledge API)
     {
@@ -133,7 +138,7 @@ extern "C" {
     }
 
     /**
-     * Shutdown the plugin
+     * \brief Shutdown the plugin
      */
     void plugin_shutdown(PLUGIN_HANDLE handle)
     {

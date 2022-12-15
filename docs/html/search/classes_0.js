@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['clientgatewayinterface_0',['ClientGatewayInterface',['../classClientGatewayInterface.html',1,'']]],
-  ['configurationexception_1',['ConfigurationException',['../classConfigurationException.html',1,'']]]
+  ['applicationparameters_0',['ApplicationParameters',['../structApplicationParameters.html',1,'']]]
 ];

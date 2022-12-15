@@ -13,18 +13,25 @@
 
 #include <string>
 #include <map>
+#include <memory>
 
 // Fledge headers
 #include <config_category.h>
 
 // libiec61850 headers
 #include <libiec61850/libiec61850_common_api.h>
+#include <libiec61850/iec61850_common.h>
 #include <libiec61850/iso_connection_parameters.h>
 
 #include <rapidjson/document.h>
 
+// For white box unit tests
+#include <gtest/gtest_prod.h>
+
+constexpr unsigned int DEFAULT_READ_POLLING_PERIOD_IN_MS = 1000;
+
 /**
- *  Lower layer parameters (below the MMS layer) for connection with server
+ *  \brief Lower layer parameters (below the MMS layer) for connection with server
  */
 struct OsiParameters {
     std::string localApTitle{""};
@@ -40,36 +47,76 @@ struct OsiParameters {
 };
 
 /**
- *  Parameters for creating a connection with 1 IEC61850 server
+ *  \brief Parameters for creating a connection with 1 IEC61850 server
  */
 struct ServerConnectionParameters {
     std::string ipAddress;
-    int mmsPort;
+    int mmsPort{0};
     bool isOsiParametersEnabled{false};
     OsiParameters osiParameters;
 };
 
-/**
- *  Parameters about the data to transfer to Fledge
- */
-struct ExchangedData {
-    std::string logicalDeviceName = "LD_NOT_DEFINED";
-    std::string logicalNodeName = "LN_NOT_DEFINED";
-    std::string cdc = "CDC_NOT_DEFINED";
-    std::string dataAttribute = "DA_NOT_DEFINED";
-    std::string fcName = "FC_NOT_DEFINED";
 
-    std::string daPath = "NOT_DEFINED";
+/**
+ *  \brief Defined types of Datapoint
+ */
+enum class DatapointTypeId {
+   MV_DATAPOINT_TYPE = 0,
+   SPS_DATAPOINT_TYPE = 1,
+   UNKNOWN_DATAPOINT_TYPE = -1
+};
+
+/**
+ *  \brief Node for the MMS name tree (name for each element of a complex MMS)
+ */
+struct MmsNameNode {
+    std::string mmsName;
+    std::vector<std::shared_ptr<const MmsNameNode>> children;
+};
+
+/**
+ *  \brief Mode of the reading activity: list of DO or list of Dataset
+ */
+enum class ReadMode {
+    DO_READING = 0,
+    DATASET_READING
+};
+
+/**
+ *  \brief Application parameters about the IEC61850 client
+ */
+struct ApplicationParameters {
+    unsigned int readPollingPeriodInMs = DEFAULT_READ_POLLING_PERIOD_IN_MS;  /** Default polling period: 1 second */
+    ReadMode readMode = ReadMode::DO_READING;  /** Default reading mode: DO, not dataset */
 };
 
 using OsiSelectorSize = uint8_t;
 using ServerDictKey = std::string;
 using ServerConfigDict = std::map<ServerDictKey, ServerConnectionParameters, std::less<>>;
+using DatapointLabel = std::string;
+using DatapointTypeStr = std::string;
+using DataPath = std::string;
 
+/**
+ *  \brief Parameters about the data to transfer to Fledge
+ */
+struct DatapointConfig {
+    DatapointLabel label;  /**< name for the Datapoint */
+    DatapointTypeStr datapointType; /**< to define the structure of the datapoint */
+    DatapointTypeId datapointTypeId = DatapointTypeId::UNKNOWN_DATAPOINT_TYPE;
+    DataPath dataPath = "NOT_DEFINED";  /**< Object path in the IEC61850 data mode */
+    FunctionalConstraint functionalConstraint = IEC61850_FC_NONE;
+    MmsNameNode mmsNameTree;  /**< name of each subelement of the MMS and datapoint */
+};
+
+/**
+ *  \brief Collection of Datapoint configuration, extracted from the input JSON configuration
+ */
+using ExchangedData = std::map<DatapointLabel, DatapointConfig, std::less<>>;
 
 
 /** \class ConfigurationException
- *  \brief a error in the input configuration has been detected
+ *  \brief Error in the input configuration
  */
 class ConfigurationException: public std::logic_error
 {
@@ -95,6 +142,8 @@ class IEC61850ClientConfig
 
         ServerConfigDict serverConfigDict;
 
+        ApplicationParameters applicationParams;
+
         // Data model section
         ExchangedData exchangedData;
 
@@ -110,6 +159,8 @@ class IEC61850ClientConfig
         static void logOsiSelector(const std::string &selectorName,
                                    const int selectorSize,
                                    const uint8_t *selectorValues);
+        static void logExchangedData(const ExchangedData &exchangedData);
+        static void logMmsNameTree(const MmsNameNode &mmsNameNode, uint8_t currentDepth = 0);
 
     private:
         void importJsonProtocolConfig(const std::string &protocolConfig);
@@ -119,8 +170,11 @@ class IEC61850ClientConfig
                                            ServerConnectionParameters &iedConnectionParam) const;
         void importJsonConnectionOsiSelectors(const rapidjson::Value &connOsiConfig,
                                               OsiParameters *osiParams) const;
-        void importJsonApplicationLayerConfig(const rapidjson::Value &transportLayer) const;
-        void importJsonExchangeConfig(const std::string &exchangeConfig);
+        void importJsonApplicationLayerConfig(const rapidjson::Value &applicationLayer);
+        void importJsonExchangedDataConfig(const std::string &exchangedDataConfig);
+        void importJsonDatapointConfig(const rapidjson::Value &jsonDatapointConfig);
+        void importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
+                                               DatapointConfig &datapointConfig) const;
 
         static OsiSelectorSize parseOsiPSelector(std::string &inputOsiSelector, PSelector *pselector);
         static OsiSelectorSize parseOsiTSelector(std::string &inputOsiSelector, TSelector *tselector);
@@ -130,6 +184,25 @@ class IEC61850ClientConfig
                                                 const uint8_t selectorSize);
 
         static bool isValidIPAddress(const std::string &addrStr);
+
+        // Section: see the class as a white box for unit tests
+        FRIEND_TEST(IEC61850ClientConfigTest, importValidExchangedData);
+        FRIEND_TEST(IEC61850ClientConfigTest, importExchangedDataWithParsingError);
+        FRIEND_TEST(IEC61850ClientConfigTest, importExchangedDataWithMissingSection);
+        FRIEND_TEST(IEC61850ClientConfigTest, importExchangedDataWithMissingDatapointSection);
+        FRIEND_TEST(IEC61850ClientConfigTest, importExchangedDataWithDatapointNotArray);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingLabel);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithBadFormatLabel);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithSameLabel);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingProtocol);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithProtocolNotArray);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryName);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithNameBadFormat);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryTypeId);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithTypeIdBadFormat);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryAddress);
+        FRIEND_TEST(IEC61850ClientConfigTest, importDatapointWithAddressBadFormat);
+        FRIEND_TEST(IEC61850ClientConfigTest, importValidExchangedDataWithIgnoredProtocols);
 };
 
 #endif  // INCLUDE_IEC61850_CLIENT_CONFIG_H_

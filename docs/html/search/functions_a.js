@@ -1,11 +1,7 @@
 var searchData=
 [
-  ['senddata_0',['sendData',['../classIEC61850Client.html#a5189bcc8a83426a072cfb43e4f62aa4f',1,'IEC61850Client']]],
-  ['setconfig_1',['setConfig',['../classIEC61850.html#a7540a61b79b5ef92c7dd11566b8a37cc',1,'IEC61850']]],
-  ['setmmsvalue_2',['setMmsValue',['../classWrappedMms.html#a398cf74542c9aa9ac313102e7762f1bb',1,'WrappedMms']]],
-  ['setosiconnectionparameters_3',['setOsiConnectionParameters',['../classIEC61850ClientConnection.html#a751109ad3de386031f6d1f986315c23c',1,'IEC61850ClientConnection']]],
-  ['start_4',['start',['../classIEC61850.html#ac318b3c8def302413db1b5905cc09e56',1,'IEC61850::start()'],['../classIEC61850Client.html#a71cc4d7991168a3c5d845971333dbd40',1,'IEC61850Client::start()'],['../classClientGatewayInterface.html#ae077edf9bf8b7a01ea3c30430e5355fb',1,'ClientGatewayInterface::start()']]],
-  ['startdemo_5',['startDemo',['../classIEC61850Client.html#aa91f77c4878bf4cd1d6b722dddf9250d',1,'IEC61850Client']]],
-  ['stop_6',['stop',['../classIEC61850.html#a5c45bb9e02bff4a6861113b0e5326315',1,'IEC61850::stop()'],['../classIEC61850Client.html#a5f610246c301538fcb313d7ea2ac58d5',1,'IEC61850Client::stop()'],['../classClientGatewayInterface.html#ae25e2bf238cf95aee870773eb8682f69',1,'ClientGatewayInterface::stop()']]],
-  ['stopdemo_7',['stopDemo',['../classIEC61850Client.html#a4c49ec032ec668571ed751ae06f9f783',1,'IEC61850Client']]]
+  ['readandexportmms_0',['readAndExportMms',['../classIEC61850Client.html#ae0bf1fea7f4f74570e62c42de8bf832b',1,'IEC61850Client']]],
+  ['readdo_1',['readDO',['../classIEC61850ClientConnection.html#a1908f70259fedcf41a42033ae32a4bd4',1,'IEC61850ClientConnection::readDO()'],['../classIEC61850ClientConnectionInterface.html#a9f994fb0dad21fdd75ae4416e91e6590',1,'IEC61850ClientConnectionInterface::readDO()']]],
+  ['readmmsloop_2',['readMmsLoop',['../classIEC61850Client.html#a64f8eb02a40a2d12048df336685a1d64',1,'IEC61850Client']]],
+  ['registeringest_3',['registerIngest',['../classIEC61850.html#a5e967bfff53d0c86c09a122a94bd16d2',1,'IEC61850::registerIngest()'],['../classFledgeProxyInterface.html#ac560f978a00847c4c60fe64e3427af70',1,'FledgeProxyInterface::registerIngest()']]]
 ];

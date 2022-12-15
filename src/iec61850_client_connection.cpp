@@ -97,21 +97,19 @@ void IEC61850ClientConnection::close()
 }
 
 std::shared_ptr<WrappedMms>
-IEC61850ClientConnection::readMms(const std::string &daPath,
-                                  const std::string &fcName)
+IEC61850ClientConnection::readDO(const std::string &doPath,
+                                 const FunctionalConstraint &functionalConstraint)
 {
     // Preconditions
     if (! isConnected()) {
         return nullptr;
     }
 
-    FunctionalConstraint functionalConstraint =
-        FunctionalConstraint_fromString(fcName.c_str());
     auto wrapped_mms = std::make_shared<WrappedMms>();
     std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
     wrapped_mms->setMmsValue(IedConnection_readObject(m_iedConnection,
                              &m_networkStack_error,
-                             daPath.c_str(),
+                             doPath.c_str(),
                              functionalConstraint));
     return wrapped_mms;
 }

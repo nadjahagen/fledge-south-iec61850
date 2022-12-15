@@ -57,23 +57,6 @@ const std::string configForReconfiguration = QUOTE({
                 }
             }
         })
-    },
-    "exchanged_data" : {
-        "description" : "exchanged data list",
-        "type" : "JSON",
-        "displayName" : "Exchanged data list",
-        "order" : "4",
-        "value" : QUOTE({
-            "exchanged_data": {
-                "name" : "iec104client",
-                "version" : "1.0",
-                "Logical Device": "GenericIO",
-                "Logical Node": "GGIO1",
-                "CDC" : "AnIn1",
-                "Data Attribute": "mag.f",
-                "Functional Constraint": "MX"
-            }
-        })
     }
 });
 
@@ -118,23 +101,6 @@ const std::string configWithoutLogLevel = QUOTE({
                 },
                 "application_layer" : {
                 }
-            }
-        })
-    },
-    "exchanged_data" : {
-        "description" : "exchanged data list",
-        "type" : "JSON",
-        "displayName" : "Exchanged data list",
-        "order" : "4",
-        "value" : QUOTE({
-            "exchanged_data": {
-                "name" : "iec104client",
-                "version" : "1.0",
-                "Logical Device": "GenericIO",
-                "Logical Node": "GGIO1",
-                "CDC" : "AnIn1",
-                "Data Attribute": "mag.f",
-                "Functional Constraint": "MX"
             }
         })
     }
@@ -559,23 +525,6 @@ const std::string configValidOsiConnectionParameters = QUOTE({
                 }
             }
         })
-    },
-    "exchanged_data" : {
-        "description" : "exchanged data list",
-        "type" : "JSON",
-        "displayName" : "Exchanged data list",
-        "order" : "4",
-        "value" : QUOTE({
-            "exchanged_data": {
-                "name" : "iec104client",
-                "version" : "1.0",
-                "Logical Device": "GenericIO",
-                "Logical Node": "GGIO1",
-                "CDC" : "AnIn1",
-                "Data Attribute": "mag.f",
-                "Functional Constraint": "MX"
-            }
-        })
     }
 });
 
@@ -983,6 +932,292 @@ const std::string configOsiConnectionSelectorNotAByte2 = QUOTE({
         })
     }
 });
+
+const std::string validExchangedData = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label":"TS1",
+                        "pivot_id": "IDxxxxxx",
+                        "pivot_type": "SpsTyp",
+                        "pivot_subtypes": [
+                            "transient"
+                        ],
+                        "protocols":[
+                           {
+                              "name":"iec61850",
+                              "address":"simpleIOGenericIO/GGIO1.Ind1",
+                              "typeid":"SPS"
+                           }
+                        ]
+                    },
+                    {
+                        "label":"TM1",
+                        "pivot_id": "IDxxxxxx",
+                        "pivot_type": "MVTyp",
+                        "protocols":[
+                           {
+                              "name":"iec61850",
+                              "address":"simpleIOGenericIO/GGIO1.AnIn1",
+                              "typeid":"MV"
+                           }
+                        ]
+                    }
+                ]
+            }
+        });
+
+const std::string exchangedDataWithParsingError = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client"
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                    }
+                ]
+            }
+        });
+
+const std::string missingExchangedDataSection = QUOTE({
+            "sent_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                    }
+                ]
+            }
+        });
+
+const std::string missingDatapointSection = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0"
+            }
+        });
+
+const std::string datapointNotArray = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": "two datapoints"
+            }
+        });
+
+const std::string datapointWithMissingLabel = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithBadFormatLabel = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": 13
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithSameLabel = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1",
+                        "protocols":[
+                           {
+                              "name":"iec61850",
+                              "address":"simpleIOGenericIO/GGIO1.Ind1",
+                              "typeid":"SPS"
+                           }
+                        ]
+                    },
+                    {
+                        "label": "TM1"
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithMissingProtocol = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1"
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithProtocolNotArray = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1",
+                        "protocols": "iec61850"
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithMissingMandatoryName = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1",
+                        "protocols":[
+                           {
+                              "typeid":"SPS"
+                           }
+                        ]
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithNameBadFormat = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1",
+                        "protocols":[
+                           {
+                              "name": 61850,
+                              "typeid":"SPS"
+                           }
+                        ]
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithMissingMandatoryTypeId = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1",
+                        "protocols":[
+                           {
+                              "name": "iec61850"
+                           }
+                        ]
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithTypeIdBadFormat = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1",
+                        "protocols":[
+                           {
+                              "name": "iec61850",
+                              "typeid": 3
+                           }
+                        ]
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithMissingMandatoryAddress = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1",
+                        "protocols":[
+                           {
+                              "name": "iec61850",
+                              "typeid": "SPS"
+                           }
+                        ]
+                    }
+                ]
+            }
+        });
+
+const std::string datapointWithAddressBadFormat = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label": "TM1",
+                        "protocols":[
+                           {
+                              "name": "iec61850",
+                              "typeid": "SPS",
+                              "address": 3.1416
+                           }
+                        ]
+                    }
+                ]
+            }
+        });
+
+const std::string validExchangedDataWithIgnoredProtocols = QUOTE({
+            "exchanged_data": {
+                "name" : "iec61850client",
+                "version" : "1.0",
+                "datapoints": [
+                    {
+                        "label":"TS1",
+                        "pivot_id": "IDxxxxxx",
+                        "pivot_type": "SpsTyp",
+                        "pivot_subtypes": [
+                            "transient"
+                        ],
+                        "protocols":[
+                           {
+                              "name":"otherProtocol",
+                              "address":"simpleIOGenericIO/GGIO1.Ind1",
+                              "typeid":"SPS"
+                           },
+                           {
+                              "name":"iec61850",
+                              "address":"path for iec61850 model",
+                              "typeid":"SPS"
+                           },
+                           {
+                              "name":"foo",
+                              "address":"simpleIOGenericIO/GGIO1.Ind1",
+                              "typeid":"SPS"
+                           }
+                        ]
+                    }
+                ]
+            }
+        });
+
+
 // *INDENT-ON*
 //
 #endif

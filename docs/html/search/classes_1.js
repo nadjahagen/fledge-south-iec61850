@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['exchangeddata_0',['ExchangedData',['../structExchangedData.html',1,'']]]
+  ['clientgatewayinterface_0',['ClientGatewayInterface',['../classClientGatewayInterface.html',1,'']]],
+  ['configurationexception_1',['ConfigurationException',['../classConfigurationException.html',1,'']]]
 ];

@@ -61,7 +61,7 @@ include_directories(${FLEDGE_INCLUDE_DIRS})
 link_directories(${FLEDGE_LIB_DIRS})
 
 # Link runTests with what we want to test and the GTest and pthread library
-add_executable(RunTests ${unittests} ${SOURCES} version.h)
+add_executable(${PROJECT_NAME} ${unittests} ${SOURCES} version.h)
 
 target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${NEEDED_FLEDGE_LIBS})

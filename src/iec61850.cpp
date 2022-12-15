@@ -41,12 +41,13 @@ void IEC61850::start()
 {
     Logger::getLogger()->info("Plugin started");
 
-    /* Create the IEC61850 clients */
+    /** Create and start the IEC61850 clients. */
     for (auto &serverConfig : m_config->serverConfigDict) {
         std::string key = serverConfig.first;
         m_clients[key] = std::make_unique<IEC61850Client>(this,
                          serverConfig.second,
-                         m_config->exchangedData);
+                         m_config->exchangedData,
+                         m_config->applicationParams);
         m_clients[key]->start();
     }
 }
@@ -60,12 +61,13 @@ void IEC61850::stop()
     m_clients.clear();
 }
 
-void IEC61850::ingest(std::vector<Datapoint *> &points)
+void IEC61850::ingest(std::vector<Datapoint *> &points,
+                      const std::string &readingAssetName)
 {
     std::unique_lock<std::mutex> ingestGuard(m_ingestMutex);
 
     if (m_ingest_callback) {
-        /* Callback function used after receiving data */
-        (*m_ingest_callback)(m_data, Reading(m_config->assetName, points));
+        /** Send the received/read data to Fledge, via the Callback function. */
+        (*m_ingest_callback)(m_data, Reading(readingAssetName, points));
     }
 }

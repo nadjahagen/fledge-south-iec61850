@@ -424,3 +424,258 @@ TEST(IEC61850ClientConfigTest, importConfigOsiConnectionSelectorNotAByte2)
         FAIL();
     }
 }
+
+TEST(IEC61850ClientConfigTest, importValidExchangedData)
+{
+    IEC61850ClientConfig clientConfig;
+
+    ASSERT_NO_THROW(clientConfig.importJsonExchangedDataConfig(validExchangedData));
+
+    ASSERT_EQ(clientConfig.exchangedData.size(), 2);
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].label, "TM1");
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].datapointType, "MV");
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].datapointTypeId, DatapointTypeId::MV_DATAPOINT_TYPE);
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].dataPath, "simpleIOGenericIO/GGIO1.AnIn1");
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].functionalConstraint, IEC61850_FC_MX);
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.mmsName, "TM1");
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.children.size(), 3);
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.children[0]->mmsName, "mag");
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.children[1]->mmsName, "q");
+    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.children[2]->mmsName, "t");
+
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].label, "TS1");
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].datapointType, "SPS");
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].datapointTypeId, DatapointTypeId::SPS_DATAPOINT_TYPE);
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].dataPath, "simpleIOGenericIO/GGIO1.Ind1");
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].functionalConstraint, IEC61850_FC_ST);
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.mmsName, "TS1");
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.children.size(), 3);
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.children[0]->mmsName, "stVal");
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.children[1]->mmsName, "q");
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.children[2]->mmsName, "t");
+}
+
+TEST(IEC61850ClientConfigTest, importExchangedDataWithParsingError)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(exchangedDataWithParsingError);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: 'Exchanged data' parsing error");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importExchangedDataWithMissingSection)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(missingExchangedDataSection);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: 'Exchanged data' empty conf");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importExchangedDataWithMissingDatapointSection)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(missingDatapointSection);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: 'ExchangedData' parsing error: no 'datapoints'");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importExchangedDataWithDatapointNotArray)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointNotArray);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: 'datapoints' is not an array -> fail to parse 'ExchangedData'");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithMissingLabel)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithMissingLabel);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: the mandatory 'label' not found");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithBadFormatLabel)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithBadFormatLabel);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: bad format for the mandatory 'label'");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithSameLabel)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithSameLabel);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: the Datapoint label is already defined");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithMissingProtocol)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithMissingProtocol);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: 'datapoints' parsing error: no 'protocols'");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithProtocolNotArray)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithProtocolNotArray);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: 'protocols' is not an array -> fail to parse 'datapoints'");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryName)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithMissingMandatoryName);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: the mandatory 'name' not found");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithNameBadFormat)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithNameBadFormat);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: bad format for the mandatory 'name'");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryTypeId)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithMissingMandatoryTypeId);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: the mandatory 'typeid' not found");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithTypeIdBadFormat)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithTypeIdBadFormat);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: bad format for the mandatory 'typeid'");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithMissingMandatoryAddress)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithMissingMandatoryAddress);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: the mandatory 'address' not found");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(IEC61850ClientConfigTest, importDatapointWithAddressBadFormat)
+{
+    IEC61850ClientConfig clientConfig;
+
+    try {
+        clientConfig.importJsonExchangedDataConfig(datapointWithAddressBadFormat);
+        FAIL();
+    } catch (ConfigurationException e) {
+        ASSERT_STREQ(e.what(), "Configuration exception: bad format for the mandatory 'address'");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+
+TEST(IEC61850ClientConfigTest, importValidExchangedDataWithIgnoredProtocols)
+{
+    IEC61850ClientConfig clientConfig;
+
+    ASSERT_NO_THROW(clientConfig.importJsonExchangedDataConfig(validExchangedDataWithIgnoredProtocols));
+
+    ASSERT_EQ(clientConfig.exchangedData.size(), 1);
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].label, "TS1");
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].datapointType, "SPS");
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].datapointTypeId, DatapointTypeId::SPS_DATAPOINT_TYPE);
+    ASSERT_EQ(clientConfig.exchangedData["TS1"].dataPath, "path for iec61850 model");
+}
+

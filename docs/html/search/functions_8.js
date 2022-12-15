@@ -1,14 +1,5 @@
 var searchData=
 [
-  ['parseosipselector_0',['parseOsiPSelector',['../classIEC61850ClientConfig.html#ad0c4f51ad9c0cf2b24d22acf3670befe',1,'IEC61850ClientConfig']]],
-  ['parseosiselector_1',['parseOsiSelector',['../classIEC61850ClientConfig.html#aea906b7796835efae84dd0cf862661f0',1,'IEC61850ClientConfig']]],
-  ['parseosisselector_2',['parseOsiSSelector',['../classIEC61850ClientConfig.html#ab6be4767b8e1e479c637e19a261547f8',1,'IEC61850ClientConfig']]],
-  ['parseositselector_3',['parseOsiTSelector',['../classIEC61850ClientConfig.html#a45d878a344f5120c11acae014da78895',1,'IEC61850ClientConfig']]],
-  ['plugin_5finfo_4',['plugin_info',['../plugin_8cpp.html#a5de9523ffb9d9e742690383b7da744a8',1,'plugin.cpp']]],
-  ['plugin_5finit_5',['plugin_init',['../plugin_8cpp.html#a5e0d9e5f929e1c807580e65309eb45bb',1,'plugin.cpp']]],
-  ['plugin_5fpoll_6',['plugin_poll',['../plugin_8cpp.html#a38320668a87ebc99062265a8936fe1e8',1,'plugin.cpp']]],
-  ['plugin_5freconfigure_7',['plugin_reconfigure',['../plugin_8cpp.html#a49e292cff5a4e4a713d5c7a16655a8a5',1,'plugin.cpp']]],
-  ['plugin_5fregister_5fingest_8',['plugin_register_ingest',['../plugin_8cpp.html#a6f87402484fede1c0584bcd3341afb0a',1,'plugin.cpp']]],
-  ['plugin_5fshutdown_9',['plugin_shutdown',['../plugin_8cpp.html#a02da8d1abac9899c878c0b644cca299d',1,'plugin.cpp']]],
-  ['plugin_5fstart_10',['plugin_start',['../plugin_8cpp.html#ad9f5b335c7601e21f077f5981d554f70',1,'plugin.cpp']]]
+  ['open_0',['open',['../classIEC61850ClientConnection.html#a0e52da0cdf2f96aa2e6dd0e61db58d2e',1,'IEC61850ClientConnection']]],
+  ['operator_3d_1',['operator=',['../classIEC61850.html#a65679d9e071c2d2c909e13fadbcef852',1,'IEC61850::operator=(const IEC61850 &amp;)=delete'],['../classIEC61850.html#a6d46928cbf15cf828b9f58d54c9b770f',1,'IEC61850::operator=(IEC61850 &amp;&amp;)=delete'],['../classIEC61850Client.html#a1d2fdea8bfa52dc095ab7a6fe58cd3d6',1,'IEC61850Client::operator=(const IEC61850Client &amp;)=default'],['../classIEC61850Client.html#ab87bdc3d9010c6397574002f511a8dd1',1,'IEC61850Client::operator=(IEC61850Client &amp;&amp;)=default'],['../classIEC61850ClientConnection.html#a33d90c70db3d4e20c09e49ba42d8bde9',1,'IEC61850ClientConnection::operator=(const IEC61850ClientConnection &amp;)=delete'],['../classIEC61850ClientConnection.html#a6ed527efd9d228fb023bffb10648777e',1,'IEC61850ClientConnection::operator=(IEC61850ClientConnection &amp;&amp;)=delete'],['../classWrappedMms.html#ad9fee5d4403e158e6631914ba4e3e340',1,'WrappedMms::operator=(const WrappedMms &amp;)=delete'],['../classWrappedMms.html#a8efd60a2e50974af7d03c1857a37d517',1,'WrappedMms::operator=(WrappedMms &amp;&amp;)=delete']]]
 ];

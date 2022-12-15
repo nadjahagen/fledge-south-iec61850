@@ -1,6 +1,6 @@
 <map id="IEC61850ClientConnection" name="IEC61850ClientConnection">
 <area shape="rect" id="node1" title="Create and use a IEC61850 connection with a IED." alt="" coords="72,199,267,225"/>
 <area shape="rect" id="node2" href="$classIEC61850ClientConnectionInterface.html" title=" " alt="" coords="5,95,200,136"/>
-<area shape="rect" id="node3" href="$structServerConnectionParameters.html" title=" " alt="" coords="224,102,435,129"/>
-<area shape="rect" id="node4" href="$structOsiParameters.html" title=" " alt="" coords="271,5,388,32"/>
+<area shape="rect" id="node3" href="$structServerConnectionParameters.html" title="Parameters for creating a connection with 1 IEC61850 server." alt="" coords="224,102,435,129"/>
+<area shape="rect" id="node4" href="$structOsiParameters.html" title="Lower layer parameters (below the MMS layer) for connection with server." alt="" coords="271,5,388,32"/>
 </map>

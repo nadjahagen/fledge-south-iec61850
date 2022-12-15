@@ -1,9 +1,9 @@
 <map id="IEC61850Client" name="IEC61850Client">
-<area shape="rect" id="node1" title="Read from and write to a IED." alt="" coords="241,184,362,211"/>
-<area shape="rect" id="node2" href="$structServerConnectionParameters.html" title=" " alt="" coords="5,95,216,121"/>
-<area shape="rect" id="node3" href="$structOsiParameters.html" title=" " alt="" coords="52,5,169,32"/>
-<area shape="rect" id="node4" href="$structExchangedData.html" title=" " alt="" coords="239,95,363,121"/>
-<area shape="rect" id="node5" href="$classIEC61850.html" title=" " alt="" coords="417,95,500,121"/>
-<area shape="rect" id="node6" href="$classClientGatewayInterface.html" title=" " alt="" coords="281,5,457,32"/>
-<area shape="rect" id="node7" href="$classFledgeProxyInterface.html" title=" " alt="" coords="482,5,643,32"/>
+<area shape="rect" id="node1" title="Read from and write to a IED through an IEC61850 connection." alt="" coords="265,184,386,211"/>
+<area shape="rect" id="node2" href="$structServerConnectionParameters.html" title="Parameters for creating a connection with 1 IEC61850 server." alt="" coords="5,95,216,121"/>
+<area shape="rect" id="node3" href="$structOsiParameters.html" title="Lower layer parameters (below the MMS layer) for connection with server." alt="" coords="52,5,169,32"/>
+<area shape="rect" id="node4" href="$structApplicationParameters.html" title="Application parameters about the IEC61850 client." alt="" coords="241,95,410,121"/>
+<area shape="rect" id="node5" href="$classIEC61850.html" title="Main class for managing the IEC61850 clients and sending data to Fledge." alt="" coords="460,95,543,121"/>
+<area shape="rect" id="node6" href="$classClientGatewayInterface.html" title=" " alt="" coords="316,5,492,32"/>
+<area shape="rect" id="node7" href="$classFledgeProxyInterface.html" title="Interface with the Fledge API, for sending &#39;Reading&#39; datapoint." alt="" coords="517,5,678,32"/>
 </map>
