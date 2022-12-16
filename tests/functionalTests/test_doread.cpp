@@ -176,11 +176,23 @@ TEST_F(SouthIEC61850PluginTestWithIEC61850Server, readDO)
     Reading *firstReading = storedReadings.at(0);
     Reading *secondReading = storedReadings.at(1);
 
-    ASSERT_EQ("TM1", firstReading->getAssetName());
-    ASSERT_EQ("TS1", secondReading->getAssetName());
+    ASSERT_EQ("TS1", firstReading->getAssetName());
+    ASSERT_EQ("TM1", secondReading->getAssetName());
 
-    ASSERT_TRUE(hasObject(*firstReading, "TM1"));
-    Datapoint* dp = getObject(*firstReading, "TM1");
+    ASSERT_TRUE(hasObject(*firstReading, "TS1"));
+    Datapoint *dp = getObject(*firstReading, "TS1");
+    ASSERT_THAT(dp, NotNull());
+
+    ASSERT_TRUE(hasChild(*dp, "do_type"));
+    ASSERT_EQ("SPS", getStrValue(getChild(*dp, "do_type")));
+
+    ASSERT_TRUE(hasChild(*dp, "do_value"));
+    ASSERT_TRUE(hasChild(*dp, "do_quality"));
+    ASSERT_TRUE(hasChild(*dp, "do_ts"));
+
+
+    ASSERT_TRUE(hasObject(*secondReading, "TM1"));
+    dp = getObject(*secondReading, "TM1");
     ASSERT_THAT(dp, NotNull());
 
     ASSERT_TRUE(hasChild(*dp, "do_type"));
@@ -195,16 +207,4 @@ TEST_F(SouthIEC61850PluginTestWithIEC61850Server, readDO)
     ASSERT_TRUE(hasChild(*dp, "do_ts"));
     ASSERT_LE(getIntValue(getChild(*dp, "do_ts")), 2147483648);
     ASSERT_GE(getIntValue(getChild(*dp, "do_ts")), 1670509743);
-
-
-    ASSERT_TRUE(hasObject(*secondReading, "TS1"));
-    dp = getObject(*secondReading, "TS1");
-    ASSERT_THAT(dp, NotNull());
-
-    ASSERT_TRUE(hasChild(*dp, "do_type"));
-    ASSERT_EQ("SPS", getStrValue(getChild(*dp, "do_type")));
-
-    ASSERT_TRUE(hasChild(*dp, "do_value"));
-    ASSERT_TRUE(hasChild(*dp, "do_quality"));
-    ASSERT_TRUE(hasChild(*dp, "do_ts"));
 }

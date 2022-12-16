@@ -1029,28 +1029,6 @@ const std::string datapointWithBadFormatLabel = QUOTE({
             }
         });
 
-const std::string datapointWithSameLabel = QUOTE({
-            "exchanged_data": {
-                "name" : "iec61850client",
-                "version" : "1.0",
-                "datapoints": [
-                    {
-                        "label": "TM1",
-                        "protocols":[
-                           {
-                              "name":"iec61850",
-                              "address":"simpleIOGenericIO/GGIO1.Ind1",
-                              "typeid":"SPS"
-                           }
-                        ]
-                    },
-                    {
-                        "label": "TM1"
-                    }
-                ]
-            }
-        });
-
 const std::string datapointWithMissingProtocol = QUOTE({
             "exchanged_data": {
                 "name" : "iec61850client",

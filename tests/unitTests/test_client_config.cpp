@@ -432,27 +432,27 @@ TEST(IEC61850ClientConfigTest, importValidExchangedData)
     ASSERT_NO_THROW(clientConfig.importJsonExchangedDataConfig(validExchangedData));
 
     ASSERT_EQ(clientConfig.exchangedData.size(), 2);
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].label, "TM1");
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].datapointType, "MV");
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].datapointTypeId, DatapointTypeId::MV_DATAPOINT_TYPE);
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].dataPath, "simpleIOGenericIO/GGIO1.AnIn1");
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].functionalConstraint, IEC61850_FC_MX);
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.mmsName, "TM1");
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.children.size(), 3);
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.children[0]->mmsName, "mag");
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.children[1]->mmsName, "q");
-    ASSERT_EQ(clientConfig.exchangedData["TM1"].mmsNameTree.children[2]->mmsName, "t");
+    ASSERT_EQ(clientConfig.exchangedData[1].label, "TM1");
+    ASSERT_EQ(clientConfig.exchangedData[1].datapointType, "MV");
+    ASSERT_EQ(clientConfig.exchangedData[1].datapointTypeId, DatapointTypeId::MV_DATAPOINT_TYPE);
+    ASSERT_EQ(clientConfig.exchangedData[1].dataPath, "simpleIOGenericIO/GGIO1.AnIn1");
+    ASSERT_EQ(clientConfig.exchangedData[1].functionalConstraint, IEC61850_FC_MX);
+    ASSERT_EQ(clientConfig.exchangedData[1].mmsNameTree.mmsName, "TM1");
+    ASSERT_EQ(clientConfig.exchangedData[1].mmsNameTree.children.size(), 3);
+    ASSERT_EQ(clientConfig.exchangedData[1].mmsNameTree.children[0]->mmsName, "mag");
+    ASSERT_EQ(clientConfig.exchangedData[1].mmsNameTree.children[1]->mmsName, "q");
+    ASSERT_EQ(clientConfig.exchangedData[1].mmsNameTree.children[2]->mmsName, "t");
 
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].label, "TS1");
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].datapointType, "SPS");
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].datapointTypeId, DatapointTypeId::SPS_DATAPOINT_TYPE);
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].dataPath, "simpleIOGenericIO/GGIO1.Ind1");
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].functionalConstraint, IEC61850_FC_ST);
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.mmsName, "TS1");
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.children.size(), 3);
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.children[0]->mmsName, "stVal");
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.children[1]->mmsName, "q");
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].mmsNameTree.children[2]->mmsName, "t");
+    ASSERT_EQ(clientConfig.exchangedData[0].label, "TS1");
+    ASSERT_EQ(clientConfig.exchangedData[0].datapointType, "SPS");
+    ASSERT_EQ(clientConfig.exchangedData[0].datapointTypeId, DatapointTypeId::SPS_DATAPOINT_TYPE);
+    ASSERT_EQ(clientConfig.exchangedData[0].dataPath, "simpleIOGenericIO/GGIO1.Ind1");
+    ASSERT_EQ(clientConfig.exchangedData[0].functionalConstraint, IEC61850_FC_ST);
+    ASSERT_EQ(clientConfig.exchangedData[0].mmsNameTree.mmsName, "TS1");
+    ASSERT_EQ(clientConfig.exchangedData[0].mmsNameTree.children.size(), 3);
+    ASSERT_EQ(clientConfig.exchangedData[0].mmsNameTree.children[0]->mmsName, "stVal");
+    ASSERT_EQ(clientConfig.exchangedData[0].mmsNameTree.children[1]->mmsName, "q");
+    ASSERT_EQ(clientConfig.exchangedData[0].mmsNameTree.children[2]->mmsName, "t");
 }
 
 TEST(IEC61850ClientConfigTest, importExchangedDataWithParsingError)
@@ -534,20 +534,6 @@ TEST(IEC61850ClientConfigTest, importDatapointWithBadFormatLabel)
         FAIL();
     } catch (ConfigurationException e) {
         ASSERT_STREQ(e.what(), "Configuration exception: bad format for the mandatory 'label'");
-    } catch (...) {
-        FAIL();
-    }
-}
-
-TEST(IEC61850ClientConfigTest, importDatapointWithSameLabel)
-{
-    IEC61850ClientConfig clientConfig;
-
-    try {
-        clientConfig.importJsonExchangedDataConfig(datapointWithSameLabel);
-        FAIL();
-    } catch (ConfigurationException e) {
-        ASSERT_STREQ(e.what(), "Configuration exception: the Datapoint label is already defined");
     } catch (...) {
         FAIL();
     }
@@ -673,9 +659,9 @@ TEST(IEC61850ClientConfigTest, importValidExchangedDataWithIgnoredProtocols)
     ASSERT_NO_THROW(clientConfig.importJsonExchangedDataConfig(validExchangedDataWithIgnoredProtocols));
 
     ASSERT_EQ(clientConfig.exchangedData.size(), 1);
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].label, "TS1");
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].datapointType, "SPS");
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].datapointTypeId, DatapointTypeId::SPS_DATAPOINT_TYPE);
-    ASSERT_EQ(clientConfig.exchangedData["TS1"].dataPath, "path for iec61850 model");
+    ASSERT_EQ(clientConfig.exchangedData[0].label, "TS1");
+    ASSERT_EQ(clientConfig.exchangedData[0].datapointType, "SPS");
+    ASSERT_EQ(clientConfig.exchangedData[0].datapointTypeId, DatapointTypeId::SPS_DATAPOINT_TYPE);
+    ASSERT_EQ(clientConfig.exchangedData[0].dataPath, "path for iec61850 model");
 }
 
