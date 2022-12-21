@@ -73,6 +73,13 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
          */
         std::shared_ptr<WrappedMms> readDataset(const std::string &datasetRef) override;
 
+        void buildNameTree(const std::string &pathInDatamodel,
+                           const FunctionalConstraint &functionalConstraint,
+                           MmsNameNode *nameTree) override;
+
+        std::vector<std::string>
+        getDoPathListWithFCFromDataset(const std::string &datasetRef) override;
+
     private:
         /** \brief Open a connection with an IEC61850 server */
         void open();

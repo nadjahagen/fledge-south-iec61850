@@ -98,7 +98,7 @@ static const char *const default_config = QUOTE({
                         "protocols":[
                            {
                               "name":"iec61850",
-                              "address":"simpleIOGenericIO/GGIO1.Ind1",
+                              "address":"simpleIOGenericIO/GGIO1.SPSSO1",
                               "typeid":"SPS"
                            }
                         ]
@@ -131,20 +131,22 @@ static const char *const default_config = QUOTE({
                 "version" : "1.0",
                 "datasets": [
                     {
-                        "dataset_ref":"simpleIOGenericIO/LLN0.Events",
+                        "dataset_ref":"simpleIOGenericIO/LLN0.RTEEvents",
                         "data_objects":[
                             {
                                 "label":"TS1",
-                                "typeid":"SPS"
+                                "typeid":"SPS",
+                                "doName": "SPSSO1"
                             },
                             {
                                 "label":"TS2",
-                                "typeid":"SPS"
+                                "typeid":"SPS",
+                                "doName": "SPSSO2"
                             }
                         ]
                     },
                     {
-                        "dataset_ref":"simpleIOGenericIO/LLN0.Events2"
+                        "dataset_ref":"simpleIOGenericIO/LLN0.RTEEvents2"
                     },
                     {
                         "dataset_ref":"simpleIOGenericIO/LLN0.Measurements"

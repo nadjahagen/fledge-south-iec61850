@@ -11,6 +11,7 @@
  */
 
 #include "./iec61850_client.h"
+#include "./iec61850_client_config.h"
 
 // C++ headers
 #include <memory>
@@ -32,6 +33,7 @@ const std::map<std::string, std::string, std::less<>> DO_READING_MAPPING = {
     {"cdc", "do_type"},
     {"stVal", "do_value"},
     {"mag.value", "do_value"},
+    {"mag.f", "do_value"},
     {"q", "do_quality"},
     {"t", "do_ts"}
 };
@@ -39,17 +41,22 @@ const std::map<std::string, std::string, std::less<>> DO_READING_MAPPING = {
 IEC61850Client::IEC61850Client(IEC61850 *iec61850,
                                const ServerConnectionParameters &connectionParam,
                                const ExchangedData &exchangedData,
-                               const ExchangedDatasets &exchangedDatasets,
+                               const ExchangedDatasets &selectedDOInExchangedDatasets,
                                const ApplicationParameters &applicationParams)
     : m_connectionParam(connectionParam),
-      m_exchangedData(exchangedData),
-      m_exchangedDatasets(exchangedDatasets),
       m_applicationParams(applicationParams),
+      m_selectedDOInExchangedDatasets(selectedDOInExchangedDatasets),
       m_iec61850(iec61850)
 {
     m_clientId = IEC61850ClientConfig::buildKey(m_connectionParam);
     Logger::getLogger()->debug("IEC61850Client: constructor %s",
                                m_clientId.c_str());
+
+    // Make the local copy of 'exchangedData'
+    for (const auto &dpConfig : exchangedData) {
+        DatapointConfig newDpConfig = dpConfig;
+        m_localExchangedData.push_back(newDpConfig);
+    }
 }
 
 IEC61850Client::~IEC61850Client()
@@ -97,6 +104,8 @@ void IEC61850Client::initializeConnection()
         if (! m_connection->isConnected()) {
             Logger::getLogger()->warn("IEC61850Client: failed to connect with %s",
                                       m_clientId.c_str());
+        } else {
+            buildConfigurationNameTrees();
         }
 
         // Wait connection establishment
@@ -187,7 +196,7 @@ Datapoint *IEC61850Client::convertMmsToDatapoint(const MmsValue *mmsValue,
     }
 
     Datapoint *datapoint = buildDatapointFromMms(mmsValue,
-                                                 &datapointConfig.mmsNameTree,
+                                                 datapointConfig.mmsNameTree.get(),
                                                  datapointConfig.dataPath);
 
     insertTypeInDatapoint(datapoint, datapointConfig.datapointType);
@@ -389,7 +398,7 @@ void IEC61850Client::readAndExportMms()
     switch (m_applicationParams.readMode) {
         case ReadMode::DATASET_READING:
             /** In case of DATASET_READING: */
-            for (const auto &it : m_exchangedDatasets) {
+            for (const auto &it : m_localExchangedDatasets) {
                 const std::string datasetRef = it.first;
                 const ExchangedData &exchangedDataset = it.second;
 
@@ -398,17 +407,25 @@ void IEC61850Client::readAndExportMms()
                 wrapped_mms = m_connection->readDataset(datasetRef);
 
                 /** Split the dataset, to create 1 reading per DataObject. */
-                const MmsValue * const mmsValue = wrapped_mms->getMmsValue();
-                if (   (mmsValue == nullptr)
-                    || (MmsValue_getType(mmsValue) != MMS_ARRAY)
-                    || (MmsValue_getArraySize(mmsValue) != exchangedDataset.size())) {
+                const MmsValue * const datasetMmsValue = wrapped_mms->getMmsValue();
+                if (   (datasetMmsValue == nullptr)
+                    || (MmsValue_getType(datasetMmsValue) != MMS_ARRAY)
+                    || (MmsValue_getArraySize(datasetMmsValue) != exchangedDataset.size())) {
                     throw MmsParsingException("Dataset structure does not match");
                 }
 
                 uint32_t datasetIndex = 0;
                 for (const auto &dpConfig : exchangedDataset) {
-                    sendData(convertMmsToDatapoint(MmsValue_getElement(mmsValue, datasetIndex),
-                                                   dpConfig));
+                    if ( ! dpConfig.label.empty()) {
+                        Datapoint *dp = nullptr;
+                        MmsValue *doMmsValue = MmsValue_getElement(datasetMmsValue,
+                                                                   datasetIndex);
+                        dp = convertMmsToDatapoint(doMmsValue, dpConfig);
+                        sendData(dp);
+                    } else {
+                        Logger::getLogger()->debug("Read Dataset: DO ignored: %s",
+                                                   dpConfig.dataPath.c_str());
+                    }
                     datasetIndex++;
                 }
             }
@@ -417,7 +434,7 @@ void IEC61850Client::readAndExportMms()
         case ReadMode::DO_READING:
         {
             /** In case of DO_READING: */
-            for (const auto &dpConfig : m_exchangedData) {
+            for (const auto &dpConfig : m_localExchangedData) {
                 std::shared_ptr<WrappedMms> wrapped_mms;
 
                 /** Read the DataObject, */
@@ -435,4 +452,104 @@ void IEC61850Client::readAndExportMms()
                         m_applicationParams.readMode);
             break;
     }
+}
+
+void IEC61850Client::buildConfigurationNameTrees()
+{
+    /** Build the 'NameTree' for each ExchangedData. */
+    for (auto &dpConfig : m_localExchangedData) {
+        const std::string &doPath = dpConfig.dataPath;
+
+        dpConfig.mmsNameTree.reset();
+        dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+
+        m_connection->buildNameTree(doPath,
+                                    dpConfig.functionalConstraint,
+                                    dpConfig.mmsNameTree.get());
+
+        dpConfig.mmsNameTree->mmsName = dpConfig.label;
+    }
+
+    IEC61850ClientConfig::logExchangedData(m_localExchangedData);
+
+    /** For each ExchangedDataset, */
+    for (const auto &selectionEntry : m_selectedDOInExchangedDatasets) {
+        std::string datasetRef(selectionEntry.first);
+
+        /** ask the DO list to the IED, */
+        std::vector<std::string> doPathListWithFC;
+        doPathListWithFC = m_connection->getDoPathListWithFCFromDataset(datasetRef);
+
+        ExchangedData exchangedDataset;
+
+        for(const auto &doPathWithFC : doPathListWithFC) {
+            DatapointConfig newDpConfig;
+            std::string doPath;
+            std::string functionalConstraintStr;
+
+            /** extract the DO path and the FC, */
+            doPath = doPathWithFC.substr(0, doPathWithFC.find("["));
+
+            size_t functionalConstraintStrLen = doPathWithFC.find("]") -
+                                                doPathWithFC.find("[") - 1;
+            functionalConstraintStr = doPathWithFC.substr(doPathWithFC.find("[") + 1,
+                                                          functionalConstraintStrLen);
+            newDpConfig.functionalConstraint =
+                FunctionalConstraint_fromString(functionalConstraintStr.c_str());
+            newDpConfig.dataPath = doPath;
+
+            /** and build the 'NameTree', */
+            newDpConfig.mmsNameTree.reset();
+            newDpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+
+            m_connection->buildNameTree(doPath,
+                                        newDpConfig.functionalConstraint,
+                                        newDpConfig.mmsNameTree.get());
+
+            /** and indicate if this DO is selected, as a datapoint to read. */
+            for (const auto &selectedDO : selectionEntry.second) {
+                std::size_t pos = doPath.find(std::string("." + selectedDO.dataPath));
+                if ( std::string::npos != pos) {
+                    // Import the 'selected DO' properties to the Datapoint
+                    newDpConfig.label = selectedDO.label;
+                    newDpConfig.mmsNameTree->mmsName = selectedDO.label;
+                    newDpConfig.datapointType = selectedDO.datapointType;
+                    newDpConfig.datapointTypeId = selectedDO.datapointTypeId;
+                    break;
+                }
+            }
+
+            exchangedDataset.push_back(newDpConfig);
+        }
+
+        /** if no DO is selected, then select all DOs of the dataset */
+        /** (the selection is based on whether the 'label' is empty or not). */
+        bool noDOSelected = true;
+        for (auto &dpConfig : exchangedDataset) {
+            if (!dpConfig.label.empty()) {
+                noDOSelected = false;
+                break;
+            }
+        }
+
+        if (noDOSelected) {
+            for (auto &dpConfig : exchangedDataset) {
+                size_t startPos = dpConfig.dataPath.find_last_of(".");
+                std::string doName = "noName";
+
+                if (startPos != std::string::npos) {
+                    doName = dpConfig.dataPath.substr(startPos + 1);
+                }
+
+                dpConfig.label = doName;
+                if (dpConfig.mmsNameTree) {
+                    dpConfig.mmsNameTree->mmsName = doName;
+                }
+            }
+        }
+
+        m_localExchangedDatasets[datasetRef] = exchangedDataset;
+    }
+
+    IEC61850ClientConfig::logExchangedDatasets(m_localExchangedDatasets);
 }

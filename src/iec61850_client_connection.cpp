@@ -9,6 +9,7 @@
  */
 
 #include "./iec61850_client_connection.h"
+#include "./iec61850_client_config.h"
 
 // libiec61850 headers
 #include <libiec61850/iec61850_common.h>
@@ -135,4 +136,79 @@ IEC61850ClientConnection::readDataset(const std::string &datasetRef)
 
     ClientDataSet_destroy(readDataset);
     return wrapped_mms;
+}
+
+void
+IEC61850ClientConnection::buildNameTree(const std::string &pathInDatamodel,
+                                        const FunctionalConstraint &functionalConstraint,
+                                        MmsNameNode *nameTree)
+{
+    // Preconditions
+    if (! nameTree) {
+        return;
+    }
+    if (! isConnected()) {
+        return;
+    }
+
+    LinkedList dataAttributes;
+    {
+    std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
+    dataAttributes = IedConnection_getDataDirectoryByFC(m_iedConnection,
+                                                        &m_networkStack_error,
+                                                        pathInDatamodel.c_str(),
+                                                        functionalConstraint);
+    }
+
+    if (dataAttributes != NULL) {
+        LinkedList dataAttribute = LinkedList_getNext(dataAttributes);
+
+        while (dataAttribute != NULL) {
+            std::string daName(static_cast<char*>(dataAttribute->data));
+
+            auto newNameNode = std::make_shared<MmsNameNode>();
+            newNameNode->mmsName = daName;
+
+            buildNameTree(pathInDatamodel + "." + daName,
+                          functionalConstraint,
+                          newNameNode.get());
+
+            nameTree->children.push_back(std::move(newNameNode));
+            dataAttribute = LinkedList_getNext(dataAttribute);
+        }
+
+        LinkedList_destroy(dataAttributes);
+    }
+}
+
+std::vector<std::string>
+IEC61850ClientConnection::getDoPathListWithFCFromDataset(const std::string &datasetRef)
+{
+    std::vector<std::string> doPathList;
+
+    // Preconditions
+    if (! isConnected()) {
+        return doPathList;
+    }
+
+    LinkedList dataSetMembers;
+    {
+    std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
+    dataSetMembers = IedConnection_getDataSetDirectory(m_iedConnection,
+                                                       &m_networkStack_error,
+                                                       datasetRef.c_str(),
+                                                       nullptr);
+    }
+
+    if (dataSetMembers != NULL) {
+        LinkedList dataSetMemberRef = LinkedList_getNext(dataSetMembers);
+
+        while (dataSetMemberRef != NULL) {
+            doPathList.push_back(static_cast<char*>(dataSetMemberRef->data));
+
+            dataSetMemberRef = LinkedList_getNext(dataSetMemberRef);
+        }
+    }
+
+    return doPathList;
 }

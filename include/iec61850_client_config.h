@@ -108,14 +108,13 @@ struct DatapointConfig {
     DatapointTypeId datapointTypeId = DatapointTypeId::UNKNOWN_DATAPOINT_TYPE;
     DataPath dataPath = "NOT_DEFINED";  /**< Object path in the IEC61850 data mode */
     FunctionalConstraint functionalConstraint = IEC61850_FC_NONE;
-    MmsNameNode mmsNameTree;  /**< name of each subelement of the MMS and datapoint */
+    std::shared_ptr<MmsNameNode> mmsNameTree = nullptr;  /**< name of each subelement of the MMS and datapoint */
 };
 
 /**
  *  \brief Collection of Datapoint configuration, extracted from the input JSON configuration
  */
 using ExchangedData = std::vector<DatapointConfig>;
-
 using ExchangedDatasets = std::map<DatasetRef, ExchangedData, std::less<>>;
 
 /** \class ConfigurationException
@@ -149,7 +148,7 @@ class IEC61850ClientConfig
 
         // Data model section
         ExchangedData exchangedData;
-        ExchangedDatasets exchangedDatasets;
+        ExchangedDatasets selectedDOInExchangedDatasets;
 
         void importConfig(const ConfigCategory &newConfig);
 
@@ -165,7 +164,7 @@ class IEC61850ClientConfig
                                    const uint8_t *selectorValues);
         static void logExchangedData(const ExchangedData &exchangedData);
         static void logExchangedDatasets(const ExchangedDatasets &exchangedDatasets);
-        static void logMmsNameTree(const MmsNameNode &mmsNameNode, uint8_t currentDepth = 0);
+        static void logMmsNameTree(const MmsNameNode *mmsNameNode, uint8_t currentDepth = 0);
 
     private:
         void importJsonProtocolConfig(const std::string &protocolConfig);
