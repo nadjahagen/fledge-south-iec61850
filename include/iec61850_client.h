@@ -140,6 +140,10 @@ class IEC61850Client
 
         /** \brief Use the IEC61850 connection for reading DO or Dataset */
         void readAndExportMms();
+        void readAndExportAllDO();
+        void readAndExportAllDatasets();
+        void readAndExportOneDataset(const std::string &datasetRef,
+                                     const ExchangedData &exchangedDataset);
 
         // Section: Client initialization with connection creation
         void launch();

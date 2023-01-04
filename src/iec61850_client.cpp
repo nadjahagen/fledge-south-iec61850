@@ -398,59 +398,73 @@ void IEC61850Client::readAndExportMms()
     switch (m_applicationParams.readMode) {
         case ReadMode::DATASET_READING:
             /** In case of DATASET_READING: */
-            for (const auto &it : m_localExchangedDatasets) {
-                const std::string datasetRef = it.first;
-                const ExchangedData &exchangedDataset = it.second;
-
-                /** Read the complete Dataset, */
-                std::shared_ptr<WrappedMms> wrapped_mms;
-                wrapped_mms = m_connection->readDataset(datasetRef);
-
-                /** Split the dataset, to create 1 reading per DataObject. */
-                const MmsValue * const datasetMmsValue = wrapped_mms->getMmsValue();
-                if (   (datasetMmsValue == nullptr)
-                    || (MmsValue_getType(datasetMmsValue) != MMS_ARRAY)
-                    || (MmsValue_getArraySize(datasetMmsValue) != exchangedDataset.size())) {
-                    throw MmsParsingException("Dataset structure does not match");
-                }
-
-                uint32_t datasetIndex = 0;
-                for (const auto &dpConfig : exchangedDataset) {
-                    if ( ! dpConfig.label.empty()) {
-                        Datapoint *dp = nullptr;
-                        MmsValue *doMmsValue = MmsValue_getElement(datasetMmsValue,
-                                                                   datasetIndex);
-                        dp = convertMmsToDatapoint(doMmsValue, dpConfig);
-                        sendData(dp);
-                    } else {
-                        Logger::getLogger()->debug("Read Dataset: DO ignored: %s",
-                                                   dpConfig.dataPath.c_str());
-                    }
-                    datasetIndex++;
-                }
-            }
+            readAndExportAllDatasets();
             break;
 
         case ReadMode::DO_READING:
         {
             /** In case of DO_READING: */
-            for (const auto &dpConfig : m_localExchangedData) {
-                std::shared_ptr<WrappedMms> wrapped_mms;
-
-                /** Read the DataObject, */
-                wrapped_mms = m_connection->readDO(dpConfig.dataPath,
-                                                   dpConfig.functionalConstraint);
-
-                if (wrapped_mms) {
-                    sendData(convertMmsToDatapoint(wrapped_mms->getMmsValue(), dpConfig));
-                }
-            }
+            readAndExportAllDO();
             break;
         }
         default:
             Logger::getLogger()->error("Read MMS: unknown reading mode: %u",
                         m_applicationParams.readMode);
             break;
+    }
+}
+
+void IEC61850Client::readAndExportAllDO()
+{
+    for (const auto &dpConfig : m_localExchangedData) {
+        std::shared_ptr<WrappedMms> wrapped_mms;
+
+        /** Read the DataObject, */
+        wrapped_mms = m_connection->readDO(dpConfig.dataPath,
+                dpConfig.functionalConstraint);
+
+        if (wrapped_mms) {
+            sendData(convertMmsToDatapoint(wrapped_mms->getMmsValue(), dpConfig));
+        }
+    }
+}
+
+void IEC61850Client::readAndExportAllDatasets()
+{
+    for (const auto &it : m_localExchangedDatasets) {
+        const std::string datasetRef = it.first;
+        const ExchangedData &exchangedDataset = it.second;
+
+        readAndExportOneDataset(datasetRef, exchangedDataset);
+    }
+}
+
+void IEC61850Client::readAndExportOneDataset(const std::string &datasetRef,
+                                             const ExchangedData &exchangedDataset)
+{
+    /** Read the complete Dataset, */
+    std::shared_ptr<WrappedMms> wrapped_mms;
+    wrapped_mms = m_connection->readDataset(datasetRef);
+
+    /** Split the dataset, to create 1 reading per DataObject. */
+    const MmsValue * const datasetMmsValue = wrapped_mms->getMmsValue();
+    if (   (datasetMmsValue == nullptr)
+            || (MmsValue_getType(datasetMmsValue) != MMS_ARRAY)
+            || (MmsValue_getArraySize(datasetMmsValue) != exchangedDataset.size())) {
+        throw MmsParsingException("Dataset structure does not match");
+    }
+
+    uint32_t datasetIndex = 0;
+    for (const auto &dpConfig : exchangedDataset) {
+        if ( ! dpConfig.label.empty()) {
+            const MmsValue *doMmsValue = MmsValue_getElement(datasetMmsValue,
+                                                             datasetIndex);
+            sendData(convertMmsToDatapoint(doMmsValue, dpConfig));
+        } else {
+            Logger::getLogger()->debug("Read Dataset: DO ignored: %s",
+                    dpConfig.dataPath.c_str());
+        }
+        datasetIndex++;
     }
 }
 
@@ -525,7 +539,7 @@ void IEC61850Client::buildConfigurationNameTrees()
         /** if no DO is selected, then select all DOs of the dataset */
         /** (the selection is based on whether the 'label' is empty or not). */
         bool noDOSelected = true;
-        for (auto &dpConfig : exchangedDataset) {
+        for (const auto &dpConfig : exchangedDataset) {
             if (!dpConfig.label.empty()) {
                 noDOSelected = false;
                 break;

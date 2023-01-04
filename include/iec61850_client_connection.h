@@ -89,6 +89,11 @@ class IEC61850ClientConnection: public IEC61850ClientConnectionInterface
 
         void setOsiConnectionParameters();
 
+        LinkedList getDataDirectory(const std::string &pathInDatamodel,
+                                    const FunctionalConstraint &functionalConstraint);
+
+        LinkedList getDataSetDirectory(const std::string &datasetRef);
+
         ServerConnectionParameters m_connectionParam;
         std::mutex m_iedConnectionMutex;  /**< Protect the libiec61850 'IedConnection' resource */
 

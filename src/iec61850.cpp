@@ -14,9 +14,9 @@
 
 IEC61850::IEC61850()
     : ClientGatewayInterface(),
-      FledgeProxyInterface()
+      FledgeProxyInterface(),
+      m_config(std::make_shared<IEC61850ClientConfig>())
 {
-    m_config = std::make_shared<IEC61850ClientConfig>();
 }
 
 void IEC61850::setConfig(const ConfigCategory &config) const

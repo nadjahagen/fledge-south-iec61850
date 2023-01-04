@@ -562,7 +562,7 @@ void IEC61850ClientConfig::importJsonDatasetConfig(const rapidjson::Value &jsonD
     }
     // end of preconditions
 
-    std::string datasetRef = std::string(jsonDatasetConfig["dataset_ref"].GetString());
+    auto datasetRef = std::string(jsonDatasetConfig["dataset_ref"].GetString());
     if (datasetRef.empty()) {
         throw ConfigurationException("the mandatory 'dataset_ref' is empty");
     }
