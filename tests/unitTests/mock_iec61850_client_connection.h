@@ -25,5 +25,17 @@ class MockIEC61850ClientConnection : public IEC61850ClientConnectionInterface
         MOCK_METHOD(std::shared_ptr<WrappedMms>,
                     readDO, (const std::string &doPath,
                              const FunctionalConstraint &functionalConstraint), (override));
+
+        MOCK_METHOD(std::shared_ptr<WrappedMms>,
+                    readDataset, (const std::string &datasetRef), (override));
+
+        MOCK_METHOD(void,
+                    buildNameTree, (const std::string &pathInDatamodel,
+                                    const FunctionalConstraint &functionalConstraint,
+                                    MmsNameNode *nameTree), (override));
+
+        MOCK_METHOD(std::vector<std::string>,
+                    getDoPathListWithFCFromDataset,
+                    (const std::string &datasetRef), (override));
 };
 #endif  // INCLUDE_MOCK_IEC61850_CLIENT_CONNECTION_H_

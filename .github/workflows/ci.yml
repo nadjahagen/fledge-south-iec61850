@@ -78,6 +78,7 @@ jobs:
           mkdir build
           cd build
           cmake -DBUILD_TESTS=NO -DBUILD_EXAMPLES=NO ..
+          sed -i "s/CONFIG_MMS_SORT_NAME_LIST 1/CONFIG_MMS_SORT_NAME_LIST 0/" ./config/stack_config.h # disable alphabetic order, for getNameList (server side).
           make
           sudo make install
       - name: Download and install Google Unit Test framework

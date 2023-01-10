@@ -31,10 +31,12 @@ TEST(IEC61850ClientTest, createOneConnection)
 {
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ExchangedDatasets exchangedDatasets;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
                           exchangedData,
+                          exchangedDatasets,
                           applicationParams);
     client.createConnection();
     ASSERT_THAT(client.m_connection, NotNull());
@@ -45,10 +47,12 @@ TEST(IEC61850ClientTest, reuseCreatedConnection)
 {
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ExchangedDatasets exchangedDatasets;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
                           exchangedData,
+                          exchangedDatasets,
                           applicationParams);
     // Create connection
     client.createConnection();
@@ -62,10 +66,12 @@ TEST(IEC61850ClientTest, destroyConnection)
 {
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ExchangedDatasets exchangedDatasets;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
                           exchangedData,
+                          exchangedDatasets,
                           applicationParams);
     client.createConnection();
     client.destroyConnection();
@@ -76,10 +82,12 @@ TEST(IEC61850ClientTest, destroyNullConnection)
 {
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ExchangedDatasets exchangedDatasets;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
                           exchangedData,
+                          exchangedDatasets,
                           applicationParams);
     client.createConnection();
     client.destroyConnection();
@@ -98,10 +106,12 @@ TEST(IEC61850ClientTest, initializeConnectionInOneTry)
     // Test Init
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ExchangedDatasets exchangedDatasets;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
                           exchangedData,
+                          exchangedDatasets,
                           applicationParams);
     client.createConnection(); // create a Foo connection before MockConnection injection
     // Test Body
@@ -121,10 +131,12 @@ TEST(IEC61850ClientTest, initializeConnectionFailed)
     // Test Init
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ExchangedDatasets exchangedDatasets;
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
                           exchangedData,
+                          exchangedDatasets,
                           applicationParams);
     // Test Body
     ASSERT_THAT(client.m_connection, IsNull());
@@ -147,6 +159,8 @@ TEST(IEC61850ClientTest, startAndStop)
     EXPECT_CALL(mockConnectedConnection, isConnected())
     .Times(5)
     .WillRepeatedly(Return(true));
+    EXPECT_CALL(mockConnectedConnection, buildNameTree(_, _, _))
+    .Times(1);
     EXPECT_CALL(mockConnectedConnection, readDO(_, _))
     .Times(2)
     .WillRepeatedly(Return(empty_mms));
@@ -156,13 +170,15 @@ TEST(IEC61850ClientTest, startAndStop)
     // Test Init
     ServerConnectionParameters connParam;
     ExchangedData exchangedData;
+    ExchangedDatasets exchangedDatasets;
     DatapointConfig dpConfig;
     dpConfig.dataPath = "Foo.DoPath";
-    exchangedData["foo"] = dpConfig;
+    exchangedData.push_back(dpConfig);
     ApplicationParameters applicationParams;
     IEC61850Client client(nullptr,
                           connParam,
                           exchangedData,
+                          exchangedDatasets,
                           applicationParams);
     // Test Body
     ASSERT_THAT(client.m_connection, IsNull());
@@ -190,14 +206,15 @@ TEST(IEC61850ClientTest, buildIntegerDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
-    dpConfig.mmsNameTree.mmsName = "my_int";
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+    dpConfig.mmsNameTree->mmsName = "my_int";
 
     MmsValue *mmsValue = MmsValue_newInteger(32);
     MmsValue_setInt32(mmsValue, -31416);
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValue);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "my_int");
     ASSERT_EQ(dp->getData().getTypeStr(), "INTEGER");
@@ -209,14 +226,15 @@ TEST(IEC61850ClientTest, buildUnsignedIntegerDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
-    dpConfig.mmsNameTree.mmsName = "my_uint";
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+    dpConfig.mmsNameTree->mmsName = "my_uint";
 
     MmsValue *mmsValue = MmsValue_newUnsigned(32);
     MmsValue_setUint32(mmsValue, -31416);
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValue);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "my_uint");
     ASSERT_EQ(dp->getData().getTypeStr(), "INTEGER");
@@ -228,13 +246,14 @@ TEST(IEC61850ClientTest, buildBoolDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
-    dpConfig.mmsNameTree.mmsName = "stVal";
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+    dpConfig.mmsNameTree->mmsName = "stVal";
 
     MmsValue *mmsValue = MmsValue_newBoolean(false);
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValue);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "do_value");
     ASSERT_EQ(dp->getData().getTypeStr(), "INTEGER");
@@ -246,13 +265,14 @@ TEST(IEC61850ClientTest, buildFloatDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
-    dpConfig.mmsNameTree.mmsName = "stVal";
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+    dpConfig.mmsNameTree->mmsName = "stVal";
 
     MmsValue *mmsValue = MmsValue_newFloat(-3.1416);
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValue);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "do_value");
     ASSERT_EQ(dp->getData().getTypeStr(), "FLOAT");
@@ -264,13 +284,14 @@ TEST(IEC61850ClientTest, buildDoubleDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
-    dpConfig.mmsNameTree.mmsName = "stVal";
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+    dpConfig.mmsNameTree->mmsName = "stVal";
 
     MmsValue *mmsValue = MmsValue_newDouble(-3.1416e-7);
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValue);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "do_value");
     ASSERT_EQ(dp->getData().getTypeStr(), "FLOAT");
@@ -282,13 +303,14 @@ TEST(IEC61850ClientTest, buildTimestampDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
-    dpConfig.mmsNameTree.mmsName = "t";
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+    dpConfig.mmsNameTree->mmsName = "t";
 
     MmsValue *mmsValue = MmsValue_newUtcTime(1670316432);
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValue);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "do_ts");
     ASSERT_EQ(dp->getData().getTypeStr(), "INTEGER");
@@ -300,14 +322,15 @@ TEST(IEC61850ClientTest, buildBitStringDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
-    dpConfig.mmsNameTree.mmsName = "q";
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+    dpConfig.mmsNameTree->mmsName = "q";
 
     MmsValue *mmsValue = MmsValue_newBitString(27);
     MmsValue_setBitStringFromInteger(mmsValue, 1026); // "0b10000000010"
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValue);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "do_quality");
     ASSERT_EQ(dp->getData().getTypeStr(), "STRING");
@@ -319,13 +342,14 @@ TEST(IEC61850ClientTest, buildVisibleStringDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
-    dpConfig.mmsNameTree.mmsName = "str";
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
+    dpConfig.mmsNameTree->mmsName = "str";
 
     MmsValue *mmsValue = MmsValue_newVisibleString("fooStr");
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValue);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "str");
     ASSERT_EQ(dp->getData().getTypeStr(), "STRING");
@@ -337,20 +361,21 @@ TEST(IEC61850ClientTest, buildComplexDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
     dpConfig.datapointType = "my_cdc";
-    dpConfig.mmsNameTree.mmsName = "complexDp";
+    dpConfig.mmsNameTree->mmsName = "complexDp";
 
     auto node1 = std::make_shared<MmsNameNode>();
     node1->mmsName = "1";
-    dpConfig.mmsNameTree.children.push_back(node1);
+    dpConfig.mmsNameTree->children.push_back(node1);
 
     auto node2 = std::make_shared<MmsNameNode>();
     node2->mmsName = "2";
-    dpConfig.mmsNameTree.children.push_back(node2);
+    dpConfig.mmsNameTree->children.push_back(node2);
 
     auto node3 = std::make_shared<MmsNameNode>();
     node3->mmsName = "3";
-    dpConfig.mmsNameTree.children.push_back(node3);
+    dpConfig.mmsNameTree->children.push_back(node3);
 
     MmsValue *mmsValueArray = MmsValue_createEmptyArray(3);
 
@@ -365,7 +390,7 @@ TEST(IEC61850ClientTest, buildComplexDatapoint)
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValueArray);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "complexDp");
     ASSERT_EQ(dp->getData().getTypeStr(), "DP_DICT");
@@ -392,8 +417,9 @@ TEST(IEC61850ClientTest, buildComplexMxDatapoint)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
     dpConfig.datapointType = "my_cdc";
-    dpConfig.mmsNameTree.mmsName = "complexDp";
+    dpConfig.mmsNameTree->mmsName = "complexDp";
 
     auto subnode1 = std::make_shared<MmsNameNode>();
     subnode1->mmsName = "float or int";
@@ -401,15 +427,15 @@ TEST(IEC61850ClientTest, buildComplexMxDatapoint)
     auto node1 = std::make_shared<MmsNameNode>();
     node1->mmsName = "mag";
     node1->children.push_back(subnode1);
-    dpConfig.mmsNameTree.children.push_back(node1);
+    dpConfig.mmsNameTree->children.push_back(node1);
 
     auto node2 = std::make_shared<MmsNameNode>();
     node2->mmsName = "2";
-    dpConfig.mmsNameTree.children.push_back(node2);
+    dpConfig.mmsNameTree->children.push_back(node2);
 
     auto node3 = std::make_shared<MmsNameNode>();
     node3->mmsName = "3";
-    dpConfig.mmsNameTree.children.push_back(node3);
+    dpConfig.mmsNameTree->children.push_back(node3);
 
     MmsValue *mmsValueArray = MmsValue_createEmptyArray(3);
 
@@ -427,7 +453,7 @@ TEST(IEC61850ClientTest, buildComplexMxDatapoint)
     auto wrappedMms = std::make_shared<WrappedMms>();
     wrappedMms->setMmsValue(mmsValueArray);
 
-    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+    auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
 
     ASSERT_EQ(dp->getName(), "complexDp");
     ASSERT_EQ(dp->getData().getTypeStr(), "DP_DICT");
@@ -454,8 +480,9 @@ TEST(IEC61850ClientTest, buildComplexDatapointWithErroneousStructure)
     ServerConnectionParameters connParam;
     ApplicationParameters applicationParams;
     DatapointConfig dpConfig;
+    dpConfig.mmsNameTree = std::make_shared<MmsNameNode>();
     dpConfig.datapointType = "my_cdc";
-    dpConfig.mmsNameTree.mmsName = "complexDp";
+    dpConfig.mmsNameTree->mmsName = "complexDp";
 
     auto subnode1 = std::make_shared<MmsNameNode>();
     subnode1->mmsName = "float or int";
@@ -463,15 +490,15 @@ TEST(IEC61850ClientTest, buildComplexDatapointWithErroneousStructure)
     auto node1 = std::make_shared<MmsNameNode>();
     node1->mmsName = "mag";
     node1->children.push_back(subnode1);
-    dpConfig.mmsNameTree.children.push_back(node1);
+    dpConfig.mmsNameTree->children.push_back(node1);
 
     auto node2 = std::make_shared<MmsNameNode>();
     node2->mmsName = "2";
-    dpConfig.mmsNameTree.children.push_back(node2);
+    dpConfig.mmsNameTree->children.push_back(node2);
 
     auto node3 = std::make_shared<MmsNameNode>();
     node3->mmsName = "3";
-    dpConfig.mmsNameTree.children.push_back(node3);
+    dpConfig.mmsNameTree->children.push_back(node3);
 
     MmsValue *mmsValueArray = MmsValue_createEmptyArray(2);
 
@@ -488,7 +515,7 @@ TEST(IEC61850ClientTest, buildComplexDatapointWithErroneousStructure)
     wrappedMms->setMmsValue(mmsValueArray);
 
     try {
-        auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms, dpConfig);
+        auto dp = IEC61850Client::convertMmsToDatapoint(wrappedMms->getMmsValue(), dpConfig);
         FAIL();
     } catch (MmsParsingException e) {
         ASSERT_STREQ(e.what(), "MMS Parsing exception: MMS structure does not match");

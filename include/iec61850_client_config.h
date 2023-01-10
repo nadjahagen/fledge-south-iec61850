@@ -12,6 +12,7 @@
  */
 
 #include <string>
+#include <vector>
 #include <map>
 #include <memory>
 
@@ -96,6 +97,7 @@ using ServerConfigDict = std::map<ServerDictKey, ServerConnectionParameters, std
 using DatapointLabel = std::string;
 using DatapointTypeStr = std::string;
 using DataPath = std::string;
+using DatasetRef = std::string;
 
 /**
  *  \brief Parameters about the data to transfer to Fledge
@@ -106,14 +108,14 @@ struct DatapointConfig {
     DatapointTypeId datapointTypeId = DatapointTypeId::UNKNOWN_DATAPOINT_TYPE;
     DataPath dataPath = "NOT_DEFINED";  /**< Object path in the IEC61850 data mode */
     FunctionalConstraint functionalConstraint = IEC61850_FC_NONE;
-    MmsNameNode mmsNameTree;  /**< name of each subelement of the MMS and datapoint */
+    std::shared_ptr<MmsNameNode> mmsNameTree = nullptr;  /**< name of each subelement of the MMS and datapoint */
 };
 
 /**
  *  \brief Collection of Datapoint configuration, extracted from the input JSON configuration
  */
-using ExchangedData = std::map<DatapointLabel, DatapointConfig, std::less<>>;
-
+using ExchangedData = std::vector<DatapointConfig>;
+using ExchangedDatasets = std::map<DatasetRef, ExchangedData, std::less<>>;
 
 /** \class ConfigurationException
  *  \brief Error in the input configuration
@@ -146,6 +148,7 @@ class IEC61850ClientConfig
 
         // Data model section
         ExchangedData exchangedData;
+        ExchangedDatasets selectedDOInExchangedDatasets;
 
         void importConfig(const ConfigCategory &newConfig);
 
@@ -160,7 +163,8 @@ class IEC61850ClientConfig
                                    const int selectorSize,
                                    const uint8_t *selectorValues);
         static void logExchangedData(const ExchangedData &exchangedData);
-        static void logMmsNameTree(const MmsNameNode &mmsNameNode, uint8_t currentDepth = 0);
+        static void logExchangedDatasets(const ExchangedDatasets &exchangedDatasets);
+        static void logMmsNameTree(const MmsNameNode *mmsNameNode, uint8_t currentDepth = 0);
 
     private:
         void importJsonProtocolConfig(const std::string &protocolConfig);
@@ -172,9 +176,13 @@ class IEC61850ClientConfig
                                               OsiParameters *osiParams) const;
         void importJsonApplicationLayerConfig(const rapidjson::Value &applicationLayer);
         void importJsonExchangedDataConfig(const std::string &exchangedDataConfig);
+        void importJsonExchangedDatasetsConfig(const std::string &exchangedDatasetsConfig);
         void importJsonDatapointConfig(const rapidjson::Value &jsonDatapointConfig);
+        void importJsonDatasetConfig(const rapidjson::Value &jsonDatasetConfig);
         void importJsonDatapointProtocolConfig(const rapidjson::Value &datapointProtocolConfig,
                                                DatapointConfig &datapointConfig) const;
+        static void setDatapointType(const rapidjson::Value &jsonConfig,
+                                     DatapointConfig &dpConfigToComplete);
 
         static OsiSelectorSize parseOsiPSelector(std::string &inputOsiSelector, PSelector *pselector);
         static OsiSelectorSize parseOsiTSelector(std::string &inputOsiSelector, TSelector *tselector);

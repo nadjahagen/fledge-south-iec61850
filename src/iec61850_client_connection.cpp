@@ -9,6 +9,7 @@
  */
 
 #include "./iec61850_client_connection.h"
+#include "./iec61850_client_config.h"
 
 // libiec61850 headers
 #include <libiec61850/iec61850_common.h>
@@ -112,4 +113,118 @@ IEC61850ClientConnection::readDO(const std::string &doPath,
                              doPath.c_str(),
                              functionalConstraint));
     return wrapped_mms;
+}
+
+std::shared_ptr<WrappedMms>
+IEC61850ClientConnection::readDataset(const std::string &datasetRef)
+{
+    // Preconditions
+    if (! isConnected()) {
+        return nullptr;
+    }
+
+    auto wrapped_mms = std::make_shared<WrappedMms>();
+    std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
+
+    ClientDataSet readDataset = IedConnection_readDataSetValues(m_iedConnection,
+                                                                &m_networkStack_error,
+                                                                datasetRef.c_str(),
+                                                                nullptr);
+
+    /** Keep only the MmsValue, not the full ClientDataSet structure */
+    wrapped_mms->setMmsValue(MmsValue_clone(ClientDataSet_getValues(readDataset)));
+
+    ClientDataSet_destroy(readDataset);
+    return wrapped_mms;
+}
+
+void
+IEC61850ClientConnection::buildNameTree(const std::string &pathInDatamodel,
+                                        const FunctionalConstraint &functionalConstraint,
+                                        MmsNameNode *nameTree)
+{
+    // Preconditions
+    if (! nameTree) {
+        return;
+    }
+    if (! isConnected()) {
+        return;
+    }
+
+    LinkedList dataAttributes = nullptr;
+    dataAttributes = getDataDirectory(pathInDatamodel, functionalConstraint);
+
+    if (dataAttributes != nullptr) {
+        LinkedList dataAttribute = LinkedList_getNext(dataAttributes);
+
+        while (dataAttribute != nullptr) {
+            std::string daName(static_cast<char*>(dataAttribute->data));
+
+            auto newNameNode = std::make_shared<MmsNameNode>();
+            newNameNode->mmsName = daName;
+
+            buildNameTree(pathInDatamodel + "." + daName,
+                          functionalConstraint,
+                          newNameNode.get());
+
+            nameTree->children.push_back(std::move(newNameNode));
+            dataAttribute = LinkedList_getNext(dataAttribute);
+        }
+
+        LinkedList_destroy(dataAttributes);
+    }
+}
+
+LinkedList
+IEC61850ClientConnection::getDataDirectory(const std::string &pathInDatamodel,
+                                           const FunctionalConstraint &functionalConstraint)
+{
+    std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
+    LinkedList dataAttributes = nullptr;
+
+    dataAttributes = IedConnection_getDataDirectoryByFC(m_iedConnection,
+                                                        &m_networkStack_error,
+                                                        pathInDatamodel.c_str(),
+                                                        functionalConstraint);
+
+    return dataAttributes;
+}
+
+std::vector<std::string>
+IEC61850ClientConnection::getDoPathListWithFCFromDataset(const std::string &datasetRef)
+{
+    std::vector<std::string> doPathList;
+
+    // Preconditions
+    if (! isConnected()) {
+        return doPathList;
+    }
+
+    LinkedList dataSetMembers = nullptr;
+    dataSetMembers = getDataSetDirectory(datasetRef);
+
+    if (dataSetMembers != nullptr) {
+        LinkedList dataSetMemberRef = LinkedList_getNext(dataSetMembers);
+
+        while (dataSetMemberRef != nullptr) {
+            doPathList.emplace_back(static_cast<char*>(dataSetMemberRef->data));
+
+            dataSetMemberRef = LinkedList_getNext(dataSetMemberRef);
+        }
+    }
+
+    return doPathList;
+}
+
+LinkedList
+IEC61850ClientConnection::getDataSetDirectory(const std::string &datasetRef)
+{
+    std::unique_lock<std::mutex> connectionGuard(m_iedConnectionMutex);
+    LinkedList dataSetMembers = nullptr;
+    dataSetMembers = IedConnection_getDataSetDirectory(m_iedConnection,
+                                                       &m_networkStack_error,
+                                                       datasetRef.c_str(),
+                                                       nullptr);
+
+    return dataSetMembers;
 }

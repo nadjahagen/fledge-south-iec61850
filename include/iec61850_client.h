@@ -55,6 +55,7 @@ class IEC61850Client
         explicit IEC61850Client(IEC61850 *iec61850,
                                 const ServerConnectionParameters &connectionParam,
                                 const ExchangedData &exchangedData,
+                                const ExchangedDatasets &selectedDOInExchangedDatasets,
                                 const ApplicationParameters &applicationParams);
 
         ~IEC61850Client();
@@ -82,10 +83,19 @@ class IEC61850Client
 
         // Section: Configuration
         const ServerConnectionParameters &m_connectionParam;
-        const ExchangedData &m_exchangedData;
         const ApplicationParameters &m_applicationParams;
 
+        const ExchangedDatasets &m_selectedDOInExchangedDatasets;
+
+        /** \brief local copy of ExchangedData config */
+        ExchangedData m_localExchangedData;
+
+        /** \brief local copy of ExchangedDataset config */
+        ExchangedDatasets m_localExchangedDatasets;
+
         IEC61850 *m_iec61850; /**< plugin main object to which to forward the reading data */
+
+        void buildConfigurationNameTrees();
 
         /**
          * \brief Create the Datapoint object that will be ingest by Fledge
@@ -118,7 +128,7 @@ class IEC61850Client
          * by extracting the MMS content and creating a new Datapoint.
          * Reentrant function, thread safe
          */
-        static Datapoint *convertMmsToDatapoint(std::shared_ptr<WrappedMms> wrappedMms,
+        static Datapoint *convertMmsToDatapoint(const MmsValue *mmsValue,
                                                 const DatapointConfig &datapointConfig);
 
         /**
@@ -130,6 +140,10 @@ class IEC61850Client
 
         /** \brief Use the IEC61850 connection for reading DO or Dataset */
         void readAndExportMms();
+        void readAndExportAllDO();
+        void readAndExportAllDatasets();
+        void readAndExportOneDataset(const std::string &datasetRef,
+                                     const ExchangedData &exchangedDataset);
 
         // Section: Client initialization with connection creation
         void launch();
