@@ -114,7 +114,7 @@ extern "C" {
     /**
      * \brief Reconfigure the plugin
      */
-    void plugin_reconfigure(PLUGIN_HANDLE handle, std::string &newConfig)  // NOSONAR (Fledge API)
+    void plugin_reconfigure(PLUGIN_HANDLE *handle, std::string &newConfig)  // NOSONAR (Fledge API)
     {
         if (!handle) {
             Logger::getLogger()->warn("plugin_reconfigure: PLUGIN_HANDLE is null");
@@ -123,7 +123,7 @@ extern "C" {
 
         try {
             ConfigCategory config("new", newConfig);
-            auto iec61850 = static_cast<IEC61850 *>(handle);
+            auto *iec61850 = static_cast<IEC61850 *>(*handle);
             iec61850->stop();
             iec61850->setConfig(config);
             Logger::getLogger()->setMinLevel(iec61850->getLogMinLevel());
